@@ -123,7 +123,7 @@ export default function FlightMap({
   };
 
   return (
-    <div className="w-full md:w-2/3 lg:w-3/4 bg-neutral-200 relative h-[50vh] md:h-[calc(100vh-4rem)]">
+    <div className="w-full md:w-2/3 lg:w-3/4 bg-neutral-200 relative h-[50vh] md:h-[calc(100vh-4rem)] ml-3">
       {!isConnected && (
         <Alert variant="destructive" className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 w-auto">
           <AlertTriangle className="h-4 w-4" />

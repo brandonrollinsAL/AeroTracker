@@ -13,7 +13,8 @@ export default function Home() {
   const [filters, setFilters] = useState<MapFilter>({
     type: 'all',
     showWeather: false,
-    showFlightPaths: true
+    showFlightPaths: true,
+    showAirports: false
   });
   
   const { flights, isConnected } = useWebSocket(filters);

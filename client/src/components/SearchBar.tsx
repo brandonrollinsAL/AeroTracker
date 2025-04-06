@@ -9,6 +9,7 @@ import {
   CommandList
 } from '@/components/ui/command';
 import { LiveFlight, Airport, Aircraft } from '@/types';
+import axios from 'axios';
 
 export default function SearchBar() {
   const [open, setOpen] = useState(false);
@@ -18,10 +19,24 @@ export default function SearchBar() {
   const { data: searchResults, isLoading } = useQuery({
     queryKey: ['/api/search', searchQuery],
     queryFn: async () => {
-      if (searchQuery.length < 2) return [];
-      const response = await fetch(`/api/search?query=${encodeURIComponent(searchQuery)}`);
-      if (!response.ok) throw new Error('Search failed');
-      return response.json();
+      if (searchQuery.length < 2) return { flights: [], airports: [], aircraft: [] };
+      const response = await axios.get(`/api/search?query=${encodeURIComponent(searchQuery)}`);
+      if (!response.data) throw new Error('Search failed');
+      
+      // Group results by type
+      const result = {
+        flights: [],
+        airports: [],
+        aircraft: []
+      };
+      
+      response.data.forEach(item => {
+        if (item.type === 'flight') result.flights.push(item);
+        else if (item.type === 'airport') result.airports.push(item);
+        else if (item.type === 'aircraft') result.aircraft.push(item);
+      });
+      
+      return result;
     },
     enabled: open && searchQuery.length >= 2
   });
@@ -75,10 +90,9 @@ export default function SearchBar() {
           
           {searchResults && (
             <>
-              <CommandGroup heading="Flights">
-                {searchResults
-                  .filter((result: any) => result.type === 'flight')
-                  .map((flight: LiveFlight & { type: string }) => (
+              {searchResults.flights && searchResults.flights.length > 0 && (
+                <CommandGroup heading="Flights">
+                  {searchResults.flights.map((flight: LiveFlight & { type: string }) => (
                     <CommandItem 
                       key={flight.id} 
                       onSelect={() => handleSelect(flight)}
@@ -93,12 +107,12 @@ export default function SearchBar() {
                       </span>
                     </CommandItem>
                   ))}
-              </CommandGroup>
+                </CommandGroup>
+              )}
 
-              <CommandGroup heading="Airports">
-                {searchResults
-                  .filter((result: any) => result.type === 'airport')
-                  .map((airport: Airport & { type: string }) => (
+              {searchResults.airports && searchResults.airports.length > 0 && (
+                <CommandGroup heading="Airports">
+                  {searchResults.airports.map((airport: Airport & { type: string }) => (
                     <CommandItem 
                       key={airport.id} 
                       onSelect={() => handleSelect(airport)}
@@ -108,12 +122,12 @@ export default function SearchBar() {
                       <span className="ml-2 text-xs text-neutral-500">{airport.city}, {airport.country}</span>
                     </CommandItem>
                   ))}
-              </CommandGroup>
+                </CommandGroup>
+              )}
 
-              <CommandGroup heading="Aircraft">
-                {searchResults
-                  .filter((result: any) => result.type === 'aircraft')
-                  .map((aircraft: Aircraft & { type: string }) => (
+              {searchResults.aircraft && searchResults.aircraft.length > 0 && (
+                <CommandGroup heading="Aircraft">
+                  {searchResults.aircraft.map((aircraft: Aircraft & { type: string }) => (
                     <CommandItem 
                       key={aircraft.id} 
                       onSelect={() => handleSelect(aircraft)}
@@ -123,7 +137,8 @@ export default function SearchBar() {
                       <span className="ml-2 text-xs text-neutral-500">{aircraft.type}</span>
                     </CommandItem>
                   ))}
-              </CommandGroup>
+                </CommandGroup>
+              )}
             </>
           )}
         </CommandList>

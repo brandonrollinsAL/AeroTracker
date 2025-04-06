@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SearchBar from './SearchBar';
 import NavigationTabs from './NavigationTabs';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,30 @@ export default function Header({ onFilterChange }: HeaderProps) {
   
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
+    
+    // Set appropriate filters based on the selected tab
+    switch (tab) {
+      case 'Live Map':
+        // Default view - no special filter changes
+        break;
+      case 'Flight Status':
+        // Show flights with specific statuses
+        break;
+      case 'Airports':
+        // Show airports on the map
+        onFilterChange({ showAirports: true });
+        break;
+      case 'Routes':
+        // Show flight paths
+        onFilterChange({ showFlightPaths: true });
+        break;
+      case 'Weather':
+        // Show weather overlay
+        onFilterChange({ showWeather: true });
+        break;
+      default:
+        break;
+    }
   };
 
   return (
