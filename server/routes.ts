@@ -5,6 +5,7 @@ import { z } from "zod";
 import { setupWebSocketServer } from "./webSocket";
 import { fetchFlights, fetchFlightDetails, fetchAircraft } from "./api/aviation";
 import { fetchWeather } from "./api/weather";
+import { fetchUSAirports, searchAirports } from "./api/airports";
 import { MapFilter, insertAlertSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -15,10 +16,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // API Routes - prefix all routes with /api
   
-  // Get all flights
+  // Get all flights with advanced filtering
   app.get("/api/flights", async (req, res) => {
     try {
-      // Get query parameters for filtering
+      // Extract all filter parameters from query
       const filterType = (req.query.type as string) || 'all';
       const validTypes = ['all', 'commercial', 'private', 'cargo'];
       
@@ -26,7 +27,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid filter type" });
       }
       
-      const flights = await fetchFlights(filterType as MapFilter['type']);
+      const airline = req.query.airline as string;
+      const aircraft = req.query.aircraft as string;
+      const tailNumber = req.query.tailNumber as string;
+      const purpose = req.query.purpose as string;
+      const sortBy = req.query.sortBy as string;
+      const sortOrder = req.query.sortOrder as string;
+      
+      // Get flights with basic filter
+      let flights = await fetchFlights(filterType as MapFilter['type']);
+      
+      // Apply additional filtering
+      if (airline) {
+        flights = flights.filter(f => 
+          f.airline?.name?.toLowerCase().includes(airline.toLowerCase()) || 
+          f.airline?.icao?.toLowerCase() === airline.toLowerCase() ||
+          f.airline?.iata?.toLowerCase() === airline.toLowerCase()
+        );
+      }
+      
+      if (aircraft) {
+        flights = flights.filter(f => 
+          f.aircraftType?.toLowerCase().includes(aircraft.toLowerCase())
+        );
+      }
+      
+      if (tailNumber) {
+        flights = flights.filter(f => 
+          f.registration?.toLowerCase().includes(tailNumber.toLowerCase())
+        );
+      }
+      
+      if (purpose && purpose !== 'all') {
+        flights = flights.filter(f => {
+          // Determine purpose based on available data
+          if (purpose === 'passenger') {
+            return f.airline?.name != null && !f.callsign?.includes('CARGO');
+          } else if (purpose === 'freight') {
+            return f.callsign?.includes('CARGO') || f.airline?.name?.toLowerCase().includes('cargo');
+          } else if (purpose === 'military') {
+            return f.callsign?.includes('MILITARY') || 
+                  f.callsign?.startsWith('RCH') || // Air Mobility Command
+                  f.callsign?.includes('NAVY');
+          } else if (purpose === 'general') {
+            return f.airline?.name == null;
+          }
+          return true;
+        });
+      }
+      
+      // Apply sorting if specified
+      if (sortBy) {
+        flights.sort((a, b) => {
+          let comparison = 0;
+          
+          switch(sortBy) {
+            case 'airline':
+              comparison = (a.airline?.name || '').localeCompare(b.airline?.name || '');
+              break;
+            case 'altitude':
+              comparison = (a.position.altitude || 0) - (b.position.altitude || 0);
+              break;
+            case 'speed':
+              comparison = (a.position.groundSpeed || 0) - (b.position.groundSpeed || 0);
+              break;
+            case 'departure':
+              comparison = (a.departure?.icao || '').localeCompare(b.departure?.icao || '');
+              break;
+            case 'arrival':
+              comparison = (a.arrival?.icao || '').localeCompare(b.arrival?.icao || '');
+              break;
+            case 'time':
+              const aTime = a.departure?.time ? new Date(a.departure.time).getTime() : 0;
+              const bTime = b.departure?.time ? new Date(b.departure.time).getTime() : 0;
+              comparison = aTime - bTime;
+              break;
+          }
+          
+          return sortOrder === 'desc' ? -comparison : comparison;
+        });
+      }
+      
       res.json(flights);
     } catch (error) {
       console.error("Error fetching flights:", error);
@@ -51,7 +132,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get airport information
+  // Get all airports or search
+  app.get("/api/airports", async (req, res) => {
+    try {
+      const query = req.query.search as string;
+      let airports;
+      
+      if (query) {
+        // Search airports by name, code, or city
+        airports = await searchAirports(query);
+      } else {
+        // Get or fetch all US airports
+        airports = await fetchUSAirports();
+      }
+      
+      res.json(airports);
+    } catch (error) {
+      console.error("Error fetching airports:", error);
+      res.status(500).json({ message: "Failed to fetch airports" });
+    }
+  });
+
+  // Get airport information by code
   app.get("/api/airports/:code", async (req, res) => {
     try {
       const { code } = req.params;

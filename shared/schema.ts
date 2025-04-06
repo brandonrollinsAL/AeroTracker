@@ -49,6 +49,8 @@ export const airports = pgTable("airports", {
   country: text("country").notNull(),
   latitude: real("latitude").notNull(),
   longitude: real("longitude").notNull(),
+  size: text("size", { enum: ['large', 'medium', 'small'] }),
+  type: text("type", { enum: ['international', 'domestic', 'regional'] }),
 });
 
 export const aircraft = pgTable("aircraft", {
@@ -194,4 +196,11 @@ export type MapFilter = {
   type: 'all' | 'commercial' | 'private' | 'cargo';
   showWeather: boolean;
   showFlightPaths: boolean;
+  showAirports: boolean;
+  airline?: string;
+  aircraft?: string;
+  tailNumber?: string;
+  purpose?: 'passenger' | 'freight' | 'military' | 'general' | 'all';
+  sortBy?: 'airline' | 'altitude' | 'speed' | 'departure' | 'arrival' | 'time';
+  sortOrder?: 'asc' | 'desc';
 };

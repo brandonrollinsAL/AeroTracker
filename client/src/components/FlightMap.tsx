@@ -4,9 +4,11 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import MapControls from './MapControls';
 import MapFilters from './MapFilters';
-import { LiveFlight, MapFilter } from '@/types';
+import AirportMarker from './AirportMarker';
+import { LiveFlight, MapFilter, Airport } from '@/types';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
+import axios from 'axios';
 
 // Fix the default icon issue with Leaflet
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -66,14 +68,39 @@ export default function FlightMap({
   isConnected
 }: FlightMapProps) {
   const mapRef = useRef<L.Map | null>(null);
+  const [airports, setAirports] = useState<Airport[]>([]);
+  const [loadingAirports, setLoadingAirports] = useState(false);
   
   // Default center if no flights are available
   const defaultCenter: [number, number] = [37.0902, -95.7129]; // US center
   const defaultZoom = 5;
 
+  // Fetch airports when showAirports is enabled
+  useEffect(() => {
+    if (filters.showAirports && airports.length === 0) {
+      setLoadingAirports(true);
+      
+      axios.get('/api/airports')
+        .then(response => {
+          setAirports(response.data);
+        })
+        .catch(error => {
+          console.error('Error fetching airports:', error);
+        })
+        .finally(() => {
+          setLoadingAirports(false);
+        });
+    }
+  }, [filters.showAirports, airports.length]);
+
   const handleMapReady = (map: L.Map) => {
     mapRef.current = map;
   };
+  
+  // Define the type for the whenReady event
+  interface MapReadyEvent {
+    target: L.Map;
+  }
 
   const handleZoomIn = () => {
     mapRef.current?.zoomIn();
@@ -108,7 +135,7 @@ export default function FlightMap({
         center={defaultCenter}
         zoom={defaultZoom}
         style={{ height: '100%', width: '100%' }}
-        whenReady={(map) => handleMapReady(map.target)}
+        whenReady={(event: MapReadyEvent) => handleMapReady(event.target)}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -135,10 +162,25 @@ export default function FlightMap({
           </Marker>
         ))}
         
+        {/* Display airports if enabled */}
+        {filters.showAirports && airports.map(airport => (
+          <AirportMarker key={airport.id} airport={airport} />
+        ))}
+        
         {/* Weather overlay would go here if enabled */}
         {filters.showWeather && (
           // This would be a weather overlay component
           <></>
+        )}
+        
+        {/* Loading indicator for airports */}
+        {loadingAirports && (
+          <div className="absolute top-4 right-4 bg-white rounded-md shadow-md p-2 z-[1000]">
+            <div className="flex items-center space-x-2">
+              <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
+              <span className="text-xs text-neutral-700">Loading airports...</span>
+            </div>
+          </div>
         )}
         
         <MapUpdater flight={selectedFlight} />
