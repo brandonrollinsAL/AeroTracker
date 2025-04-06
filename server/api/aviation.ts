@@ -256,13 +256,13 @@ function createDefaultFlight(): LiveFlight {
   return {
     id: String(Date.now()),
     callsign: 'UNKNOWN',
-    flightNumber: null,
-    registration: null,
-    aircraftType: null,
+    flightNumber: undefined,
+    registration: undefined,
+    aircraftType: undefined,
     airline: {
       name: 'Unknown Airline',
-      icao: null,
-      iata: null
+      icao: '',
+      iata: undefined
     },
     position: {
       latitude: coords.lat,
@@ -274,9 +274,9 @@ function createDefaultFlight(): LiveFlight {
       timestamp: new Date().toISOString()
     },
     status: 'active',
-    route: null,
-    progress: null,
-    squawk: null
+    route: undefined,
+    progress: undefined,
+    squawk: undefined
   };
 }
 

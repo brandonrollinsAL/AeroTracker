@@ -6,6 +6,8 @@ import {
   aircraft, type Aircraft, type InsertAircraft,
   type LiveFlight, type WeatherData, type MapFilter
 } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -234,4 +236,206 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database storage implementation using Drizzle ORM
+export class DatabaseStorage implements IStorage {
+  // Shared caches for external API data
+  private cachedLiveFlights: LiveFlight[] = [];
+  private cachedWeather: Map<string, { data: WeatherData, timestamp: number }> = new Map();
+
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    // Ensure values are not undefined
+    const userValues = {
+      username: insertUser.username,
+      password: insertUser.password,
+      email: insertUser.email ?? null,
+      preferences: insertUser.preferences ?? null
+    };
+    
+    const [user] = await db.insert(users).values(userValues).returning();
+    return user;
+  }
+
+  // Flight operations
+  async getFlight(id: number): Promise<Flight | undefined> {
+    const [flight] = await db.select().from(flights).where(eq(flights.id, id));
+    return flight;
+  }
+
+  async getFlightByFlightNumber(flightNumber: string): Promise<Flight | undefined> {
+    const [flight] = await db.select().from(flights).where(eq(flights.flightNumber, flightNumber));
+    return flight;
+  }
+
+  async getAllFlights(): Promise<Flight[]> {
+    return await db.select().from(flights);
+  }
+
+  async createFlight(insertFlight: InsertFlight): Promise<Flight> {
+    // Ensure values are not undefined
+    const flightValues = {
+      flightNumber: insertFlight.flightNumber,
+      airline: insertFlight.airline,
+      departureAirport: insertFlight.departureAirport,
+      arrivalAirport: insertFlight.arrivalAirport,
+      departureTime: insertFlight.departureTime,
+      arrivalTime: insertFlight.arrivalTime,
+      status: insertFlight.status ?? null,
+      aircraftType: insertFlight.aircraftType ?? null,
+      aircraftRegistration: insertFlight.aircraftRegistration ?? null,
+      latitude: insertFlight.latitude ?? null,
+      longitude: insertFlight.longitude ?? null,
+      altitude: insertFlight.altitude ?? null,
+      heading: insertFlight.heading ?? null,
+      groundSpeed: insertFlight.groundSpeed ?? null,
+      verticalSpeed: insertFlight.verticalSpeed ?? null,
+      squawk: insertFlight.squawk ?? null,
+      lastUpdated: insertFlight.lastUpdated ?? null
+    };
+    
+    const [flight] = await db.insert(flights).values(flightValues).returning();
+    return flight;
+  }
+
+  async updateFlight(id: number, flightData: Partial<InsertFlight>): Promise<Flight | undefined> {
+    const [updatedFlight] = await db
+      .update(flights)
+      .set(flightData)
+      .where(eq(flights.id, id))
+      .returning();
+    return updatedFlight;
+  }
+
+  async deleteFlight(id: number): Promise<boolean> {
+    const result = await db.delete(flights).where(eq(flights.id, id)).returning({ id: flights.id });
+    return result.length > 0;
+  }
+
+  // Alert operations
+  async getAlert(id: number): Promise<Alert | undefined> {
+    const [alert] = await db.select().from(alerts).where(eq(alerts.id, id));
+    return alert;
+  }
+
+  async getAlertsByUser(userId: number): Promise<Alert[]> {
+    return await db.select().from(alerts).where(eq(alerts.userId, userId));
+  }
+
+  async createAlert(insertAlert: InsertAlert): Promise<Alert> {
+    // Ensure values are not undefined
+    const alertValues = {
+      type: insertAlert.type,
+      userId: insertAlert.userId ?? null,
+      flightId: insertAlert.flightId ?? null,
+      message: insertAlert.message ?? null,
+      isRead: insertAlert.isRead ?? false,
+      createdAt: new Date().toISOString()
+    };
+    
+    const [alert] = await db.insert(alerts).values(alertValues).returning();
+    return alert;
+  }
+
+  async updateAlert(id: number, alertData: Partial<InsertAlert>): Promise<Alert | undefined> {
+    const [updatedAlert] = await db
+      .update(alerts)
+      .set(alertData)
+      .where(eq(alerts.id, id))
+      .returning();
+    return updatedAlert;
+  }
+
+  async deleteAlert(id: number): Promise<boolean> {
+    const result = await db.delete(alerts).where(eq(alerts.id, id)).returning({ id: alerts.id });
+    return result.length > 0;
+  }
+
+  // Airport operations
+  async getAirport(id: number): Promise<Airport | undefined> {
+    const [airport] = await db.select().from(airports).where(eq(airports.id, id));
+    return airport;
+  }
+
+  async getAirportByCode(code: string): Promise<Airport | undefined> {
+    const [airport] = await db.select().from(airports).where(eq(airports.code, code));
+    return airport;
+  }
+
+  async getAllAirports(): Promise<Airport[]> {
+    return await db.select().from(airports);
+  }
+
+  async createAirport(insertAirport: InsertAirport): Promise<Airport> {
+    const [airport] = await db.insert(airports).values(insertAirport).returning();
+    return airport;
+  }
+
+  // Aircraft operations
+  async getAircraft(id: number): Promise<Aircraft | undefined> {
+    const [aircraftItem] = await db.select().from(aircraft).where(eq(aircraft.id, id));
+    return aircraftItem;
+  }
+
+  async getAircraftByRegistration(registration: string): Promise<Aircraft | undefined> {
+    const [aircraftItem] = await db.select().from(aircraft).where(eq(aircraft.registration, registration));
+    return aircraftItem;
+  }
+
+  async getAllAircraft(): Promise<Aircraft[]> {
+    return await db.select().from(aircraft);
+  }
+
+  async createAircraft(insertAircraft: InsertAircraft): Promise<Aircraft> {
+    // Ensure values are not undefined
+    const aircraftValues = {
+      type: insertAircraft.type,
+      registration: insertAircraft.registration,
+      airline: insertAircraft.airline ?? null,
+      manufacturerSerialNumber: insertAircraft.manufacturerSerialNumber ?? null,
+      age: insertAircraft.age ?? null,
+      details: insertAircraft.details ?? null
+    };
+    
+    const [aircraftItem] = await db.insert(aircraft).values(aircraftValues).returning();
+    return aircraftItem;
+  }
+
+  // Cache operations for external API data - still uses in-memory storage
+  // as this is temporary data that doesn't need to persist between app restarts
+  async cacheFlightData(flights: LiveFlight[]): Promise<void> {
+    this.cachedLiveFlights = flights;
+  }
+
+  async getCachedFlights(): Promise<LiveFlight[]> {
+    return this.cachedLiveFlights;
+  }
+
+  async cacheWeatherData(location: string, data: WeatherData): Promise<void> {
+    this.cachedWeather.set(location, { 
+      data,
+      timestamp: Date.now() 
+    });
+  }
+
+  async getCachedWeather(location: string): Promise<WeatherData | undefined> {
+    const cached = this.cachedWeather.get(location);
+    // Return cached data if it's less than 1 hour old
+    if (cached && Date.now() - cached.timestamp < 3600000) {
+      return cached.data;
+    }
+    return undefined;
+  }
+}
+
+// Using PostgreSQL database storage
+export const storage = new DatabaseStorage();
