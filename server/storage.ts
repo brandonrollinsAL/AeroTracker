@@ -4,7 +4,8 @@ import {
   alerts, type Alert, type InsertAlert,
   airports, type Airport, type InsertAirport,
   aircraft, type Aircraft, type InsertAircraft,
-  type LiveFlight, type WeatherData, type MapFilter
+  type LiveFlight, type WeatherData, type MapFilter,
+  type UserPreferences, type AircraftDetails
 } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
@@ -254,7 +255,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    // Ensure values are not undefined
+    // Ensure values are not undefined 
     const userValues = {
       username: insertUser.username,
       password: insertUser.password,
@@ -262,7 +263,8 @@ export class DatabaseStorage implements IStorage {
       preferences: insertUser.preferences ?? null
     };
     
-    const [user] = await db.insert(users).values(userValues).returning();
+    // Insert as a single value, not an array
+    const [user] = await db.insert(users).values([userValues]).returning();
     return user;
   }
 
@@ -303,7 +305,7 @@ export class DatabaseStorage implements IStorage {
       lastUpdated: insertFlight.lastUpdated ?? null
     };
     
-    const [flight] = await db.insert(flights).values(flightValues).returning();
+    const [flight] = await db.insert(flights).values([flightValues]).returning();
     return flight;
   }
 
@@ -342,7 +344,7 @@ export class DatabaseStorage implements IStorage {
       createdAt: new Date().toISOString()
     };
     
-    const [alert] = await db.insert(alerts).values(alertValues).returning();
+    const [alert] = await db.insert(alerts).values([alertValues]).returning();
     return alert;
   }
 
@@ -376,7 +378,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createAirport(insertAirport: InsertAirport): Promise<Airport> {
-    const [airport] = await db.insert(airports).values(insertAirport).returning();
+    const airportValues = {
+      code: insertAirport.code,
+      name: insertAirport.name,
+      city: insertAirport.city,
+      country: insertAirport.country,
+      latitude: insertAirport.latitude,
+      longitude: insertAirport.longitude
+    };
+    
+    const [airport] = await db.insert(airports).values([airportValues]).returning();
     return airport;
   }
 
@@ -406,7 +417,7 @@ export class DatabaseStorage implements IStorage {
       details: insertAircraft.details ?? null
     };
     
-    const [aircraftItem] = await db.insert(aircraft).values(aircraftValues).returning();
+    const [aircraftItem] = await db.insert(aircraft).values([aircraftValues]).returning();
     return aircraftItem;
   }
 
