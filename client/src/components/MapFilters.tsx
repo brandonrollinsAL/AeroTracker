@@ -88,36 +88,23 @@ export default function MapFilters({ filters, onFilterChange }: MapFiltersProps)
   ].filter(Boolean).length;
 
   return (
-    <div className="absolute top-4 left-4 bg-white rounded-md shadow-md p-3 max-w-[260px] z-[900]">
-      <div className="flex flex-col space-y-3">
-        <div className="flex justify-between items-center">
-          <h3 className="font-medium text-sm text-neutral-800">Map Filters</h3>
-          {advancedFilterCount > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-6 px-2 text-xs flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50"
-              onClick={clearFilters}
-            >
-              <X className="h-3 w-3" /> Clear All
-            </Button>
-          )}
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
+    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white rounded-md shadow-md px-4 py-2 z-[900] w-auto">
+      <div className="flex flex-row items-center space-x-4">
+        {/* Flight type filters */}
+        <div className="flex gap-1">
           <Button
             variant={filters.type === 'all' ? 'default' : 'outline'}
             size="sm"
-            className="rounded-full text-xs h-7"
+            className="h-7 px-2 text-xs rounded"
             onClick={() => handleTypeChange('all')}
           >
-            All Flights
+            All
           </Button>
           
           <Button
             variant={filters.type === 'commercial' ? 'default' : 'outline'}
             size="sm"
-            className="rounded-full text-xs h-7"
+            className="h-7 px-2 text-xs rounded"
             onClick={() => handleTypeChange('commercial')}
           >
             Commercial
@@ -126,7 +113,7 @@ export default function MapFilters({ filters, onFilterChange }: MapFiltersProps)
           <Button
             variant={filters.type === 'private' ? 'default' : 'outline'}
             size="sm"
-            className="rounded-full text-xs h-7"
+            className="h-7 px-2 text-xs rounded"
             onClick={() => handleTypeChange('private')}
           >
             Private
@@ -135,18 +122,57 @@ export default function MapFilters({ filters, onFilterChange }: MapFiltersProps)
           <Button
             variant={filters.type === 'cargo' ? 'default' : 'outline'}
             size="sm"
-            className="rounded-full text-xs h-7"
+            className="h-7 px-2 text-xs rounded"
             onClick={() => handleTypeChange('cargo')}
           >
             Cargo
           </Button>
+        </div>
+
+        {/* Separator */}
+        <div className="h-6 border-r border-gray-300"></div>
+        
+        {/* Display toggles */}
+        <div className="flex space-x-3">
+          <div className="flex items-center space-x-1.5">
+            <Switch
+              id="weather-toggle-mini"
+              checked={filters.showWeather}
+              onCheckedChange={handleToggleWeather}
+            />
+            <Label htmlFor="weather-toggle-mini" className="text-xs">Weather</Label>
+          </div>
           
+          <div className="flex items-center space-x-1.5">
+            <Switch
+              id="paths-toggle-mini"
+              checked={filters.showFlightPaths}
+              onCheckedChange={handleToggleFlightPaths}
+            />
+            <Label htmlFor="paths-toggle-mini" className="text-xs">Flight Paths</Label>
+          </div>
+          
+          <div className="flex items-center space-x-1.5">
+            <Switch
+              id="airports-toggle-mini"
+              checked={filters.showAirports}
+              onCheckedChange={handleToggleAirports}
+            />
+            <Label htmlFor="airports-toggle-mini" className="text-xs">Airports</Label>
+          </div>
+        </div>
+
+        {/* Separator */}
+        <div className="h-6 border-r border-gray-300"></div>
+        
+        {/* Advanced filters */}
+        <div>
           <Popover open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 size="sm"
-                className={`rounded-full text-xs h-7 ${advancedFilterCount > 0 ? 'border-primary text-primary' : ''}`}
+                className={`rounded h-7 text-xs px-2 ${advancedFilterCount > 0 ? 'border-primary text-primary' : ''}`}
               >
                 <SlidersHorizontal className="h-3 w-3 mr-1" />
                 Advanced
@@ -159,6 +185,19 @@ export default function MapFilters({ filters, onFilterChange }: MapFiltersProps)
             </PopoverTrigger>
             
             <PopoverContent className="w-80 p-3">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-medium text-sm">Advanced Filters</h3>
+                {advancedFilterCount > 0 && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-6 px-2 text-xs flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50"
+                    onClick={clearFilters}
+                  >
+                    <X className="h-3 w-3" /> Clear All
+                  </Button>
+                )}
+              </div>
               <Tabs defaultValue="filters">
                 <TabsList className="w-full mb-2">
                   <TabsTrigger value="filters" className="flex-1">Filters</TabsTrigger>
