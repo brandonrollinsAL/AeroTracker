@@ -13,26 +13,23 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
       className="border-b h-16 py-2 px-4 flex items-center justify-between sticky top-0 z-50 backdrop-blur-md"
       style={{
         background: isDarkMode 
-          ? 'linear-gradient(to right, rgba(5, 39, 77, 0.95), rgba(10, 36, 64, 0.95))' 
-          : 'linear-gradient(to right, rgba(255, 255, 255, 0.95), rgba(230, 247, 255, 0.95))',
-        borderColor: isDarkMode ? 'var(--aviation-blue-dark)' : 'rgba(85, 255, 221, 0.3)',
+          ? 'rgba(0, 58, 101, 0.95)' 
+          : 'rgba(255, 255, 255, 0.95)',
+        borderColor: isDarkMode ? 'var(--aviation-blue-dark)' : 'rgba(10, 73, 149, 0.1)',
         boxShadow: isDarkMode 
-          ? '0 2px 15px rgba(0, 0, 0, 0.25), 0 0 1px var(--aviation-blue-accent)' 
-          : '0 2px 15px rgba(10, 73, 149, 0.15), 0 0 1px var(--aviation-blue-light)'
+          ? '0 2px 10px rgba(0, 0, 0, 0.2)' 
+          : '0 2px 10px rgba(10, 73, 149, 0.1)'
       }}
     >
       <div className="flex items-center">
         <div className="mr-4 relative">
           <div 
-            className="h-12 w-12 rounded-full flex items-center justify-center overflow-hidden aviation-shimmer"
+            className="h-12 w-12 rounded-full flex items-center justify-center overflow-hidden"
             style={{ 
-              background: isDarkMode
-                ? 'var(--aviation-dark-gradient-glow)'
-                : 'linear-gradient(135deg, var(--aviation-blue-dark), var(--aviation-blue-light), var(--aviation-cyan))',
+              background: isDarkMode ? 'var(--aviation-dark-accent)' : 'var(--aviation-blue-accent)',
               boxShadow: isDarkMode
-                ? '0 4px 15px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(85, 255, 221, 0.2), var(--aviation-glow-sm)'
-                : '0 4px 15px rgba(10, 73, 149, 0.3), 0 0 0 1px rgba(85, 255, 221, 0.2)',
-              border: '2px solid rgba(255, 255, 255, 0.1)',
+                ? '0 4px 12px rgba(0, 0, 0, 0.25)'
+                : '0 4px 12px rgba(10, 73, 149, 0.2)',
               transition: 'all 0.3s ease'
             }}
           >
@@ -41,18 +38,18 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
           <div 
             className="absolute -top-1 -right-1 h-4 w-4 rounded-full aviation-pulse" 
             style={{ 
-              background: 'linear-gradient(to right, var(--aviation-blue-light), var(--aviation-cyan-glow))',
-              boxShadow: 'var(--aviation-glow-sm)'
+              background: isDarkMode ? 'var(--aviation-cyan)' : 'var(--aviation-blue-light)',
+              boxShadow: isDarkMode ? '0 1px 3px rgba(0, 0, 0, 0.3)' : '0 1px 3px rgba(10, 73, 149, 0.2)'
             }}
           />
         </div>
         <div>
           <h1 
-            className="text-2xl font-bold bg-clip-text text-transparent tracking-tight relative"
+            className="text-2xl font-bold tracking-tight relative"
             style={{
-              backgroundImage: isDarkMode 
-                ? 'linear-gradient(to right, var(--aviation-blue-light), var(--aviation-cyan-glow))' 
-                : 'linear-gradient(135deg, var(--aviation-blue-dark), var(--aviation-blue-medium), var(--aviation-blue-light))'
+              color: isDarkMode 
+                ? 'var(--aviation-blue-light)' 
+                : 'var(--aviation-blue-accent)'
             }}
           >
             AeroTracker
@@ -60,7 +57,7 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
               className="absolute -top-1 -right-1 text-xs text-white px-1.5 py-0.5 rounded-sm opacity-90 tracking-wide" 
               style={{ 
                 fontSize: '8px', 
-                background: 'linear-gradient(to right, var(--aviation-blue-accent), var(--aviation-teal-highlight))'
+                background: isDarkMode ? 'var(--aviation-dark-accent)' : 'var(--aviation-blue-accent)'
               }}
             >
               BETA
@@ -77,12 +74,12 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
               Advanced Flight Tracking
             </span>
             <span 
-              className="inline-block px-2 py-0.5 text-[10px] rounded-full text-white font-semibold aviation-pulse"
+              className="inline-block px-2 py-0.5 text-[10px] rounded text-white font-semibold"
               style={{ 
-                background: 'linear-gradient(to right, var(--aviation-blue-accent), var(--aviation-teal-highlight))',
+                background: isDarkMode ? 'var(--aviation-dark-accent)' : 'var(--aviation-blue-accent)',
                 boxShadow: isDarkMode 
-                  ? '0 2px 8px rgba(68, 153, 153, 0.5), var(--aviation-glow-sm)' 
-                  : '0 2px 8px rgba(68, 153, 153, 0.4)'
+                  ? '0 2px 4px rgba(0, 0, 0, 0.3)' 
+                  : '0 2px 4px rgba(10, 73, 149, 0.2)'
               }}
             >
               PRO
@@ -137,9 +134,9 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
               className="aviation-tab-button active flex items-center space-x-1 rounded-full px-3"
               style={{ 
                 height: '32px',
-                background: 'linear-gradient(to right, var(--aviation-blue-dark), var(--aviation-blue-medium))',
+                background: isDarkMode ? 'var(--aviation-dark-accent)' : 'var(--aviation-blue-accent)',
                 color: 'white',
-                boxShadow: '0 2px 8px rgba(10, 73, 149, 0.2)'
+                boxShadow: isDarkMode ? '0 2px 4px rgba(0, 0, 0, 0.2)' : '0 2px 4px rgba(10, 73, 149, 0.1)'
               }}
             >
               <MapIcon className="h-4 w-4" />
@@ -169,8 +166,8 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
             <span 
               className="absolute -top-1 -right-1 h-3 w-3 rounded-full aviation-pulse"
               style={{ 
-                background: 'linear-gradient(to right, var(--aviation-blue-light), var(--aviation-cyan-glow))',
-                boxShadow: 'var(--aviation-glow-sm)',
+                background: isDarkMode ? 'var(--aviation-cyan)' : 'var(--aviation-blue-light)',
+                boxShadow: isDarkMode ? '0 1px 3px rgba(0, 0, 0, 0.3)' : '0 1px 3px rgba(10, 73, 149, 0.2)',
                 border: isDarkMode ? '2px solid var(--aviation-dark-blue)' : '2px solid white'
               }}
             ></span>
@@ -198,7 +195,13 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
           </Button>
           
           <Button 
-            className="ml-2 aviation-btn-accent"
+            className="ml-2"
+            style={{
+              background: isDarkMode ? 'var(--aviation-dark-accent)' : 'var(--aviation-blue-accent)',
+              color: 'white',
+              borderRadius: '5px',
+              boxShadow: isDarkMode ? '0 2px 4px rgba(0, 0, 0, 0.2)' : '0 2px 4px rgba(10, 73, 149, 0.1)'
+            }}
           >
             <UserIcon className="h-4 w-4 mr-2" />
             Sign In
@@ -236,8 +239,8 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
             <span 
               className="absolute -top-1 -right-1 h-2 w-2 rounded-full aviation-pulse"
               style={{ 
-                background: 'linear-gradient(to right, var(--aviation-blue-light), var(--aviation-cyan-glow))',
-                boxShadow: 'var(--aviation-glow-sm)',
+                background: isDarkMode ? 'var(--aviation-cyan)' : 'var(--aviation-blue-light)',
+                boxShadow: isDarkMode ? '0 1px 3px rgba(0, 0, 0, 0.3)' : '0 1px 3px rgba(10, 73, 149, 0.2)',
                 border: isDarkMode ? '1px solid var(--aviation-dark-blue)' : '1px solid white'
               }}
             ></span>

@@ -152,12 +152,12 @@
 
 /* Aviation-themed button styles */
 .aviation-btn {
-  background: var(--aviation-gradient);
+  background: var(--aviation-blue-accent);
   color: white;
   border: none;
-  border-radius: 30px; /* More rounded buttons */
+  border-radius: 5px; /* Less rounded buttons for more minimalistic look */
   transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-  box-shadow: 0 4px 10px rgba(10, 73, 149, 0.25);
+  box-shadow: 0 2px 4px rgba(10, 73, 149, 0.15);
   padding: 0.5rem 1.25rem;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -165,41 +165,25 @@
   overflow: hidden;
 }
 
-.aviation-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.6s ease;
-}
-
 .aviation-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(10, 73, 149, 0.35);
-  background: linear-gradient(135deg, var(--aviation-blue-dark), var(--aviation-blue-light));
-}
-
-.aviation-btn:hover::before {
-  transform: translateX(100%);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(10, 73, 149, 0.25);
+  background: var(--aviation-blue-dark);
 }
 
 .aviation-btn:active {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 5px rgba(10, 73, 149, 0.2);
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(10, 73, 149, 0.15);
 }
 
 .dark .aviation-btn {
-  background: var(--aviation-dark-gradient);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  background: var(--aviation-dark-accent);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .dark .aviation-btn:hover {
-  background: linear-gradient(135deg, var(--aviation-dark-blue), var(--aviation-blue-light));
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+  background: var(--aviation-blue-dark);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Card-style containers */
@@ -1032,43 +1016,27 @@
 
 /* Button accent styles */
 .aviation-btn-accent {
-  background: var(--aviation-gradient-light);
+  background: var(--aviation-blue-accent);
   color: white;
   border: none;
-  border-radius: 100px;
+  border-radius: 5px;
   padding: 0.5rem 1.25rem;
   font-weight: 600;
   letter-spacing: 0.3px;
-  box-shadow: 0 4px 10px rgba(85, 255, 221, 0.3);
-  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 2px 4px rgba(10, 73, 149, 0.15);
+  transition: all 0.3s ease;
   position: relative;
-  overflow: hidden;
-}
-
-.aviation-btn-accent::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.6s ease;
 }
 
 .aviation-btn-accent:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--aviation-glow-md);
-}
-
-.aviation-btn-accent:hover::before {
-  transform: translateX(100%);
+  transform: translateY(-2px);
+  background: var(--aviation-blue-dark);
+  box-shadow: 0 3px 8px rgba(10, 73, 149, 0.25);
 }
 
 .dark .aviation-btn-accent {
-  background: var(--aviation-dark-gradient-glow);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), var(--aviation-glow-sm);
+  background: var(--aviation-dark-accent);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Tabs styling */
@@ -1292,40 +1260,41 @@
 
 /* Aviation Buttons */
 .aviation-btn-primary {
-  @apply relative overflow-hidden px-5 py-2 rounded-full font-medium text-white transition-all;
-  background: var(--aviation-gradient);
-  box-shadow: 0 4px 10px rgba(10, 73, 149, 0.25);
+  @apply relative px-5 py-2 rounded font-medium text-white transition-all;
+  background: var(--aviation-blue-accent);
+  box-shadow: 0 2px 4px rgba(10, 73, 149, 0.15);
 }
 
 .aviation-btn-primary:hover {
   transform: translateY(-2px);
-  background: var(--aviation-gradient-light);
-  box-shadow: 0 6px 15px rgba(10, 73, 149, 0.4), var(--aviation-glow-sm);
+  background: var(--aviation-blue-dark);
+  box-shadow: 0 3px 8px rgba(10, 73, 149, 0.25);
 }
 
 .aviation-btn-secondary {
-  @apply relative overflow-hidden px-5 py-2 rounded-full font-medium transition-all;
+  @apply relative px-5 py-2 rounded font-medium transition-all;
   background: rgba(255, 255, 255, 0.8);
   color: var(--aviation-blue-dark);
   border: 1px solid rgba(73, 149, 253, 0.3);
-  box-shadow: 0 4px 8px rgba(10, 73, 149, 0.1);
+  box-shadow: 0 2px 4px rgba(10, 73, 149, 0.1);
 }
 
 .aviation-btn-secondary:hover {
   transform: translateY(-2px);
   background: rgba(73, 149, 253, 0.1);
-  box-shadow: 0 6px 12px rgba(10, 73, 149, 0.2), 0 0 0 1px rgba(73, 149, 253, 0.5);
+  box-shadow: 0 3px 8px rgba(10, 73, 149, 0.15);
 }
 
 .aviation-btn-accent {
-  @apply relative overflow-hidden px-5 py-2 rounded-full font-medium text-white transition-all;
-  background: var(--aviation-gradient-accent-strong);
-  box-shadow: 0 4px 10px rgba(68, 153, 153, 0.3);
+  @apply relative px-5 py-2 rounded font-medium text-white transition-all;
+  background: var(--aviation-blue-accent);
+  box-shadow: 0 2px 4px rgba(10, 73, 149, 0.15);
 }
 
 .aviation-btn-accent:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(68, 153, 153, 0.5), var(--aviation-glow-accent);
+  background: var(--aviation-blue-dark);
+  box-shadow: 0 3px 8px rgba(10, 73, 149, 0.25);
 }
 
 .dark .aviation-btn-secondary {
@@ -1336,43 +1305,46 @@
 
 .dark .aviation-btn-secondary:hover {
   background: rgba(5, 39, 77, 0.9);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(73, 149, 253, 0.3);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Aviation Icon Buttons */
 .aviation-icon-btn {
-  @apply flex items-center justify-center rounded-full w-10 h-10 transition-all relative overflow-hidden;
-  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(230,247,255,0.9));
+  @apply flex items-center justify-center rounded-full w-10 h-10 transition-all relative;
+  background: rgba(255,255,255,0.9);
   border: 1px solid rgba(73, 149, 253, 0.2);
   color: var(--aviation-blue-dark);
-  box-shadow: 0 3px 8px rgba(10, 73, 149, 0.15);
+  box-shadow: 0 2px 4px rgba(10, 73, 149, 0.1);
 }
 
 .aviation-icon-btn:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 5px 15px rgba(10, 73, 149, 0.25), var(--aviation-glow-sm);
+  transform: translateY(-2px);
+  background: rgba(240, 248, 255, 0.95);
+  box-shadow: 0 3px 8px rgba(10, 73, 149, 0.15);
 }
 
 .aviation-icon-btn.active {
-  background: var(--aviation-gradient);
+  background: var(--aviation-blue-accent);
   color: white;
-  box-shadow: 0 4px 12px rgba(10, 73, 149, 0.3), 0 0 0 2px rgba(73, 149, 253, 0.4);
+  box-shadow: 0 2px 4px rgba(10, 73, 149, 0.15);
 }
 
 .dark .aviation-icon-btn {
   background: rgba(5, 39, 77, 0.8);
   color: var(--aviation-blue-light);
   border-color: var(--aviation-dark-accent);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .dark .aviation-icon-btn:hover {
   background: var(--aviation-dark-blue);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 8px rgba(73, 149, 253, 0.3);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
 }
 
 .dark .aviation-icon-btn.active {
-  background: var(--aviation-dark-gradient-glow);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(73, 149, 253, 0.3);
+  background: var(--aviation-dark-accent);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Aviation Cards and Panels */
@@ -1380,28 +1352,15 @@
   @apply rounded-xl overflow-hidden backdrop-blur-md relative;
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(10, 73, 149, 0.1);
-  box-shadow: 
-    0 10px 30px rgba(10, 73, 149, 0.15),
-    0 0 0 1px rgba(73, 149, 253, 0.05);
-}
-
-.aviation-panel::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--aviation-gradient-light);
-  opacity: 0.8;
+  border-top: 3px solid var(--aviation-blue-accent);
+  box-shadow: 0 4px 15px rgba(10, 73, 149, 0.1);
 }
 
 .dark .aviation-panel {
   background: rgba(5, 39, 77, 0.9);
   border-color: rgba(73, 149, 253, 0.2);
-  box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(73, 149, 253, 0.05);
+  border-top: 3px solid var(--aviation-dark-accent);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* Data highlights */
@@ -1430,29 +1389,33 @@
 }
 
 .aviation-status-active {
-  background: linear-gradient(135deg, var(--aviation-blue-light), var(--aviation-teal-highlight));
-  color: var(--aviation-dark-blue);
-  box-shadow: var(--aviation-glow-sm);
+  background: var(--aviation-blue-accent);
+  color: white;
+  box-shadow: 0 1px 3px rgba(10, 73, 149, 0.15);
 }
 
 .aviation-status-landed {
-  background: linear-gradient(135deg, var(--aviation-success), #4ddbca);
+  background: var(--aviation-success);
   color: white;
+  box-shadow: 0 1px 3px rgba(10, 73, 149, 0.15);
 }
 
 .aviation-status-scheduled {
-  background: linear-gradient(135deg, var(--aviation-blue-medium), var(--aviation-sky-blue));
+  background: var(--aviation-blue-medium);
   color: white;
+  box-shadow: 0 1px 3px rgba(10, 73, 149, 0.15);
 }
 
 .aviation-status-delayed {
-  background: linear-gradient(135deg, #ff9500, #ffcc00);
-  color: rgba(0, 0, 0, 0.8);
+  background: #ff9500;
+  color: white;
+  box-shadow: 0 1px 3px rgba(10, 73, 149, 0.15);
 }
 
 .aviation-status-cancelled {
-  background: linear-gradient(135deg, var(--aviation-alert), #ff8c8f);
+  background: var(--aviation-alert);
   color: white;
+  box-shadow: 0 1px 3px rgba(10, 73, 149, 0.15);
 }
 
 /* Glassy containers */
