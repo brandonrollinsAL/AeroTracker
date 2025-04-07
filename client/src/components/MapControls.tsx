@@ -8,7 +8,7 @@ interface MapControlsProps {
 
 export default function MapControls({ onZoomIn, onZoomOut, onMyLocation }: MapControlsProps) {
   return (
-    <div className="absolute top-4 right-4 flex flex-col space-y-2">
+    <div className="absolute top-4 right-4 flex flex-col space-y-2 z-[900]">
       <Button 
         variant="outline" 
         size="icon" 
