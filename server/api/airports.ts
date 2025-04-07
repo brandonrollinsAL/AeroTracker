@@ -1,5 +1,8 @@
 import { storage } from '../storage';
 import { InsertAirport, Airport } from '@shared/schema';
+import fs from 'fs';
+import path from 'path';
+import { parse } from 'csv-parse/sync';
 
 // Using mock data until OpenAI API key is provided
 let openaiEnabled = false;
@@ -28,7 +31,90 @@ interface AirportData {
 }
 
 /**
- * Fetch all major US airports using OpenAI or mock data
+ * Import airports from CSV file
+ * The CSV file comes from the OpenFlights database
+ */
+export async function importAirportsFromCSV(): Promise<Airport[]> {
+  try {
+    const csvFilePath = path.join(process.cwd(), 'attached_assets', 'airports.csv');
+    console.log(`Reading airports from CSV: ${csvFilePath}`);
+    
+    // Check if the file exists
+    if (!fs.existsSync(csvFilePath)) {
+      console.error(`Airport CSV file not found: ${csvFilePath}`);
+      return [];
+    }
+    
+    // Read and parse the CSV file
+    const fileContent = fs.readFileSync(csvFilePath, 'utf-8');
+    const records = parse(fileContent, {
+      columns: true,
+      skip_empty_lines: true
+    });
+    
+    // Filter for US airports and valid data
+    const validAirports = records.filter((record: any) => {
+      return record.iso_country === 'US' && 
+             record.type !== 'closed' && 
+             record.iata_code && 
+             record.latitude_deg && 
+             record.longitude_deg;
+    });
+    
+    console.log(`Found ${validAirports.length} valid US airports in CSV file`);
+    
+    // Transform to our airport format and save to database
+    const airports: Airport[] = [];
+    
+    for (const record of validAirports) {
+      // Determine airport size and type
+      let size: 'large' | 'medium' | 'small' = 'small';
+      let type: 'international' | 'domestic' | 'regional' = 'regional';
+      
+      // Set size based on airport type field
+      if (record.type.includes('large_airport')) {
+        size = 'large';
+        type = 'international';
+      } else if (record.type.includes('medium_airport')) {
+        size = 'medium';
+        type = 'domestic';
+      }
+      
+      // Create airport data
+      const airportData: AirportData = {
+        name: record.name,
+        code: record.iata_code || record.gps_code || record.local_code || record.ident,
+        city: record.municipality || 'Unknown',
+        country: 'United States',
+        latitude: parseFloat(record.latitude_deg),
+        longitude: parseFloat(record.longitude_deg),
+        size,
+        type
+      };
+      
+      try {
+        const airport = await saveAirportToDatabase(airportData);
+        airports.push(airport);
+      } catch (error) {
+        console.error(`Error saving airport ${airportData.code}:`, error);
+      }
+    }
+    
+    console.log(`Successfully imported ${airports.length} airports to database`);
+    return airports;
+  } catch (error) {
+    console.error('Error importing airports from CSV:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch all US airports 
+ * This will try multiple data sources in order:
+ * 1. Existing airports from database
+ * 2. Import from CSV file
+ * 3. Fetch from OpenAI API
+ * 4. Use mock data as fallback
  */
 export async function fetchUSAirports(): Promise<Airport[]> {
   try {
@@ -37,6 +123,17 @@ export async function fetchUSAirports(): Promise<Airport[]> {
     if (existingAirports.length > 0) {
       console.log(`Retrieved ${existingAirports.length} airports from database`);
       return existingAirports;
+    }
+    
+    // Try importing from CSV first
+    try {
+      const csvAirports = await importAirportsFromCSV();
+      if (csvAirports.length > 0) {
+        console.log(`Using ${csvAirports.length} airports imported from CSV`);
+        return csvAirports;
+      }
+    } catch (csvError) {
+      console.error('Error importing from CSV, falling back to other methods:', csvError);
     }
 
     // If OpenAI is enabled, use it to fetch airports
