@@ -1,6 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { MoonIcon, SunIcon, InfoIcon, SearchIcon, BellIcon, UserIcon, PlaneIcon, Settings, MapIcon, BarChart3Icon, CloudIcon } from 'lucide-react';
+import { 
+  MoonIcon, 
+  SunIcon, 
+  InfoIcon, 
+  SearchIcon, 
+  BellIcon, 
+  UserIcon, 
+  PlaneIcon, 
+  Settings, 
+  MapIcon, 
+  BarChart3Icon, 
+  CloudIcon,
+  GlobeIcon,
+  RadarIcon,
+  LayoutDashboardIcon,
+  CalendarIcon,
+  BellRingIcon
+} from 'lucide-react';
 
 interface HeaderProps {
   isDarkMode: boolean;
@@ -8,6 +25,63 @@ interface HeaderProps {
 }
 
 export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  
+  const notificationsRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const notificationButtonRef = useRef<HTMLButtonElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  
+  // Handle click outside to close dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Close notifications dropdown
+      if (
+        showNotifications && 
+        notificationsRef.current && 
+        !notificationsRef.current.contains(event.target as Node) &&
+        notificationButtonRef.current &&
+        !notificationButtonRef.current.contains(event.target as Node)
+      ) {
+        setShowNotifications(false);
+      }
+      
+      // Close menu dropdown
+      if (
+        showMenu && 
+        menuRef.current && 
+        !menuRef.current.contains(event.target as Node) &&
+        menuButtonRef.current &&
+        !menuButtonRef.current.contains(event.target as Node)
+      ) {
+        setShowMenu(false);
+      }
+    };
+    
+    // Add event listener
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    // Cleanup
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showNotifications, showMenu]);
+  
+  const notifications = [
+    { id: 1, title: "Flight UA289 Delayed", type: "alert", time: "2m ago" },
+    { id: 2, title: "Weather Alert at LAX", type: "weather", time: "15m ago" },
+    { id: 3, title: "AA100 Route Changed", type: "info", time: "1h ago" }
+  ];
+  
+  const menuItems = [
+    { icon: <GlobeIcon size={16} />, label: "Map View", active: true },
+    { icon: <RadarIcon size={16} />, label: "Live Tracking" },
+    { icon: <LayoutDashboardIcon size={16} />, label: "Dashboard" },
+    { icon: <PlaneIcon size={16} />, label: "Fleet Analysis" },
+    { icon: <CalendarIcon size={16} />, label: "Schedule" }
+  ];
+  
   return (
     <header 
       className={`h-16 py-2 px-6 flex items-center justify-between sticky top-0 z-50 ${
@@ -135,22 +209,112 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
             </Button>
           </div>
           
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className={`h-9 w-9 rounded-full relative overflow-hidden ${
-              isDarkMode 
-                ? 'text-[#a0d0ec] hover:text-white hover:bg-[#003a65]/40 border border-[#003a65]/30' 
-                : 'text-[#003a65] hover:bg-[#4995fd]/10 border border-[#4995fd]/20'
-            }`}
-            style={{
-              boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.1)'
-            }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#4995fd]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <BellIcon className="h-5 w-5 relative z-10" />
-            <div className="absolute top-1 right-1.5 h-2 w-2 bg-[#4995fd] rounded-full transform scale-0 animate-pulse"></div>
-          </Button>
+          <div className="relative">
+            <Button 
+              ref={notificationButtonRef}
+              variant="ghost" 
+              size="icon"
+              onClick={() => setShowNotifications(!showNotifications)}
+              className={`h-9 w-9 rounded-full relative overflow-hidden ${
+                isDarkMode 
+                  ? 'text-[#a0d0ec] hover:text-white hover:bg-[#003a65]/40 border border-[#003a65]/30' 
+                  : 'text-[#003a65] hover:bg-[#4995fd]/10 border border-[#4995fd]/20'
+              }`}
+              style={{
+                boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.1)'
+              }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#4995fd]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <BellIcon className="h-5 w-5 relative z-10" />
+              <div className="absolute top-1 right-1.5 h-2 w-2 bg-[#4995fd] rounded-full animate-pulse"></div>
+            </Button>
+            
+            {/* Notifications dropdown */}
+            {showNotifications && (
+              <div 
+                ref={notificationsRef}
+                className={`absolute right-0 mt-2 w-80 rounded-lg overflow-hidden ${
+                  isDarkMode 
+                    ? 'bg-[#002b4c] border border-[#003a65]/60' 
+                    : 'bg-white border border-[#4995fd]/20'
+                } shadow-xl z-50 transition-all duration-200 transform origin-top-right`}
+                style={{
+                  boxShadow: isDarkMode 
+                    ? '0 10px 25px rgba(0, 0, 0, 0.3), 0 0 1px rgba(73, 149, 253, 0.4)' 
+                    : '0 10px 25px rgba(10, 73, 149, 0.15), 0 0 1px rgba(73, 149, 253, 0.2)',
+                  backgroundImage: isDarkMode 
+                    ? 'linear-gradient(to bottom, rgba(0, 58, 101, 0.95), rgba(0, 29, 54, 0.95))' 
+                    : 'linear-gradient(to bottom, rgba(255, 255, 255, 0.97), rgba(240, 248, 255, 0.97))'
+                }}
+              >
+                <div className={`p-3 border-b ${isDarkMode ? 'border-[#003a65]' : 'border-[#4995fd]/10'}`}>
+                  <div className="flex justify-between items-center">
+                    <h3 className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-[#003a65]'}`}>Notifications</h3>
+                    <div className="flex space-x-2">
+                      <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-[#4995fd]/10 text-xs font-medium text-[#4995fd]">
+                        {notifications.length}
+                      </span>
+                      <button 
+                        className={`text-xs ${isDarkMode ? 'text-[#a0d0ec]/80 hover:text-white' : 'text-[#003a65]/70 hover:text-[#003a65]'}`}
+                        onClick={() => setShowNotifications(false)}
+                      >
+                        Clear all
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="overflow-y-auto max-h-[300px] py-1 aviation-scroll">
+                  {notifications.map(notification => (
+                    <div 
+                      key={notification.id}
+                      className={`px-4 py-3 border-b hover:bg-[#4995fd]/5 transition-colors duration-150 cursor-pointer ${
+                        isDarkMode ? 'border-[#003a65]/30' : 'border-[#4995fd]/10'
+                      }`}
+                    >
+                      <div className="flex items-start">
+                        <div 
+                          className={`h-8 w-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0 ${
+                            notification.type === 'alert' 
+                              ? 'bg-red-500/10' 
+                              : notification.type === 'weather' 
+                                ? 'bg-blue-500/10' 
+                                : 'bg-[#4995fd]/10'
+                          }`}
+                        >
+                          {notification.type === 'alert' ? (
+                            <BellRingIcon size={16} className="text-red-500" />
+                          ) : notification.type === 'weather' ? (
+                            <CloudIcon size={16} className="text-blue-500" />
+                          ) : (
+                            <InfoIcon size={16} className="text-[#4995fd]" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <p className={`text-sm ${isDarkMode ? 'text-white' : 'text-[#003a65]'} font-medium`}>
+                            {notification.title}
+                          </p>
+                          <span className={`text-xs ${isDarkMode ? 'text-[#a0d0ec]/60' : 'text-[#003a65]/60'}`}>
+                            {notification.time}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div 
+                  className={`p-3 flex justify-center ${isDarkMode ? 'bg-[#003a65]/30' : 'bg-[#4995fd]/5'}`}
+                >
+                  <button 
+                    className={`text-xs font-medium ${isDarkMode ? 'text-[#a0d0ec] hover:text-white' : 'text-[#003a65] hover:text-[#4995fd]'}`}
+                  >
+                    View all notifications
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
           
           <Button 
             variant="ghost" 
@@ -190,24 +354,113 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
             )}
           </Button>
           
-          <Button 
-            className={`ml-1 text-white rounded-md h-9 px-4 group overflow-hidden relative ${
-              isDarkMode 
-                ? 'bg-gradient-to-r from-[#0a4995] to-[#4995fd] hover:from-[#003a65] hover:to-[#4995fd]' 
-                : 'bg-gradient-to-r from-[#003a65] to-[#4995fd] hover:from-[#0a4995] hover:to-[#4995fd]'
-            } transition-all duration-300`}
-            style={{
-              boxShadow: isDarkMode 
-                ? '0 3px 10px rgba(73, 149, 253, 0.3)' 
-                : '0 3px 8px rgba(73, 149, 253, 0.25)'
-            }}
-          >
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-[#a0d0ec]/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-            <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div className="absolute h-[1px] bottom-0 left-0 right-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
-            <UserIcon className="h-4 w-4 mr-2 text-[#a0d0ec] group-hover:scale-110 transition-transform duration-300" />
-            <span className="relative z-10 font-medium">Sign In</span>
-          </Button>
+          <div className="relative">
+            <Button 
+              ref={menuButtonRef}
+              onClick={() => setShowMenu(!showMenu)}
+              className={`ml-1 text-white rounded-md h-9 px-4 group overflow-hidden relative ${
+                isDarkMode 
+                  ? 'bg-gradient-to-r from-[#0a4995] to-[#4995fd] hover:from-[#003a65] hover:to-[#4995fd]' 
+                  : 'bg-gradient-to-r from-[#003a65] to-[#4995fd] hover:from-[#0a4995] hover:to-[#4995fd]'
+              } transition-all duration-300`}
+              style={{
+                boxShadow: isDarkMode 
+                  ? '0 3px 10px rgba(73, 149, 253, 0.3)' 
+                  : '0 3px 8px rgba(73, 149, 253, 0.25)'
+              }}
+            >
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-[#a0d0ec]/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+              <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="absolute h-[1px] bottom-0 left-0 right-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+              <UserIcon className="h-4 w-4 mr-2 text-[#a0d0ec] group-hover:scale-110 transition-transform duration-300" />
+              <span className="relative z-10 font-medium">Sign In</span>
+            </Button>
+            
+            {/* Menu dropdown */}
+            {showMenu && (
+              <div 
+                ref={menuRef}
+                className={`absolute right-0 mt-2 w-64 rounded-lg overflow-hidden ${
+                  isDarkMode 
+                    ? 'bg-[#002b4c] border border-[#003a65]/60' 
+                    : 'bg-white border border-[#4995fd]/20'
+                } shadow-xl z-50`}
+                style={{
+                  boxShadow: isDarkMode 
+                    ? '0 10px 25px rgba(0, 0, 0, 0.3), 0 0 1px rgba(73, 149, 253, 0.4)' 
+                    : '0 10px 25px rgba(10, 73, 149, 0.15), 0 0 1px rgba(73, 149, 253, 0.2)',
+                  backgroundImage: isDarkMode 
+                    ? 'linear-gradient(to bottom, rgba(0, 58, 101, 0.95), rgba(0, 29, 54, 0.95))' 
+                    : 'linear-gradient(to bottom, rgba(255, 255, 255, 0.97), rgba(240, 248, 255, 0.97))'
+                }}
+              >
+                <div className="p-4 border-b border-b-[#4995fd]/10">
+                  <div className="flex items-center">
+                    <div 
+                      className="h-12 w-12 rounded-lg flex items-center justify-center relative overflow-hidden mr-3"
+                      style={{
+                        backgroundImage: `linear-gradient(135deg, #4995fd, #003a65)`,
+                        boxShadow: isDarkMode 
+                          ? '0 3px 8px rgba(0,0,0,0.3)' 
+                          : '0 3px 8px rgba(73,149,253,0.2)'
+                      }}
+                    >
+                      <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-white via-transparent to-transparent"></div>
+                      <UserIcon className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <div className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-[#003a65]'}`}>Guest User</div>
+                      <div className={`text-xs ${isDarkMode ? 'text-[#a0d0ec]/70' : 'text-[#003a65]/70'}`}>Sign in to save preferences</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="py-1">
+                  {menuItems.map((item, index) => (
+                    <button
+                      key={index}
+                      className={`w-full flex items-center px-4 py-2.5 text-sm ${
+                        item.active 
+                          ? isDarkMode 
+                            ? 'bg-[#003a65] text-white' 
+                            : 'bg-[#4995fd]/10 text-[#003a65]' 
+                          : isDarkMode 
+                            ? 'text-[#a0d0ec] hover:bg-[#003a65]/60 hover:text-white' 
+                            : 'text-[#003a65] hover:bg-[#4995fd]/5'
+                      } transition-colors duration-150`}
+                    >
+                      <span className={`mr-3 ${item.active ? 'text-[#4995fd]' : ''}`}>
+                        {item.icon}
+                      </span>
+                      <span>{item.label}</span>
+                      {item.active && (
+                        <span className="ml-auto">
+                          <div className="h-1.5 w-1.5 rounded-full bg-[#4995fd]"></div>
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+                
+                <div className={`p-3 ${isDarkMode ? 'bg-[#001f3f]/50' : 'bg-[#4995fd]/5'}`}>
+                  <button 
+                    className={`w-full flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium ${
+                      isDarkMode 
+                        ? 'bg-[#003a65] text-white hover:bg-[#003a65]/90' 
+                        : 'bg-gradient-to-r from-[#003a65] to-[#4995fd] text-white'
+                    }`}
+                    style={{
+                      boxShadow: isDarkMode 
+                        ? '0 3px 5px rgba(0,0,0,0.2)' 
+                        : '0 3px 5px rgba(73,149,253,0.2)'
+                    }}
+                  >
+                    Create Account
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         
         <div className="md:hidden flex items-center space-x-1.5">
