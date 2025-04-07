@@ -263,18 +263,18 @@ export default function Home() {
         
         <Tabs 
           defaultValue="map" 
-          className="w-full px-4 pt-2"
+          className="w-full px-2 pt-1"
           onValueChange={(value) => setActiveTab(value as 'map' | 'tools')}
         >
           <TabsList 
-            className="grid grid-cols-2 w-[400px] mb-4 relative overflow-hidden rounded-lg p-0.5 aviation-tabs-content"
+            className="grid grid-cols-2 w-[350px] mb-2 relative overflow-hidden rounded-lg p-0.5 aviation-tabs-content"
             style={{
               background: isDarkMode 
                 ? 'linear-gradient(to right, rgba(0, 43, 76, 0.9), rgba(0, 58, 101, 0.9))'
                 : 'linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(240, 248, 255, 0.9))',
               boxShadow: isDarkMode
-                ? '0 4px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(73, 149, 253, 0.2)'
-                : '0 4px 12px rgba(73, 149, 253, 0.1), 0 0 0 1px rgba(73, 149, 253, 0.1)',
+                ? '0 3px 8px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(73, 149, 253, 0.2)'
+                : '0 3px 8px rgba(73, 149, 253, 0.1), 0 0 0 1px rgba(73, 149, 253, 0.1)',
               borderImage: isDarkMode
                 ? 'linear-gradient(to right, rgba(73, 149, 253, 0.4), rgba(73, 149, 253, 0.2)) 1'
                 : 'linear-gradient(to right, rgba(73, 149, 253, 0.2), rgba(73, 149, 253, 0.1)) 1'
@@ -283,7 +283,7 @@ export default function Home() {
             <div className="absolute inset-0 opacity-20 bg-gradient-to-r from-[#4995fd]/10 via-[#4995fd]/30 to-[#4995fd]/10"></div>
             <TabsTrigger 
               value="map" 
-              className="text-base relative overflow-hidden font-medium data-[state=active]:shadow-md transition-all duration-300 group py-2.5"
+              className="text-sm relative overflow-hidden font-medium data-[state=active]:shadow-md transition-all duration-300 group py-2"
               style={{
                 borderRadius: '0.5rem',
                 background: 'transparent',
@@ -294,13 +294,13 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#4995fd]/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
               <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#4995fd] to-transparent opacity-0 group-hover:opacity-100 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center">
-                <span className="material-icons mr-2" style={{ fontSize: '18px', color: '#4995fd' }}>flight</span>
+                <span className="material-icons mr-1.5" style={{ fontSize: '16px', color: '#4995fd' }}>flight</span>
                 Flight Tracking
               </div>
             </TabsTrigger>
             <TabsTrigger 
               value="tools" 
-              className="text-base relative overflow-hidden font-medium data-[state=active]:shadow-md transition-all duration-300 group py-2.5"
+              className="text-sm relative overflow-hidden font-medium data-[state=active]:shadow-md transition-all duration-300 group py-2"
               style={{
                 borderRadius: '0.5rem',
                 background: 'transparent',
@@ -311,15 +311,15 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#4995fd]/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
               <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#4995fd] to-transparent opacity-0 group-hover:opacity-100 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center">
-                <span className="material-icons mr-2" style={{ fontSize: '18px', color: '#4995fd' }}>route</span>
+                <span className="material-icons mr-1.5" style={{ fontSize: '16px', color: '#4995fd' }}>route</span>
                 Route Optimization
               </div>
             </TabsTrigger>
           </TabsList>
           
           <TabsContent value="map" className="mt-0">
-            <main className="flex flex-col md:flex-row">
-              <div className="flex-grow">
+            <main className="flex flex-col md:flex-row h-[calc(100vh-110px)]">
+              <div className="flex-grow h-full">
                 <FlightMap 
                   flights={flights}
                   selectedFlight={selectedFlight}
@@ -358,8 +358,8 @@ export default function Home() {
         {/* Keyboard shortcuts help button */}
         <div className="fixed bottom-4 left-4 z-50">
           <Button 
-            className="rounded-full px-4 py-2.5 font-medium text-sm transition-all 
-                     hover:-translate-y-1 group relative overflow-hidden"
+            className="rounded-full px-3 py-2 font-medium text-xs transition-all 
+                     hover:-translate-y-0.5 group relative overflow-hidden"
             style={{ 
               background: isDarkMode 
                 ? 'linear-gradient(135deg, rgba(0, 43, 76, 0.85), rgba(0, 58, 101, 0.85))' 
@@ -430,7 +430,7 @@ export default function Home() {
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#4995fd]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
             <div className="absolute h-[1px] w-full bg-[#4995fd]/30 bottom-0 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
             <div className="relative z-10 flex items-center justify-center">
-              <span className="material-icons mr-2 text-sm" style={{ color: '#4995fd' }}>keyboard</span>
+              <span className="material-icons mr-1.5 text-xs" style={{ color: '#4995fd' }}>keyboard</span>
               <span className="group-hover:text-[#4995fd] transition-colors duration-300">Keyboard Shortcuts</span>
             </div>
           </Button>
