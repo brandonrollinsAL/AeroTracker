@@ -102,7 +102,7 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
       }}
     >
       <div className="flex items-center">
-        <div className="mr-3 relative group">
+        <div className="mr-3 relative group z-20">
           <div 
             className={`h-11 w-11 rounded-lg flex items-center justify-center relative overflow-hidden ${
               isDarkMode ? 'bg-[#4995fd]' : 'bg-[#4995fd]'
@@ -127,8 +127,8 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
           <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-[#4995fd] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
         </div>
         
-        <div>
-          <h1 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-[#003a65]'}`}>
+        <div className="z-10">
+          <h1 className={`text-lg font-bold leading-tight ${isDarkMode ? 'text-white' : 'text-[#003a65]'}`}>
             <span className="bg-gradient-to-r from-[#003a65] to-[#4995fd] bg-clip-text text-transparent flex items-center">
               <span className="mr-1">AeroTracker</span>
               <span className="text-xs px-1.5 py-0.5 bg-[#4995fd]/10 rounded-sm text-[#4995fd] font-medium">PRO</span>
@@ -149,32 +149,45 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
         </div>
         
         {/* New navigation buttons */}
-        <div className="hidden lg:flex ml-8 space-x-1">
+        <div className="hidden lg:flex ml-8 space-x-1.5">
           {menuItems.map((item, index) => (
             <Button
               key={index}
               variant="ghost"
               size="sm"
-              className={`h-8 px-3 rounded text-xs font-medium flex items-center gap-1.5 border border-transparent ${
+              className={`h-9 px-3 rounded text-xs font-medium flex items-center gap-1.5 border group relative overflow-hidden ${
                 item.active
                   ? isDarkMode
-                    ? 'bg-[#003a65]/60 text-white border-[#4995fd]/30'
+                    ? 'bg-[#003a65]/70 text-white border-[#4995fd]/30'
                     : 'bg-[#4995fd]/10 text-[#003a65] border-[#4995fd]/20'
                   : isDarkMode
-                    ? 'text-[#a0d0ec]/80 hover:text-white hover:bg-[#003a65]/40'
-                    : 'text-[#003a65]/70 hover:text-[#003a65] hover:bg-[#4995fd]/10'
+                    ? 'text-[#a0d0ec]/80 hover:text-white hover:bg-[#003a65]/40 border-[#003a65]/30'
+                    : 'text-[#003a65]/70 hover:text-[#003a65] hover:bg-[#4995fd]/10 border-[#4995fd]/10'
               }`}
               style={{
                 boxShadow: item.active
                   ? isDarkMode
-                    ? 'inset 0 1px 1px rgba(0,0,0,0.1), 0 1px 1px rgba(73,149,253,0.1)'
-                    : 'inset 0 1px 1px rgba(0,0,0,0.05), 0 1px 1px rgba(73,149,253,0.05)'
+                    ? 'inset 0 1px 1px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.1)'
+                    : 'inset 0 1px 1px rgba(255,255,255,0.1), 0 2px 4px rgba(73,149,253,0.1)'
                   : 'none',
               }}
             >
-              <span className="opacity-80">{item.icon}</span>
-              {item.label}
-              {item.active && <div className="h-1 w-1 rounded-full bg-[#4995fd] ml-0.5 animate-pulse"></div>}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#4995fd]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+              <div className={`absolute h-[1px] bottom-0 left-0 right-0 bg-gradient-to-r from-transparent via-[#4995fd] to-transparent transform scale-x-0 transition-transform duration-500 ${item.active ? 'scale-x-100' : 'group-hover:scale-x-100'}`}></div>
+              <span className={`transition-all duration-300 ${
+                item.active 
+                  ? 'text-[#4995fd]' 
+                  : 'group-hover:text-[#4995fd]'
+              }`}>{item.icon}</span>
+              <span className="relative z-10">{item.label}</span>
+              {item.active && (
+                <>
+                  <div className="h-1.5 w-1.5 rounded-full bg-[#4995fd] ml-0.5 relative">
+                    <div className="absolute inset-0 rounded-full bg-[#4995fd] animate-ping opacity-75"></div>
+                  </div>
+                  <div className="absolute -bottom-0.5 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#4995fd] to-transparent"></div>
+                </>
+              )}
             </Button>
           ))}
         </div>
@@ -183,31 +196,46 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
       <div className="flex items-center space-x-3">
         <div className="relative hidden md:block group">
           <div 
-            className={`absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none ${
-              isDarkMode ? 'text-[#a0d0ec]/70' : 'text-[#4995fd]/70'
-            } group-focus-within:text-[#4995fd] group-hover:scale-105 transition-transform duration-200`}
+            className={`absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none group-focus-within:scale-105 transition-transform duration-200 z-10`}
+            style={{ 
+              color: isDarkMode ? '#a0d0ec' : '#4995fd',
+              transition: 'all 0.3s ease'
+            }}
           >
-            <SearchIcon className="h-4 w-4" />
+            <SearchIcon className="h-4 w-4 transition-all duration-300 group-focus-within:text-[#4995fd]" />
           </div>
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#4995fd]/10 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
           <input 
             type="search" 
-            className={`pl-10 pr-12 py-2 text-sm rounded-full border ${
+            className={`pl-10 pr-12 py-2 text-sm rounded-full border focus:border-[#4995fd] ${
               isDarkMode 
-                ? 'border-[#4995fd]/30 bg-[#002b4c]/50 text-white placeholder-[#a0d0ec]/50 focus:border-[#4995fd]/70' 
-                : 'border-[#4995fd]/20 focus:border-[#4995fd] placeholder-[#003a65]/50'
-            } focus:outline-none focus:ring-1 focus:ring-[#4995fd]/30 w-[240px] transition-all duration-300 focus:w-[320px]`} 
+                ? 'border-[#4995fd]/30 bg-gradient-to-r from-[#001f3d]/95 to-[#002b4c]/95 text-white placeholder-[#a0d0ec]/50' 
+                : 'border-[#4995fd]/20 bg-gradient-to-r from-white to-[#f0f8ff]/95 placeholder-[#003a65]/50'
+            } focus:outline-none focus:ring-1 focus:ring-[#4995fd]/40 w-[240px] transition-all duration-300 focus:w-[320px]`} 
             placeholder="Search flights, airports, routes..." 
             style={{
               boxShadow: isDarkMode
-                ? 'inset 0 1px 3px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.1)'
-                : 'inset 0 1px 3px rgba(0,0,0,0.05), 0 2px 4px rgba(73,149,253,0.1)'
+                ? 'inset 0 1px 3px rgba(0,0,0,0.2), 0 3px 6px rgba(0,0,0,0.15), 0 0 0 1px rgba(73,149,253,0.1)'
+                : 'inset 0 1px 2px rgba(0,0,0,0.04), 0 3px 6px rgba(73,149,253,0.08), 0 0 0 1px rgba(73,149,253,0.05)'
             }}
           />
-          <div className={`absolute inset-y-0 right-0 flex items-center pr-3 ${
-            isDarkMode ? 'text-[#a0d0ec]/30' : 'text-[#4995fd]/30'
-          } pointer-events-none`}>
-            <span className="inline-flex items-center justify-center rounded text-xs bg-[#4995fd]/10 px-1.5 py-0.5 border border-[#4995fd]/20">⌘K</span>
+          <div className={`absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none transition-all duration-300 ${
+            isDarkMode ? 'text-[#a0d0ec]/40 group-focus-within:text-[#a0d0ec]/60' : 'text-[#4995fd]/40 group-focus-within:text-[#4995fd]/60'
+          }`}>
+            <span className="inline-flex items-center justify-center rounded text-xs font-medium px-1.5 py-0.5 transition-all duration-300"
+                  style={{
+                    background: isDarkMode ? 'rgba(73,149,253,0.15)' : 'rgba(73,149,253,0.1)',
+                    border: `1px solid ${isDarkMode ? 'rgba(73,149,253,0.3)' : 'rgba(73,149,253,0.2)'}`,
+                    boxShadow: isDarkMode ? '0 1px 2px rgba(0,0,0,0.2)' : '0 1px 2px rgba(0,0,0,0.05)'
+                  }}>⌘K</span>
           </div>
+          
+          {/* Subtle animated focus glow effect */}
+          <div className="absolute -inset-0.5 rounded-full opacity-0 group-focus-within:opacity-100 blur-sm transition-opacity duration-300"
+               style={{ 
+                 background: `radial-gradient(circle at center, ${isDarkMode ? 'rgba(73,149,253,0.3)' : 'rgba(73,149,253,0.2)'}, transparent 70%)`,
+                 zIndex: -1 
+               }}></div>
         </div>
         
         <div className="hidden md:flex items-center space-x-2">

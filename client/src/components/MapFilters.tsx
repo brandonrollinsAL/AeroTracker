@@ -93,7 +93,7 @@ export default function MapFilters({ filters, onFilterChange, isDarkMode = false
     <TooltipProvider>
       <div 
         className={`
-          absolute top-[64px] left-0 right-0 md:right-1/4 z-[900]
+          absolute top-[64px] left-0 right-0 md:right-1/4 z-[800]
           ${isDarkMode 
             ? 'bg-[#002b4c]/95 border-b border-[#4995fd]/20' 
             : 'bg-white/95 border-b border-[#4995fd]/10'
@@ -107,7 +107,8 @@ export default function MapFilters({ filters, onFilterChange, isDarkMode = false
           borderImage: isDarkMode
             ? 'linear-gradient(to right, rgba(0,58,101,0.3), rgba(73,149,253,0.3), rgba(0,58,101,0.3)) 1'
             : 'linear-gradient(to right, rgba(73,149,253,0.1), rgba(73,149,253,0.2), rgba(73,149,253,0.1)) 1',
-          borderImageSlice: 1
+          borderImageSlice: 1,
+          padding: '0 16px' // Add padding to ensure content doesn't touch screen edges
         }}
       >
         <div className="mx-4 my-1.5 flex items-center space-x-2 text-xs">

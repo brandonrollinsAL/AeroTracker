@@ -131,7 +131,7 @@ function MapControlButtons({
   
   return (
     <div className="map-controls">
-      <div className="aviation-glass p-1.5 rounded-xl backdrop-blur-md flex flex-col space-y-2 border border-[#55ffdd]/20">
+      <div className="aviation-glass p-1.5 rounded-xl backdrop-blur-md flex flex-col space-y-2 border border-[#4995fd]/30">
         <TooltipProvider>
           <UITooltip>
             <TooltipTrigger asChild>
@@ -187,7 +187,7 @@ function MapControlButtons({
           </UITooltip>
         </TooltipProvider>
         
-        <div className="h-px w-full bg-[#55ffdd]/10"></div>
+        <div className="h-px w-full bg-[#4995fd]/20"></div>
         
         <TooltipProvider>
           <UITooltip>
@@ -377,7 +377,7 @@ export default function FlightMap({
     <div className={`w-full relative h-[50vh] md:h-[calc(100vh-4rem)] ${
       isDarkMode ? 'bg-neutral-900' : 'bg-white'
     } ${isFullscreen ? 'fixed inset-0 z-50 h-screen w-screen' : ''}`}>
-      <div className={`w-full h-full ${isDarkMode ? 'bg-neutral-900' : 'bg-white'} rounded overflow-hidden pt-[40px] px-4 pb-4`}>
+      <div className={`w-full h-full ${isDarkMode ? 'bg-neutral-900' : 'bg-white'} rounded overflow-hidden pt-[40px] px-5 pb-5`}>
         {!isConnected && (
           <Alert variant="destructive" className="absolute top-[84px] left-1/2 transform -translate-x-1/2 z-50 w-auto">
             <AlertTriangle className="h-4 w-4" />

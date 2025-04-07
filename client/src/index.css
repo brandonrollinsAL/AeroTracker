@@ -150,20 +150,22 @@
   filter: drop-shadow(0 0 5px rgba(10, 73, 149, 0.8));
 }
 
-/* Aviation-themed button styles */
+/* Aviation-themed button styles with enhanced #4995fd accents */
 .aviation-btn {
   background: var(--aviation-blue-accent);
   color: white;
   border: none;
-  border-radius: 5px; /* Less rounded buttons for more minimalistic look */
+  border-radius: 6px; /* Slightly more rounded for better visual appearance */
   transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-  box-shadow: 0 2px 4px rgba(10, 73, 149, 0.15);
+  box-shadow: 
+    0 2px 6px rgba(10, 73, 149, 0.15), 
+    0 0 0 1px rgba(73, 149, 253, 0.15);
   padding: 0.5rem 1.25rem;
   font-weight: 600;
   letter-spacing: 0.5px;
   position: relative;
   overflow: hidden;
-  background-image: linear-gradient(to right, #4995fd, #4995fd);
+  background-image: linear-gradient(to right, #4995fd, #0a4995);
   background-size: 200% auto;
 }
 
@@ -174,37 +176,80 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0));
+  background: linear-gradient(to right, rgba(255,255,255,0.15), rgba(255,255,255,0));
   transform: translateX(-100%);
   transition: transform 0.6s ease;
 }
 
+/* Add subtle aviation blue glow effect on hover */
+.aviation-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(73, 149, 253, 0.8), rgba(73, 149, 253, 0));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+  border-radius: 6px;
+  filter: blur(8px);
+}
+
 .aviation-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 3px 8px rgba(10, 73, 149, 0.25), 0 0 15px rgba(73, 149, 253, 0.3);
-  background-image: linear-gradient(to right, #003a65, #4995fd);
+  box-shadow: 
+    0 4px 12px rgba(10, 73, 149, 0.25), 
+    0 0 0 1px rgba(73, 149, 253, 0.2),
+    0 0 15px rgba(73, 149, 253, 0.3);
+  background-image: linear-gradient(to right, #4995fd, #003a65);
   background-position: right center;
+  color: rgba(255, 255, 255, 1);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .aviation-btn:hover::before {
   transform: translateX(100%);
 }
 
+.aviation-btn:hover::after {
+  opacity: 0.5;
+}
+
 .aviation-btn:active {
   transform: translateY(0);
-  box-shadow: 0 1px 3px rgba(10, 73, 149, 0.15);
+  box-shadow: 
+    0 1px 3px rgba(10, 73, 149, 0.15),
+    0 0 0 1px rgba(73, 149, 253, 0.3),
+    inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-image: linear-gradient(to right, #003a65, #0a4995);
 }
 
 .dark .aviation-btn {
   background: var(--aviation-dark-accent);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(73, 149, 253, 0.2);
   background-image: linear-gradient(to right, #002b4c, #003a65);
+  border: 1px solid rgba(73, 149, 253, 0.15);
 }
 
 .dark .aviation-btn:hover {
   background-image: linear-gradient(to right, #003a65, #4995fd);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3), 0 0 15px rgba(73, 149, 253, 0.2);
-  border: 1px solid rgba(73, 149, 253, 0.1);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3), 
+    0 0 15px rgba(73, 149, 253, 0.2),
+    0 0 0 1px rgba(73, 149, 253, 0.3);
+  border: 1px solid rgba(73, 149, 253, 0.25);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.dark .aviation-btn:active {
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(73, 149, 253, 0.4),
+    inset 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Card-style containers */
@@ -1218,16 +1263,16 @@
   stroke-dasharray: 2, 6;
 }
 
-/* Map controls */
+/* Map controls with enhanced #4995fd accents and adjusted positioning */
 .map-controls {
   position: absolute;
-  top: 20px;
+  top: 80px; /* Moved down to avoid logo overlap */
   right: 20px;
-  z-index: 1000;
+  z-index: 900; /* Ensure it's below the header but above map elements */
   display: flex;
   flex-direction: column;
   gap: 12px;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 4px 10px rgba(73, 149, 253, 0.15));
 }
 
 .map-controls::before {
@@ -1237,8 +1282,8 @@
   right: -15px;
   bottom: -15px;
   left: -15px;
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border-radius: 20px;
   z-index: -1;
   opacity: 0;
@@ -1247,24 +1292,31 @@
 }
 
 .map-controls:hover::before {
-  opacity: 0.3;
+  opacity: 0.4;
 }
 
 .map-control-button {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(85, 255, 221, 0.2);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.97), rgba(240, 248, 255, 0.97));
+  border: 1px solid rgba(73, 149, 253, 0.2);
   border-radius: 50%;
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--aviation-blue-dark);
-  box-shadow: 0 4px 10px rgba(10, 73, 149, 0.15);
+  color: #003a65;
+  box-shadow: 
+    0 4px 12px rgba(73, 149, 253, 0.12),
+    0 0 0 1px rgba(73, 149, 253, 0.08);
   transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   cursor: pointer;
   position: relative;
   overflow: hidden;
+}
+
+.map-control-button svg {
+  color: #4995fd;
+  transition: all 0.3s ease;
 }
 
 .map-control-button::before {
@@ -1274,25 +1326,51 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, rgba(85, 255, 221, 0.2), transparent 70%);
+  background: radial-gradient(circle at center, rgba(73, 149, 253, 0.15), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Add subtle top border glow */
+.map-control-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to right, #4995fd, transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
 .map-control-button:hover {
   transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 6px 15px rgba(10, 73, 149, 0.25);
+  box-shadow: 
+    0 6px 15px rgba(73, 149, 253, 0.2),
+    0 0 0 1px rgba(73, 149, 253, 0.15);
+  border-color: rgba(73, 149, 253, 0.3);
+}
+
+.map-control-button:hover svg {
+  transform: scale(1.1);
+  color: #4995fd;
 }
 
 .map-control-button:hover::before {
   opacity: 1;
 }
 
+.map-control-button:hover::after {
+  opacity: 1;
+}
+
 .map-control-button.active {
-  background: var(--aviation-gradient);
+  background: linear-gradient(135deg, #4995fd, #003a65);
   color: white;
+  border-color: rgba(73, 149, 253, 0.5);
   box-shadow: 
-    0 4px 12px rgba(10, 73, 149, 0.3),
+    0 4px 12px rgba(73, 149, 253, 0.3),
     0 0 0 2px rgba(85, 255, 221, 0.4);
 }
 
@@ -1574,9 +1652,21 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Tabs styling */
+/* Enhanced tabs styling with more #4995fd accents */
 .aviation-tabs {
   margin-bottom: 16px;
+  position: relative;
+}
+
+.aviation-tabs::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(73, 149, 253, 0.3), transparent);
+  opacity: 0.5;
 }
 
 .aviation-tab {
@@ -1584,9 +1674,81 @@
   padding: 8px 12px;
   font-size: 14px;
   font-weight: 600;
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  border: 1px solid rgba(73, 149, 253, 0.2);
   color: var(--aviation-blue-dark);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 2px 4px rgba(73, 149, 253, 0.08),
+    0 0 0 1px rgba(73, 149, 253, 0.05);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(240, 248, 255, 0.8));
+}
+
+.aviation-tab:hover {
+  border-color: rgba(73, 149, 253, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 3px 6px rgba(73, 149, 253, 0.12),
+    0 0 0 1px rgba(73, 149, 253, 0.1);
+}
+
+.aviation-tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to right, #4995fd, transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.aviation-tab:hover::before {
+  transform: scaleX(1);
+}
+
+.aviation-tab[data-state="active"] {
+  background: linear-gradient(135deg, rgba(73, 149, 253, 0.15), rgba(73, 149, 253, 0.05));
+  border-color: rgba(73, 149, 253, 0.3);
+  color: #4995fd;
+  font-weight: 700;
+  box-shadow: 
+    0 3px 8px rgba(73, 149, 253, 0.15),
+    0 0 0 1px rgba(73, 149, 253, 0.15);
+}
+
+.aviation-tab[data-state="active"]::before {
+  transform: scaleX(1);
+  background: linear-gradient(to right, #4995fd 30%, transparent);
+}
+
+.dark .aviation-tab {
+  background: linear-gradient(to bottom, rgba(0, 43, 76, 0.8), rgba(0, 58, 101, 0.8));
+  border-color: rgba(73, 149, 253, 0.25);
+  color: rgba(160, 208, 236, 0.9);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(73, 149, 253, 0.1);
+}
+
+.dark .aviation-tab:hover {
+  border-color: rgba(73, 149, 253, 0.4);
+  color: white;
+  box-shadow: 
+    0 3px 6px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(73, 149, 253, 0.2);
+}
+
+.dark .aviation-tab[data-state="active"] {
+  background: linear-gradient(135deg, rgba(73, 149, 253, 0.25), rgba(0, 58, 101, 0.8));
+  border-color: rgba(73, 149, 253, 0.4);
+  color: #4995fd;
+  box-shadow: 
+    0 3px 8px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(73, 149, 253, 0.3);
 }
 
 .aviation-tab-button {
@@ -1594,6 +1756,7 @@
   transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
   overflow: hidden;
   position: relative;
+  box-shadow: 0 2px 4px rgba(73, 149, 253, 0.1) !important;
 }
 
 .aviation-tab-button::after {
@@ -2017,6 +2180,47 @@
 .dark .aviation-scroll::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom, #0a4995, #4995fd);
   box-shadow: 0 0 5px rgba(73,149,253,0.5);
+}
+
+/* Enhanced aviation tabs content */
+.aviation-tabs-content {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.8), rgba(240, 248, 255, 0.8));
+  box-shadow: 
+    0 4px 12px rgba(73, 149, 253, 0.08), 
+    0 0 0 1px rgba(73, 149, 253, 0.1);
+}
+
+.dark .aviation-tabs-content {
+  background: linear-gradient(to right, rgba(0, 43, 76, 0.9), rgba(0, 58, 101, 0.9));
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.15), 
+    0 0 0 1px rgba(73, 149, 253, 0.15);
+}
+
+.aviation-tabs-content::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(73, 149, 253, 0.3), transparent);
+  opacity: 0.5;
+}
+
+.aviation-tabs-content:hover {
+  box-shadow: 
+    0 6px 16px rgba(73, 149, 253, 0.12),
+    0 0 0 1px rgba(73, 149, 253, 0.15);
+}
+
+.dark .aviation-tabs-content:hover {
+  box-shadow: 
+    0 6px 16px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(73, 149, 253, 0.2);
 }
 
 /* Apply aviation scrollbars to specific elements throughout the app */

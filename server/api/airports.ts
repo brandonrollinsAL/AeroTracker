@@ -1,9 +1,20 @@
-import OpenAI from "openai";
 import { storage } from '../storage';
 import { InsertAirport, Airport } from '@shared/schema';
 
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Using mock data until OpenAI API key is provided
+let openaiEnabled = false;
+let openai: any;
+
+try {
+  if (process.env.OPENAI_API_KEY) {
+    const OpenAI = require("openai");
+    // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+    openai = new OpenAI.default({ apiKey: process.env.OPENAI_API_KEY });
+    openaiEnabled = true;
+  }
+} catch (error) {
+  console.log("OpenAI initialization failed, using mock data:", error);
+}
 
 interface AirportData {
   name: string;
@@ -17,7 +28,7 @@ interface AirportData {
 }
 
 /**
- * Fetch all major US airports using OpenAI
+ * Fetch all major US airports using OpenAI or mock data
  */
 export async function fetchUSAirports(): Promise<Airport[]> {
   try {
@@ -28,41 +39,166 @@ export async function fetchUSAirports(): Promise<Airport[]> {
       return existingAirports;
     }
 
-    console.log("Fetching US airport data using OpenAI...");
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful assistant that provides accurate data about US airports."
-        },
-        {
-          role: "user", 
-          content: "Generate a JSON array containing information for the 50 major US airports. Include name, IATA code, city, country (United States), precise latitude/longitude coordinates, size (large, medium, or small based on number of passengers), and type (international, domestic, or regional). Format as JSON: [{name, code, city, country, latitude, longitude, size, type}]"
-        }
-      ],
-      response_format: { type: "json_object" }
-    });
+    // If OpenAI is enabled, use it to fetch airports
+    if (openaiEnabled && openai) {
+      console.log("Fetching US airport data using OpenAI...");
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: "You are a helpful assistant that provides accurate data about US airports."
+          },
+          {
+            role: "user", 
+            content: "Generate a JSON array containing information for the 50 major US airports. Include name, IATA code, city, country (United States), precise latitude/longitude coordinates, size (large, medium, or small based on number of passengers), and type (international, domestic, or regional). Format as JSON: [{name, code, city, country, latitude, longitude, size, type}]"
+          }
+        ],
+        response_format: { type: "json_object" }
+      });
 
-    const responseContent = response.choices[0].message.content || '{"airports":[]}';
-    const result = JSON.parse(responseContent);
-    if (!result.airports || !Array.isArray(result.airports)) {
-      throw new Error("Invalid response format from OpenAI");
+      const responseContent = response.choices[0].message.content || '{"airports":[]}';
+      const result = JSON.parse(responseContent);
+      if (!result.airports || !Array.isArray(result.airports)) {
+        throw new Error("Invalid response format from OpenAI");
+      }
+
+      // Transform and save to database
+      const airports: Airport[] = [];
+      for (const airportData of result.airports) {
+        const airport = await saveAirportToDatabase(airportData);
+        airports.push(airport);
+      }
+
+      console.log(`Saved ${airports.length} airports to database`);
+      return airports;
+    } else {
+      // Use mock data when OpenAI is not available
+      console.log("Using mock airport data (OpenAI not available)...");
+      const mockAirports = getMockAirports();
+      
+      // Save mock data to database
+      const airports: Airport[] = [];
+      for (const airportData of mockAirports) {
+        const airport = await saveAirportToDatabase(airportData);
+        airports.push(airport);
+      }
+      
+      console.log(`Saved ${airports.length} mock airports to database`);
+      return airports;
     }
-
-    // Transform and save to database
-    const airports: Airport[] = [];
-    for (const airportData of result.airports) {
-      const airport = await saveAirportToDatabase(airportData);
-      airports.push(airport);
-    }
-
-    console.log(`Saved ${airports.length} airports to database`);
-    return airports;
   } catch (error) {
     console.error("Error fetching US airports:", error);
     return [];
   }
+}
+
+/**
+ * Get mock airport data
+ */
+function getMockAirports(): AirportData[] {
+  return [
+    {
+      name: "Hartsfield-Jackson Atlanta International Airport",
+      code: "ATL",
+      city: "Atlanta",
+      country: "United States",
+      latitude: 33.6407,
+      longitude: -84.4277,
+      size: "large",
+      type: "international"
+    },
+    {
+      name: "Los Angeles International Airport",
+      code: "LAX",
+      city: "Los Angeles",
+      country: "United States",
+      latitude: 33.9416,
+      longitude: -118.4085,
+      size: "large",
+      type: "international"
+    },
+    {
+      name: "O'Hare International Airport",
+      code: "ORD",
+      city: "Chicago",
+      country: "United States",
+      latitude: 41.9742,
+      longitude: -87.9073,
+      size: "large",
+      type: "international"
+    },
+    {
+      name: "Dallas/Fort Worth International Airport",
+      code: "DFW",
+      city: "Dallas",
+      country: "United States",
+      latitude: 32.8998,
+      longitude: -97.0403,
+      size: "large",
+      type: "international"
+    },
+    {
+      name: "Denver International Airport",
+      code: "DEN",
+      city: "Denver",
+      country: "United States",
+      latitude: 39.8561,
+      longitude: -104.6737,
+      size: "large",
+      type: "international"
+    },
+    {
+      name: "John F. Kennedy International Airport",
+      code: "JFK",
+      city: "New York",
+      country: "United States",
+      latitude: 40.6413,
+      longitude: -73.7781,
+      size: "large",
+      type: "international"
+    },
+    {
+      name: "San Francisco International Airport",
+      code: "SFO",
+      city: "San Francisco",
+      country: "United States",
+      latitude: 37.6213,
+      longitude: -122.3790,
+      size: "large",
+      type: "international"
+    },
+    {
+      name: "Seattle-Tacoma International Airport",
+      code: "SEA",
+      city: "Seattle",
+      country: "United States",
+      latitude: 47.4502,
+      longitude: -122.3088,
+      size: "large",
+      type: "international"
+    },
+    {
+      name: "Miami International Airport",
+      code: "MIA",
+      city: "Miami",
+      country: "United States",
+      latitude: 25.7932,
+      longitude: -80.2906,
+      size: "large",
+      type: "international"
+    },
+    {
+      name: "McCarran International Airport",
+      code: "LAS",
+      city: "Las Vegas",
+      country: "United States",
+      latitude: 36.0840,
+      longitude: -115.1537,
+      size: "large",
+      type: "international"
+    }
+  ];
 }
 
 /**

@@ -8,6 +8,9 @@ import { broadcastMessage } from '../webSocket';
 const FLIGHTAWARE_USERNAME = process.env.FLIGHTAWARE_USERNAME;
 const FLIGHTAWARE_PASSWORD = process.env.FLIGHTAWARE_PASSWORD;
 
+// Flag to use mock data for development
+const USE_MOCK_DATA = true; // Set to false in production
+
 // Helper variables for timing broadcasts
 let lastBroadcastTime = 0;
 
@@ -35,6 +38,13 @@ const RECONNECT_DELAY = 5000; // 5 seconds
  * Initialize connection to FlightAware Firehose
  */
 export function initializeFlightAwareConnection() {
+  // If using mock data, skip real connection
+  if (USE_MOCK_DATA) {
+    console.log('Using mock data for flight information - skipping FlightAware connection');
+    isConnected = true; // Set connected state to true
+    return;
+  }
+  
   if (!FLIGHTAWARE_USERNAME || !FLIGHTAWARE_PASSWORD) {
     console.error('FlightAware credentials not found in environment variables');
     return;
@@ -272,12 +282,286 @@ function updateFlightInfo(fields: string[]) {
 }
 
 /**
- * Fetch flights based on the provided filter type (from cache)
+ * Generate mock flight data for development
+ */
+function generateMockFlights(count: number = 30): LiveFlight[] {
+  console.log(`Generating ${count} mock flights for development`);
+  const airlines = [
+    { name: 'Delta Air Lines', icao: 'DAL', iata: 'DL' },
+    { name: 'American Airlines', icao: 'AAL', iata: 'AA' },
+    { name: 'United Airlines', icao: 'UAL', iata: 'UA' },
+    { name: 'Southwest Airlines', icao: 'SWA', iata: 'WN' },
+    { name: 'Alaska Airlines', icao: 'ASA', iata: 'AS' },
+    { name: 'JetBlue Airways', icao: 'JBU', iata: 'B6' },
+    { name: 'Air Canada', icao: 'ACA', iata: 'AC' },
+    { name: 'British Airways', icao: 'BAW', iata: 'BA' },
+    { name: 'Lufthansa', icao: 'DLH', iata: 'LH' },
+    { name: 'FedEx Express', icao: 'FDX', iata: 'FX' }
+  ];
+  
+  const aircraftTypes = ['B738', 'A320', 'B77W', 'E170', 'A319', 'B763', 'B752', 'CRJ9', 'A321', 'B737'];
+  
+  const airports = [
+    { icao: 'KATL', iata: 'ATL', name: 'Hartsfield-Jackson Atlanta International Airport' },
+    { icao: 'KLAX', iata: 'LAX', name: 'Los Angeles International Airport' },
+    { icao: 'KORD', iata: 'ORD', name: "O'Hare International Airport" },
+    { icao: 'KDFW', iata: 'DFW', name: 'Dallas/Fort Worth International Airport' },
+    { icao: 'KDEN', iata: 'DEN', name: 'Denver International Airport' },
+    { icao: 'KJFK', iata: 'JFK', name: 'John F. Kennedy International Airport' },
+    { icao: 'KSFO', iata: 'SFO', name: 'San Francisco International Airport' },
+    { icao: 'KSEA', iata: 'SEA', name: 'Seattle-Tacoma International Airport' },
+    { icao: 'KMIA', iata: 'MIA', name: 'Miami International Airport' },
+    { icao: 'KLAS', iata: 'LAS', name: 'McCarran International Airport' }
+  ];
+  
+  const statuses: Array<'scheduled' | 'active' | 'landed' | 'cancelled' | 'diverted' | 'delayed'> = 
+    ['active', 'active', 'active', 'active', 'delayed', 'scheduled', 'landed'];
+  
+  const flights: LiveFlight[] = [];
+  
+  // Define US flight region boundaries
+  const usMinLat = 24.0; // Southern tip of Florida
+  const usMaxLat = 49.0; // Northern border with Canada
+  const usMinLon = -125.0; // West Coast
+  const usMaxLon = -66.0; // East Coast
+  
+  for (let i = 0; i < count; i++) {
+    const airline = airlines[Math.floor(Math.random() * airlines.length)];
+    const aircraftType = aircraftTypes[Math.floor(Math.random() * aircraftTypes.length)];
+    const depAirport = airports[Math.floor(Math.random() * airports.length)];
+    
+    // Make sure arrival is different from departure
+    let arrIndex = Math.floor(Math.random() * airports.length);
+    while (airports[arrIndex].icao === depAirport.icao) {
+      arrIndex = Math.floor(Math.random() * airports.length);
+    }
+    const arrAirport = airports[arrIndex];
+    
+    // Generate flight number
+    const flightNumber = `${airline.iata}${Math.floor(Math.random() * 1000) + 1000}`;
+    const callsign = `${airline.icao}${flightNumber.substring(2)}`;
+    
+    // Generate random position within US flight region
+    const latitude = usMinLat + Math.random() * (usMaxLat - usMinLat);
+    const longitude = usMinLon + Math.random() * (usMaxLon - usMinLon);
+    
+    // Generate random altitude between 10000 and 40000 feet
+    const altitude = Math.floor(Math.random() * 30000) + 10000;
+    
+    // Generate random heading (0-359 degrees)
+    const heading = Math.floor(Math.random() * 360);
+    
+    // Generate random ground speed (300-550 knots)
+    const groundSpeed = Math.floor(Math.random() * 250) + 300;
+    
+    // Status weighted towards active
+    const status = statuses[Math.floor(Math.random() * statuses.length)];
+    
+    // Generate registration (N + numbers for US aircraft)
+    const registration = `N${Math.floor(Math.random() * 9000) + 1000}`;
+    
+    // Generate timestamp
+    const timestamp = new Date().toISOString();
+    
+    // Generate random progress (0-100%)
+    const progress = Math.floor(Math.random() * 101);
+    
+    flights.push({
+      id: `MOCK${i}`,
+      callsign,
+      flightNumber,
+      registration,
+      aircraftType,
+      airline: {
+        name: airline.name,
+        icao: airline.icao,
+        iata: airline.iata
+      },
+      departure: {
+        icao: depAirport.icao,
+        iata: depAirport.iata,
+        name: depAirport.name,
+        time: new Date(Date.now() - Math.random() * 3600000).toISOString() // Random time in the last hour
+      },
+      arrival: {
+        icao: arrAirport.icao,
+        iata: arrAirport.iata,
+        name: arrAirport.name,
+        time: new Date(Date.now() + Math.random() * 7200000).toISOString() // Random time in next 2 hours
+      },
+      position: {
+        latitude,
+        longitude,
+        altitude,
+        heading,
+        groundSpeed,
+        verticalSpeed: 0,
+        timestamp
+      },
+      status,
+      route: `${depAirport.icao} DCT ${arrAirport.icao}`,
+      progress,
+      squawk: `${Math.floor(Math.random() * 8999) + 1000}` // 4-digit squawk code
+    });
+  }
+  
+  // Add a few sample cargo flights
+  for (let i = 0; i < 5; i++) {
+    const cargoAirlines = [
+      { name: 'FedEx Express', icao: 'FDX', iata: 'FX' },
+      { name: 'UPS Airlines', icao: 'UPS', iata: '5X' },
+      { name: 'Atlas Air', icao: 'GTI', iata: '5Y' },
+      { name: 'Cargolux', icao: 'CLX', iata: 'CV' },
+      { name: 'ABX Air', icao: 'ABX', iata: 'GB' }
+    ];
+    
+    const airline = cargoAirlines[Math.floor(Math.random() * cargoAirlines.length)];
+    const aircraftType = ['B744', 'B748', 'B763', 'B77L', 'MD11'][Math.floor(Math.random() * 5)];
+    const depAirport = airports[Math.floor(Math.random() * airports.length)];
+    let arrIndex = Math.floor(Math.random() * airports.length);
+    while (airports[arrIndex].icao === depAirport.icao) {
+      arrIndex = Math.floor(Math.random() * airports.length);
+    }
+    const arrAirport = airports[arrIndex];
+    
+    // Generate cargo flight number
+    const flightNumber = `${airline.iata}${Math.floor(Math.random() * 8000) + 1000}`;
+    const callsign = `${airline.icao}${flightNumber.substring(2)}`;
+    
+    flights.push({
+      id: `CARGO${i}`,
+      callsign,
+      flightNumber,
+      registration: `N${Math.floor(Math.random() * 9000) + 1000}`,
+      aircraftType,
+      airline: {
+        name: airline.name,
+        icao: airline.icao,
+        iata: airline.iata
+      },
+      departure: {
+        icao: depAirport.icao,
+        iata: depAirport.iata,
+        name: depAirport.name,
+        time: new Date(Date.now() - Math.random() * 3600000).toISOString()
+      },
+      arrival: {
+        icao: arrAirport.icao,
+        iata: arrAirport.iata,
+        name: arrAirport.name,
+        time: new Date(Date.now() + Math.random() * 7200000).toISOString()
+      },
+      position: {
+        latitude: usMinLat + Math.random() * (usMaxLat - usMinLat),
+        longitude: usMinLon + Math.random() * (usMaxLon - usMinLon),
+        altitude: Math.floor(Math.random() * 30000) + 10000,
+        heading: Math.floor(Math.random() * 360),
+        groundSpeed: Math.floor(Math.random() * 250) + 300,
+        verticalSpeed: 0,
+        timestamp: new Date().toISOString()
+      },
+      status: 'active',
+      route: `${depAirport.icao} DCT ${arrAirport.icao}`,
+      progress: Math.floor(Math.random() * 101),
+      squawk: `${Math.floor(Math.random() * 8999) + 1000}`
+    });
+  }
+  
+  // Add a few private/general aviation flights
+  for (let i = 0; i < 5; i++) {
+    const aircraftType = ['C172', 'C208', 'PA28', 'BE20', 'BE58'][Math.floor(Math.random() * 5)];
+    const depAirport = airports[Math.floor(Math.random() * airports.length)];
+    let arrIndex = Math.floor(Math.random() * airports.length);
+    while (airports[arrIndex].icao === depAirport.icao) {
+      arrIndex = Math.floor(Math.random() * airports.length);
+    }
+    const arrAirport = airports[arrIndex];
+    
+    // Generate typical N-number for US private aircraft
+    const registration = `N${Math.floor(Math.random() * 9000) + 1000}`;
+    const callsign = registration;
+    
+    flights.push({
+      id: `PVT${i}`,
+      callsign,
+      registration,
+      aircraftType,
+      airline: undefined,
+      departure: {
+        icao: depAirport.icao,
+        iata: depAirport.iata,
+        name: depAirport.name,
+        time: new Date(Date.now() - Math.random() * 3600000).toISOString()
+      },
+      arrival: {
+        icao: arrAirport.icao,
+        iata: arrAirport.iata,
+        name: arrAirport.name,
+        time: new Date(Date.now() + Math.random() * 7200000).toISOString()
+      },
+      position: {
+        latitude: usMinLat + Math.random() * (usMaxLat - usMinLat),
+        longitude: usMinLon + Math.random() * (usMaxLon - usMinLon),
+        altitude: Math.floor(Math.random() * 10000) + 3000, // Lower altitudes for GA
+        heading: Math.floor(Math.random() * 360),
+        groundSpeed: Math.floor(Math.random() * 100) + 100, // Slower speeds for GA
+        verticalSpeed: 0,
+        timestamp: new Date().toISOString()
+      },
+      status: 'active',
+      route: `${depAirport.icao} DCT ${arrAirport.icao}`,
+      progress: Math.floor(Math.random() * 101),
+      squawk: `${Math.floor(Math.random() * 8999) + 1000}`
+    });
+  }
+  
+  return flights;
+}
+
+/**
+ * Fetch flights based on the provided filter type (from cache or mock data)
  */
 export async function fetchFlights(filterType: MapFilter['type']): Promise<LiveFlight[]> {
   try {
     console.log(`Fetching flights (${flightCache.size} in cache) with filter: ${filterType}`);
     
+    // If using mock data, generate and return mock flights
+    if (USE_MOCK_DATA) {
+      const mockFlights = generateMockFlights(40);
+      
+      // Cache the mock flights
+      mockFlights.forEach(flight => {
+        flightCache.set(flight.id, flight);
+      });
+      
+      // Cache to storage
+      await storage.cacheFlightData(mockFlights);
+      
+      // Apply filters
+      let filteredFlights = mockFlights;
+      if (filterType !== 'all') {
+        // Filter flights based on type
+        filteredFlights = filteredFlights.filter(flight => {
+          if (filterType === 'commercial') {
+            // Commercial flights usually have airline info and are operated by commercial carriers
+            return flight.airline?.name != null;
+          } else if (filterType === 'private') {
+            // Private flights often have no airline info or registration as callsign
+            return flight.airline?.name == null || flight.callsign === flight.registration;
+          } else if (filterType === 'cargo') {
+            // Cargo flights might be identified by specific airlines or callsigns
+            const cargoAirlines = ['FDX', 'UPS', 'ABX', 'GTI', 'CLX'];
+            return cargoAirlines.some(code => flight.callsign?.startsWith(code)) || 
+                   flight.airline?.name?.toLowerCase().includes('cargo');
+          }
+          return true;
+        });
+      }
+      
+      return filteredFlights;
+    }
+    
+    // Otherwise use real FlightAware data
     // If not connected to FlightAware, try to connect
     if (!isConnected) {
       initializeFlightAwareConnection();
@@ -290,17 +574,19 @@ export async function fetchFlights(filterType: MapFilter['type']): Promise<LiveF
     
     // Apply filters based on filterType
     if (filterType !== 'all') {
+      // Filter flights based on type
       flights = flights.filter(flight => {
         if (filterType === 'commercial') {
-          // Commercial flights typically have airline codes in callsign
-          return /^[A-Z]{2,3}\d+$/.test(flight.callsign);
+          // Commercial flights usually have airline info and are operated by commercial carriers
+          return flight.airline?.name != null;
         } else if (filterType === 'private') {
-          // Private flights typically have N, G, or other registration prefixes
-          return /^[A-Z]{1}[A-Z0-9]{1,5}$/.test(flight.callsign);
+          // Private flights often have no airline info or registration as callsign
+          return flight.airline?.name == null || flight.callsign === flight.registration;
         } else if (filterType === 'cargo') {
-          // Cargo airlines often have specific codes like FDX (FedEx), UPS, etc.
-          const cargoAirlines = ['FDX', 'UPS', 'ABX', 'GTI', 'ATN', 'CKS', 'CLX'];
-          return cargoAirlines.some(code => flight.callsign.startsWith(code));
+          // Cargo flights might be identified by specific airlines or callsigns
+          const cargoAirlines = ['FDX', 'UPS', 'ABX', 'GTI', 'CLX'];
+          return cargoAirlines.some(code => flight.callsign?.startsWith(code)) || 
+                 flight.airline?.name?.toLowerCase().includes('cargo');
         }
         return true;
       });
@@ -344,7 +630,7 @@ export async function fetchAircraft(registration: string): Promise<Aircraft | nu
       id: 0,
       registration,
       type: 'Unknown',
-      airline: null,
+      airline: null, // Using null because the schema allows it
       manufacturerSerialNumber: null,
       age: null,
       details: null
