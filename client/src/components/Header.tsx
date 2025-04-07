@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { 
   MoonIcon, 
@@ -12,8 +13,19 @@ import {
   GlobeIcon,
   RadarIcon,
   LayoutDashboardIcon,
-  CalendarIcon
+  LogOut,
+  User
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useAuth } from '@/hooks/use-auth';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 interface HeaderProps {
   isDarkMode: boolean;
@@ -226,17 +238,70 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
             )}
           </Button>
           
-          {/* Sign in button */}
-          <Button
-            className={`ml-1 text-white rounded-md h-9 px-4 ${
-              isDarkMode 
-                ? 'bg-gradient-to-r from-[#0a4995] to-[#4995fd]' 
-                : 'bg-gradient-to-r from-[#003a65] to-[#4995fd]'
-            }`}
-          >
-            <UserIcon className="h-4 w-4 mr-2 text-[#a0d0ec]" />
-            <span>Sign In</span>
-          </Button>
+          {/* User profile or sign in button */}
+          {
+            (() => {
+              const { user, logoutMutation } = useAuth();
+              const [, navigate] = useLocation();
+              
+              if (user) {
+                return (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className={`ml-1 rounded-md h-9 ${
+                          isDarkMode
+                            ? 'bg-[#003a65]/70 text-white hover:bg-[#003a65]'
+                            : 'bg-[#4995fd]/10 text-[#003a65] hover:bg-[#4995fd]/20'
+                        } px-3 flex items-center space-x-2`}
+                      >
+                        <Avatar className="h-6 w-6">
+                          <AvatarFallback 
+                            className="bg-gradient-to-r from-[#003a65] to-[#4995fd] text-white text-xs"
+                          >
+                            {user.username.substring(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-sm font-medium">{user.username}</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end">
+                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Profile</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        className="cursor-pointer text-red-500 focus:text-red-500"
+                        onClick={() => {
+                          logoutMutation.mutate();
+                        }}
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Log out</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                );
+              }
+              
+              return (
+                <Button
+                  className={`ml-1 text-white rounded-md h-9 px-4 ${
+                    isDarkMode 
+                      ? 'bg-gradient-to-r from-[#0a4995] to-[#4995fd]' 
+                      : 'bg-gradient-to-r from-[#003a65] to-[#4995fd]'
+                  }`}
+                  onClick={() => navigate('/auth')}
+                >
+                  <UserIcon className="h-4 w-4 mr-2 text-[#a0d0ec]" />
+                  <span>Sign In</span>
+                </Button>
+              );
+            })()
+          }
         </div>
       </div>
     </header>

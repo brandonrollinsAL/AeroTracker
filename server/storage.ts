@@ -15,6 +15,7 @@ export interface IStorage {
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
 
   // Flight operations
@@ -93,10 +94,22 @@ export class MemStorage implements IStorage {
       (user) => user.username === username,
     );
   }
+  
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.email === email,
+    );
+  }
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userIdCounter++;
-    const user: User = { ...insertUser, id };
+    const user: User = { 
+      id,
+      username: insertUser.username,
+      password: insertUser.password,
+      email: insertUser.email,
+      preferences: insertUser.preferences ?? null
+    };
     this.users.set(id, user);
     return user;
   }
@@ -118,7 +131,26 @@ export class MemStorage implements IStorage {
 
   async createFlight(insertFlight: InsertFlight): Promise<Flight> {
     const id = this.flightIdCounter++;
-    const flight: Flight = { ...insertFlight, id };
+    const flight: Flight = {
+      id,
+      flightNumber: insertFlight.flightNumber,
+      airline: insertFlight.airline,
+      departureAirport: insertFlight.departureAirport,
+      arrivalAirport: insertFlight.arrivalAirport,
+      departureTime: insertFlight.departureTime,
+      arrivalTime: insertFlight.arrivalTime,
+      status: insertFlight.status ?? null,
+      aircraftType: insertFlight.aircraftType ?? null,
+      aircraftRegistration: insertFlight.aircraftRegistration ?? null,
+      latitude: insertFlight.latitude ?? null,
+      longitude: insertFlight.longitude ?? null,
+      altitude: insertFlight.altitude ?? null,
+      heading: insertFlight.heading ?? null,
+      groundSpeed: insertFlight.groundSpeed ?? null,
+      verticalSpeed: insertFlight.verticalSpeed ?? null,
+      squawk: insertFlight.squawk ?? null,
+      lastUpdated: insertFlight.lastUpdated ?? null
+    };
     this.flights.set(id, flight);
     return flight;
   }
@@ -253,6 +285,11 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db.select().from(users).where(eq(users.username, username));
     return user;
   }
+  
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
 
   async createUser(insertUser: InsertUser): Promise<User> {
     // Ensure values are not undefined 
@@ -260,7 +297,7 @@ export class DatabaseStorage implements IStorage {
       username: insertUser.username,
       password: insertUser.password,
       email: insertUser.email ?? null,
-      preferences: insertUser.preferences ?? null
+      preferences: insertUser.preferences as UserPreferences | null ?? null
     };
     
     // Insert as a single value, not an array
@@ -416,7 +453,7 @@ export class DatabaseStorage implements IStorage {
       airline: insertAircraft.airline ?? null,
       manufacturerSerialNumber: insertAircraft.manufacturerSerialNumber ?? null,
       age: insertAircraft.age ?? null,
-      details: insertAircraft.details ?? null
+      details: insertAircraft.details as AircraftDetails | null ?? null
     };
     
     const [aircraftItem] = await db.insert(aircraft).values([aircraftValues]).returning();

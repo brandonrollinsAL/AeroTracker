@@ -13,10 +13,14 @@ import {
 } from "./api/analytics";
 import { calculateOptimizedRoute } from "./api/routes";
 import { MapFilter, insertAlertSchema } from "@shared/schema";
+import { setupAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
 
+  // Set up authentication
+  setupAuth(app);
+  
   // Set up WebSocket server for real-time updates
   setupWebSocketServer(httpServer);
 
