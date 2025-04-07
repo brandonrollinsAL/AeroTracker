@@ -4,7 +4,9 @@ import {
   WeatherData,
   FlightPerformanceMetrics,
   AirlinePerformanceMetrics,
-  AirportPerformanceMetrics
+  AirportPerformanceMetrics,
+  OptimizedRoute,
+  RouteParams
 } from '@/types';
 
 // Fetch flight data
@@ -137,5 +139,24 @@ export async function fetchAirportPerformanceMetrics(airportCode?: string): Prom
   } catch (error) {
     console.error('Error fetching airport performance metrics:', error);
     return [];
+  }
+}
+
+// Calculate optimized route between two airports
+export async function calculateOptimizedRoute(params: RouteParams): Promise<OptimizedRoute | null> {
+  try {
+    const response = await fetch('/api/routes/optimize', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(params),
+    });
+    
+    if (!response.ok) throw new Error('Failed to calculate optimized route');
+    return await response.json();
+  } catch (error) {
+    console.error('Error calculating optimized route:', error);
+    return null;
   }
 }

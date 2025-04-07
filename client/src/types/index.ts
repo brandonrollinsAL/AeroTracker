@@ -153,3 +153,42 @@ export type AirportPerformanceMetrics = {
   totalArrivals: number;
   weatherImpactIndex: number;
 };
+
+// Route optimization types
+export type RouteParams = {
+  departureCode: string;
+  arrivalCode: string;
+  aircraftType: string;
+  fuelEfficiency?: number;
+  considerWeather?: boolean;
+  optimizationFactor?: 'balanced' | 'fuel' | 'time' | 'altitude' | 'weather';
+  plannedDate?: string;
+};
+
+export type RouteWaypoint = {
+  lat: number;
+  lon: number;
+  name: string;
+};
+
+export type AltitudePoint = {
+  distance: number;
+  altitude: number;
+};
+
+export type WindComponent = {
+  tailwind: number;
+  headwind: number;
+  crosswind: number;
+};
+
+export type OptimizedRoute = {
+  routeName: string;
+  fuelBurn: number;
+  flightTime: number;
+  distance: number;
+  waypoints: RouteWaypoint[];
+  weatherImpact: 'low' | 'medium' | 'high';
+  altitudeProfile: AltitudePoint[];
+  windComponent: WindComponent;
+};

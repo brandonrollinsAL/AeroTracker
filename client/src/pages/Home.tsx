@@ -4,12 +4,14 @@ import FlightMap from '@/components/FlightMap';
 import FlightPanel from '@/components/FlightPanel';
 import Header from '@/components/Header';
 import FlightDetailPanel from '@/components/FlightDetailPanel';
-import { LiveFlight, MapFilter } from '@/types';
+import RouteOptimizer from '@/components/RouteOptimizer';
+import { LiveFlight, MapFilter, Airport } from '@/types';
 import { ToastProvider } from '@/components/ui/toast';
 import { useToast } from '@/hooks/use-toast';
 import { useHotkeys, useMultiHotkeys } from '@/hooks/use-hotkeys';
 import { useTheme } from '@/hooks/use-theme';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Home() {
   // Theme state
@@ -29,6 +31,9 @@ export default function Home() {
     showFlightPaths: true,
     showAirports: true
   });
+  
+  // State for airports (for route optimizer)
+  const [airports, setAirports] = useState<Airport[]>([]);
 
   // Toast notifications
   const { toast } = useToast();
@@ -119,6 +124,23 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem('favoriteFlights', JSON.stringify(favoriteFlights));
   }, [favoriteFlights]);
+  
+  // Fetch airports for the route optimizer
+  useEffect(() => {
+    async function fetchAirports() {
+      try {
+        const response = await fetch('/api/airports');
+        if (response.ok) {
+          const airportData = await response.json();
+          setAirports(airportData);
+        }
+      } catch (error) {
+        console.error('Error fetching airports:', error);
+      }
+    }
+    
+    fetchAirports();
+  }, []);
 
   // Handle map filter changes
   const handleFilterChange = (newFilters: Partial<MapFilter>) => {
@@ -203,6 +225,9 @@ export default function Home() {
     }
   ]);
 
+  // State for active tab
+  const [activeTab, setActiveTab] = useState<'map' | 'tools'>('map');
+
   return (
     <ToastProvider>
       <Helmet>
@@ -215,29 +240,46 @@ export default function Home() {
           onThemeToggle={() => setTheme(theme === 'dark' ? 'light' : 'dark')} 
         />
         
-        <main className="flex flex-col md:flex-row">
-          <div className="flex-grow">
-            <FlightMap 
-              flights={flights}
-              selectedFlight={selectedFlight}
-              onFlightSelect={handleFlightSelect}
-              filters={mapFilters}
-              onFilterChange={handleFilterChange}
-              isConnected={isConnected}
-              isDarkMode={isDarkMode}
-            />
-          </div>
+        <Tabs 
+          defaultValue="map" 
+          className="w-full px-4 pt-2"
+          onValueChange={(value) => setActiveTab(value as 'map' | 'tools')}
+        >
+          <TabsList className="grid grid-cols-2 w-[400px] mb-4">
+            <TabsTrigger value="map" className="text-base">Flight Tracking</TabsTrigger>
+            <TabsTrigger value="tools" className="text-base">Route Optimization</TabsTrigger>
+          </TabsList>
           
-          <FlightPanel 
-            flights={flights}
-            selectedFlight={selectedFlight}
-            onSelectFlight={handleFlightSelect}
-            totalFlights={flights.length}
-            filters={mapFilters}
-          />
-        </main>
+          <TabsContent value="map" className="mt-0">
+            <main className="flex flex-col md:flex-row">
+              <div className="flex-grow">
+                <FlightMap 
+                  flights={flights}
+                  selectedFlight={selectedFlight}
+                  onFlightSelect={handleFlightSelect}
+                  filters={mapFilters}
+                  onFilterChange={handleFilterChange}
+                  isConnected={isConnected}
+                  isDarkMode={isDarkMode}
+                />
+              </div>
+              
+              <FlightPanel 
+                flights={flights}
+                selectedFlight={selectedFlight}
+                onSelectFlight={handleFlightSelect}
+                totalFlights={flights.length}
+                filters={mapFilters}
+              />
+            </main>
+          </TabsContent>
+          
+          <TabsContent value="tools" className="mt-0">
+            <RouteOptimizer airports={airports} />
+          </TabsContent>
+        </Tabs>
 
-        {selectedFlight && (
+        {selectedFlight && activeTab === 'map' && (
           <FlightDetailPanel 
             flight={selectedFlight}
             onClose={handleCloseFlightPanel}

@@ -11,6 +11,7 @@ import {
   getAirlinePerformanceMetrics, 
   getAirportPerformanceMetrics 
 } from "./api/analytics";
+import { calculateOptimizedRoute } from "./api/routes";
 import { MapFilter, insertAlertSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -379,6 +380,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching airport performance metrics:", error);
       res.status(500).json({ message: "Failed to fetch airport performance metrics" });
+    }
+  });
+
+  // ROUTE OPTIMIZATION ENDPOINTS
+  
+  // Calculate optimized route between two airports
+  app.post("/api/routes/optimize", async (req, res) => {
+    try {
+      const { 
+        departureCode, 
+        arrivalCode, 
+        aircraftType, 
+        fuelEfficiency, 
+        considerWeather, 
+        optimizationFactor,
+        plannedDate
+      } = req.body;
+      
+      if (!departureCode || !arrivalCode || !aircraftType) {
+        return res.status(400).json({ 
+          message: "Missing required parameters: departureCode, arrivalCode, and aircraftType are required" 
+        });
+      }
+      
+      // Set default values for optional parameters
+      const params = {
+        departureCode,
+        arrivalCode,
+        aircraftType,
+        fuelEfficiency: fuelEfficiency || 50,
+        considerWeather: considerWeather !== undefined ? considerWeather : true,
+        optimizationFactor: optimizationFactor || 'balanced',
+        plannedDate
+      };
+      
+      const optimizedRoute = await calculateOptimizedRoute(params);
+      
+      if (!optimizedRoute) {
+        return res.status(404).json({ message: "Could not calculate optimized route" });
+      }
+      
+      res.json(optimizedRoute);
+    } catch (error) {
+      console.error("Error calculating optimized route:", error);
+      res.status(500).json({ message: "Failed to calculate optimized route" });
     }
   });
 
