@@ -186,6 +186,9 @@ export default function Home() {
     });
   };
 
+  // State for active tab
+  const [activeTab, setActiveTab] = useState<'map' | 'tools'>('map');
+  
   // Register keyboard shortcuts
   useMultiHotkeys([
     {
@@ -224,9 +227,6 @@ export default function Home() {
       options: { modifier: 'ctrl' }
     }
   ]);
-
-  // State for active tab
-  const [activeTab, setActiveTab] = useState<'map' | 'tools'>('map');
 
   return (
     <ToastProvider>

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { Airport } from '@shared/schema';
+import { Airport, OptimizedRoute } from '@/types';
 import { Plane, Wind, Calendar, Droplets, Clock, Fuel, Navigation, BarChart, Map, Waves } from 'lucide-react';
 
 interface RouteOptimizerProps {
@@ -22,16 +22,9 @@ export default function RouteOptimizer({ airports }: RouteOptimizerProps) {
   const [considerWeather, setConsiderWeather] = useState(true);
   const [optimizationFactor, setOptimizationFactor] = useState('balanced');
   const [plannedDate, setPlannedDate] = useState('');
-  const [optimizedRoute, setOptimizedRoute] = useState<null | {
-    routeName: string;
-    fuelBurn: number;
-    flightTime: number;
-    distance: number;
-    waypoints: { lat: number; lon: number; name: string; }[];
-    weatherImpact: 'low' | 'medium' | 'high';
-    altitudeProfile: { distance: number; altitude: number; }[];
-    windComponent: { tailwind: number; headwind: number; crosswind: number; };
-  }>(null);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [airline, setAirline] = useState('');
+  const [optimizedRoute, setOptimizedRoute] = useState<OptimizedRoute | null>(null);
 
   // Filter airports for dropdown
   const filteredDepartureAirports = airports.filter(airport => 
@@ -81,20 +74,31 @@ export default function RouteOptimizer({ airports }: RouteOptimizerProps) {
               Math.sin(dLon/2) * Math.sin(dLon/2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     const distance = R * c;
+
+    // Apply airline preference if selected
+    let routeModifier = 1.0;
+    let routeNameSuffix = "Optimized";
+    
+    if (airline) {
+      // In a real API call, this would filter routes by the specific airline
+      // For simulation, we'll adjust the parameters slightly
+      routeModifier = 0.95; // Airlines with direct routes often have more efficient paths
+      routeNameSuffix = `Optimized (${airline})`;
+    }
     
     // Simulate an optimized route
     const newOptimizedRoute = {
-      routeName: `${departureAirport.code} to ${arrivalAirport.code} Optimized`,
-      fuelBurn: distance * (1 - fuelEfficiency/100) * 0.15,
-      flightTime: distance / 800 * 60, // Assuming 800 km/h average speed
-      distance: distance,
+      routeName: `${departureAirport.code} to ${arrivalAirport.code} ${routeNameSuffix}`,
+      fuelBurn: distance * (1 - fuelEfficiency/100) * 0.15 * routeModifier,
+      flightTime: distance / 800 * 60 * routeModifier, // Assuming 800 km/h average speed
+      distance: distance * routeModifier,
       waypoints: [
         { lat: departureAirport.latitude, lon: departureAirport.longitude, name: departureAirport.code },
-        // Add midpoint as a waypoint
+        // Add midpoint as a waypoint (slightly adjusted if airline is specified)
         { 
-          lat: (departureAirport.latitude + arrivalAirport.latitude) / 2,
-          lon: (departureAirport.longitude + arrivalAirport.longitude) / 2,
-          name: 'Midpoint'
+          lat: (departureAirport.latitude + arrivalAirport.latitude) / 2 + (airline ? 0.01 : 0),
+          lon: (departureAirport.longitude + arrivalAirport.longitude) / 2 + (airline ? 0.01 : 0),
+          name: airline ? `${airline} Waypoint` : 'Midpoint'
         },
         { lat: arrivalAirport.latitude, lon: arrivalAirport.longitude, name: arrivalAirport.code }
       ],
@@ -278,6 +282,44 @@ export default function RouteOptimizer({ airports }: RouteOptimizerProps) {
                 </div>
               </div>
               
+              <div className="flex justify-end my-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                  className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                >
+                  {showAdvanced ? "Hide Advanced Options" : "Show Advanced Options"}
+                </Button>
+              </div>
+              
+              {showAdvanced && (
+                <div className="border rounded-md p-4 mt-2 bg-blue-50/50 space-y-4">
+                  <h3 className="font-medium text-blue-800">Advanced Route Options</h3>
+                  
+                  <div>
+                    <Label htmlFor="airline">Preferred Airline</Label>
+                    <Select value={airline} onValueChange={setAirline}>
+                      <SelectTrigger id="airline">
+                        <SelectValue placeholder="Any airline" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Any airline</SelectItem>
+                        <SelectItem value="UAL">United Airlines</SelectItem>
+                        <SelectItem value="AAL">American Airlines</SelectItem>
+                        <SelectItem value="DAL">Delta Air Lines</SelectItem>
+                        <SelectItem value="SWA">Southwest Airlines</SelectItem>
+                        <SelectItem value="LUF">Lufthansa</SelectItem>
+                        <SelectItem value="AFR">Air France</SelectItem>
+                        <SelectItem value="BAW">British Airways</SelectItem>
+                        <SelectItem value="UAE">Emirates</SelectItem>
+                        <SelectItem value="SIA">Singapore Airlines</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-gray-500 mt-1">Filter route options by specific airline operators</p>
+                  </div>
+                </div>
+              )}
+              
               <Button 
                 className="w-full mt-4" 
                 onClick={calculateOptimizedRoute}
@@ -309,11 +351,22 @@ export default function RouteOptimizer({ airports }: RouteOptimizerProps) {
       {optimizedRoute && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-blue-600">
+            <CardTitle className="text-blue-600 flex items-center gap-2">
+              <Plane className="h-5 w-5" />
               Optimized Route Results
+              {airline && (
+                <span className="ml-2 px-2 py-1 bg-blue-100 text-xs font-mono rounded-md">
+                  {airline}
+                </span>
+              )}
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="flex items-center">
               {optimizedRoute.routeName}
+              {airline && (
+                <div className="ml-2 text-xs bg-blue-50 px-2 py-1 rounded-md text-blue-700">
+                  Airline optimized
+                </div>
+              )}
             </CardDescription>
           </CardHeader>
           
