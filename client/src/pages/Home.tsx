@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet';
 import FlightMap from '@/components/FlightMap';
 import FlightPanel from '@/components/FlightPanel';
 import Header from '@/components/Header';
+import MapIconMenu from '@/components/MapIconMenu';
 import FlightDetailPanel from '@/components/FlightDetailPanel';
 import RouteOptimizer from '@/components/RouteOptimizer';
 import { LiveFlight, MapFilter, Airport } from '@/types';
@@ -239,6 +240,26 @@ export default function Home() {
           isDarkMode={isDarkMode} 
           onThemeToggle={() => setTheme(theme === 'dark' ? 'light' : 'dark')} 
         />
+        
+        {activeTab === 'map' && (
+          <MapIconMenu
+            filters={mapFilters}
+            onFilterChange={handleFilterChange}
+            onZoomIn={() => {
+              // This will be handled by the map component
+              window.dispatchEvent(new CustomEvent('map-zoom-in'));
+            }}
+            onZoomOut={() => {
+              // This will be handled by the map component
+              window.dispatchEvent(new CustomEvent('map-zoom-out'));
+            }}
+            onMyLocation={() => {
+              // This will be handled by the map component
+              window.dispatchEvent(new CustomEvent('map-my-location'));
+            }}
+            isDarkMode={isDarkMode}
+          />
+        )}
         
         <Tabs 
           defaultValue="map" 

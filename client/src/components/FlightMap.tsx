@@ -275,7 +275,7 @@ export default function FlightMap({
     }
   }, [airports.length]);
   
-  // Component to monitor zoom level changes
+  // Component to monitor zoom level changes and handle map control events
   const ZoomMonitor = () => {
     const map = useMap();
     
@@ -287,11 +287,48 @@ export default function FlightMap({
       // Set initial zoom
       updateZoom();
       
+      // Handle zoom in event from MapIconMenu
+      const handleZoomIn = () => {
+        const newZoom = Math.min(map.getZoom() + 1, map.getMaxZoom());
+        map.setZoom(newZoom);
+      };
+      
+      // Handle zoom out event from MapIconMenu
+      const handleZoomOut = () => {
+        const newZoom = Math.max(map.getZoom() - 1, map.getMinZoom());
+        map.setZoom(newZoom);
+      };
+      
+      // Handle my location event from MapIconMenu
+      const handleMyLocation = () => {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            map.setView(
+              [position.coords.latitude, position.coords.longitude],
+              10,
+              { animate: true }
+            );
+          },
+          (error) => {
+            console.error('Error getting location:', error);
+          }
+        );
+      };
+      
       // Add event listener for zoom changes
       map.on('zoom', updateZoom);
       
+      // Add custom event listeners from MapIconMenu
+      window.addEventListener('map-zoom-in', handleZoomIn);
+      window.addEventListener('map-zoom-out', handleZoomOut);
+      window.addEventListener('map-my-location', handleMyLocation);
+      
       return () => {
+        // Clean up all event listeners
         map.off('zoom', updateZoom);
+        window.removeEventListener('map-zoom-in', handleZoomIn);
+        window.removeEventListener('map-zoom-out', handleZoomOut);
+        window.removeEventListener('map-my-location', handleMyLocation);
       };
     }, [map]);
     
