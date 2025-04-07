@@ -4,10 +4,11 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
-import { Filter, SlidersHorizontal, X } from "lucide-react";
+import { Filter, SlidersHorizontal, X, Cloud, Plane, MapPin, Layers } from "lucide-react";
 import { MapFilter } from "@/types";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface MapFiltersProps {
   filters: MapFilter;
@@ -88,250 +89,271 @@ export default function MapFilters({ filters, onFilterChange }: MapFiltersProps)
   ].filter(Boolean).length;
 
   return (
-    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white rounded-md shadow-md px-4 py-2 z-[900] w-auto">
-      <div className="flex flex-row items-center space-x-4">
-        {/* Flight type filters */}
-        <div className="flex gap-1">
-          <Button
-            variant={filters.type === 'all' ? 'default' : 'outline'}
-            size="sm"
-            className="h-7 px-2 text-xs rounded"
-            onClick={() => handleTypeChange('all')}
-          >
-            All
-          </Button>
-          
-          <Button
-            variant={filters.type === 'commercial' ? 'default' : 'outline'}
-            size="sm"
-            className="h-7 px-2 text-xs rounded"
-            onClick={() => handleTypeChange('commercial')}
-          >
-            Commercial
-          </Button>
-          
-          <Button
-            variant={filters.type === 'private' ? 'default' : 'outline'}
-            size="sm"
-            className="h-7 px-2 text-xs rounded"
-            onClick={() => handleTypeChange('private')}
-          >
-            Private
-          </Button>
-          
-          <Button
-            variant={filters.type === 'cargo' ? 'default' : 'outline'}
-            size="sm"
-            className="h-7 px-2 text-xs rounded"
-            onClick={() => handleTypeChange('cargo')}
-          >
-            Cargo
-          </Button>
-        </div>
-
-        {/* Separator */}
-        <div className="h-6 border-r border-gray-300"></div>
-        
-        {/* Display toggles */}
-        <div className="flex space-x-3">
-          <div className="flex items-center space-x-1.5">
-            <Switch
-              id="weather-toggle-mini"
-              checked={filters.showWeather}
-              onCheckedChange={handleToggleWeather}
-            />
-            <Label htmlFor="weather-toggle-mini" className="text-xs">Weather</Label>
-          </div>
-          
-          <div className="flex items-center space-x-1.5">
-            <Switch
-              id="paths-toggle-mini"
-              checked={filters.showFlightPaths}
-              onCheckedChange={handleToggleFlightPaths}
-            />
-            <Label htmlFor="paths-toggle-mini" className="text-xs">Flight Paths</Label>
-          </div>
-          
-          <div className="flex items-center space-x-1.5">
-            <Switch
-              id="airports-toggle-mini"
-              checked={filters.showAirports}
-              onCheckedChange={handleToggleAirports}
-            />
-            <Label htmlFor="airports-toggle-mini" className="text-xs">Airports</Label>
-          </div>
-        </div>
-
-        {/* Separator */}
-        <div className="h-6 border-r border-gray-300"></div>
-        
-        {/* Advanced filters */}
-        <div>
-          <Popover open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className={`rounded h-7 text-xs px-2 ${advancedFilterCount > 0 ? 'border-primary text-primary' : ''}`}
-              >
-                <SlidersHorizontal className="h-3 w-3 mr-1" />
-                Advanced
-                {advancedFilterCount > 0 && (
-                  <span className="ml-1 bg-primary text-white w-4 h-4 rounded-full text-[10px] flex items-center justify-center">
-                    {advancedFilterCount}
-                  </span>
-                )}
-              </Button>
-            </PopoverTrigger>
+    <TooltipProvider>
+      <div className="absolute top-0 left-0 right-0 bg-white/95 border-b shadow-sm px-4 py-2 z-[900] w-full">
+        <div className="flex flex-row items-center justify-between max-w-7xl mx-auto">
+          {/* Left side - Flight type buttons */}
+          <div className="flex gap-1">
+            <Button
+              variant={filters.type === 'all' ? 'default' : 'outline'}
+              size="sm"
+              className="h-7 px-2 text-xs rounded"
+              onClick={() => handleTypeChange('all')}
+            >
+              <Plane className="h-3 w-3 mr-1" />
+              All
+            </Button>
             
-            <PopoverContent className="w-80 p-3">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="font-medium text-sm">Advanced Filters</h3>
-                {advancedFilterCount > 0 && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-6 px-2 text-xs flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50"
-                    onClick={clearFilters}
-                  >
-                    <X className="h-3 w-3" /> Clear All
-                  </Button>
-                )}
-              </div>
-              <Tabs defaultValue="filters">
-                <TabsList className="w-full mb-2">
-                  <TabsTrigger value="filters" className="flex-1">Filters</TabsTrigger>
-                  <TabsTrigger value="display" className="flex-1">Display</TabsTrigger>
-                  <TabsTrigger value="sort" className="flex-1">Sort</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="filters" className="mt-2 space-y-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="airline-filter" className="text-xs text-neutral-600">Airline</Label>
-                    <Input 
-                      id="airline-filter" 
-                      placeholder="Filter by airline name or code" 
-                      className="h-8 text-sm"
-                      value={filters.airline || ''}
-                      onChange={handleAirlineChange}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="aircraft-filter" className="text-xs text-neutral-600">Aircraft Type</Label>
-                    <Input 
-                      id="aircraft-filter" 
-                      placeholder="E.g., B737, A320" 
-                      className="h-8 text-sm"
-                      value={filters.aircraft || ''}
-                      onChange={handleAircraftChange}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="tailnumber-filter" className="text-xs text-neutral-600">Tail Number</Label>
-                    <Input 
-                      id="tailnumber-filter" 
-                      placeholder="Registration code" 
-                      className="h-8 text-sm"
-                      value={filters.tailNumber || ''}
-                      onChange={handleTailNumberChange}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="purpose-filter" className="text-xs text-neutral-600">Flight Purpose</Label>
-                    <Select 
-                      onValueChange={handlePurposeChange}
-                      value={filters.purpose || 'all'}
+            <Button
+              variant={filters.type === 'commercial' ? 'default' : 'outline'}
+              size="sm"
+              className="h-7 px-2 text-xs rounded"
+              onClick={() => handleTypeChange('commercial')}
+            >
+              <Plane className="h-3 w-3 mr-1" />
+              Commercial
+            </Button>
+            
+            <Button
+              variant={filters.type === 'private' ? 'default' : 'outline'}
+              size="sm"
+              className="h-7 px-2 text-xs rounded"
+              onClick={() => handleTypeChange('private')}
+            >
+              <Plane className="h-3 w-3 mr-1" />
+              Private
+            </Button>
+            
+            <Button
+              variant={filters.type === 'cargo' ? 'default' : 'outline'}
+              size="sm"
+              className="h-7 px-2 text-xs rounded"
+              onClick={() => handleTypeChange('cargo')}
+            >
+              <Plane className="h-3 w-3 mr-1" />
+              Cargo
+            </Button>
+          </div>
+
+          {/* Middle - Display toggle buttons */}
+          <div className="flex space-x-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={filters.showWeather ? 'default' : 'outline'}
+                  size="sm"
+                  className="h-8 w-8 p-0 rounded-full"
+                  onClick={() => handleToggleWeather(!filters.showWeather)}
+                >
+                  <Cloud className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p className="text-xs">Weather Overlay</p>
+              </TooltipContent>
+            </Tooltip>
+            
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={filters.showFlightPaths ? 'default' : 'outline'}
+                  size="sm"
+                  className="h-8 w-8 p-0 rounded-full"
+                  onClick={() => handleToggleFlightPaths(!filters.showFlightPaths)}
+                >
+                  <Layers className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p className="text-xs">Flight Paths</p>
+              </TooltipContent>
+            </Tooltip>
+            
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={filters.showAirports ? 'default' : 'outline'}
+                  size="sm"
+                  className="h-8 w-8 p-0 rounded-full"
+                  onClick={() => handleToggleAirports(!filters.showAirports)}
+                >
+                  <MapPin className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p className="text-xs">Airports</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          
+          {/* Right side - Advanced filters */}
+          <div>
+            <Popover open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`rounded h-7 text-xs px-2 ${advancedFilterCount > 0 ? 'border-primary text-primary' : ''}`}
+                >
+                  <SlidersHorizontal className="h-3 w-3 mr-1" />
+                  Advanced
+                  {advancedFilterCount > 0 && (
+                    <span className="ml-1 bg-primary text-white w-4 h-4 rounded-full text-[10px] flex items-center justify-center">
+                      {advancedFilterCount}
+                    </span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              
+              <PopoverContent className="w-80 p-3">
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="font-medium text-sm">Advanced Filters</h3>
+                  {advancedFilterCount > 0 && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-6 px-2 text-xs flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50"
+                      onClick={clearFilters}
                     >
-                      <SelectTrigger id="purpose-filter" className="h-8 text-sm">
-                        <SelectValue placeholder="All purposes" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All purposes</SelectItem>
-                        <SelectItem value="passenger">Passenger</SelectItem>
-                        <SelectItem value="freight">Freight/Cargo</SelectItem>
-                        <SelectItem value="military">Military</SelectItem>
-                        <SelectItem value="general">General Aviation</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="display" className="mt-2 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="weather-toggle" className="text-xs text-neutral-600">Weather Overlay</Label>
-                    <Switch
-                      id="weather-toggle"
-                      checked={filters.showWeather}
-                      onCheckedChange={handleToggleWeather}
-                    />
-                  </div>
+                      <X className="h-3 w-3" /> Clear All
+                    </Button>
+                  )}
+                </div>
+                <Tabs defaultValue="filters">
+                  <TabsList className="w-full mb-2">
+                    <TabsTrigger value="filters" className="flex-1">Filters</TabsTrigger>
+                    <TabsTrigger value="display" className="flex-1">Display</TabsTrigger>
+                    <TabsTrigger value="sort" className="flex-1">Sort</TabsTrigger>
+                  </TabsList>
                   
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="flight-paths-toggle" className="text-xs text-neutral-600">Flight Paths</Label>
-                    <Switch
-                      id="flight-paths-toggle"
-                      checked={filters.showFlightPaths}
-                      onCheckedChange={handleToggleFlightPaths}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="airports-toggle" className="text-xs text-neutral-600">Show Airports</Label>
-                    <Switch
-                      id="airports-toggle"
-                      checked={filters.showAirports}
-                      onCheckedChange={handleToggleAirports}
-                    />
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="sort" className="mt-2 space-y-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="sort-by" className="text-xs text-neutral-600">Sort By</Label>
-                    <Select 
-                      onValueChange={handleSortChange}
-                      value={filters.sortBy || ''}
-                    >
-                      <SelectTrigger id="sort-by" className="h-8 text-sm">
-                        <SelectValue placeholder="Sort by..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="airline">Airline</SelectItem>
-                        <SelectItem value="altitude">Altitude</SelectItem>
-                        <SelectItem value="speed">Speed</SelectItem>
-                        <SelectItem value="departure">Departure Airport</SelectItem>
-                        <SelectItem value="arrival">Arrival Airport</SelectItem>
-                        <SelectItem value="time">Departure Time</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  {filters.sortBy && (
+                  <TabsContent value="filters" className="mt-2 space-y-3">
                     <div className="space-y-2">
-                      <Label htmlFor="sort-order" className="text-xs text-neutral-600">Sort Order</Label>
+                      <Label htmlFor="airline-filter" className="text-xs text-neutral-600">Airline</Label>
+                      <Input 
+                        id="airline-filter" 
+                        placeholder="Filter by airline name or code" 
+                        className="h-8 text-sm"
+                        value={filters.airline || ''}
+                        onChange={handleAirlineChange}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="aircraft-filter" className="text-xs text-neutral-600">Aircraft Type</Label>
+                      <Input 
+                        id="aircraft-filter" 
+                        placeholder="E.g., B737, A320" 
+                        className="h-8 text-sm"
+                        value={filters.aircraft || ''}
+                        onChange={handleAircraftChange}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="tailnumber-filter" className="text-xs text-neutral-600">Tail Number</Label>
+                      <Input 
+                        id="tailnumber-filter" 
+                        placeholder="Registration code" 
+                        className="h-8 text-sm"
+                        value={filters.tailNumber || ''}
+                        onChange={handleTailNumberChange}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="purpose-filter" className="text-xs text-neutral-600">Flight Purpose</Label>
                       <Select 
-                        onValueChange={handleSortOrderChange}
-                        value={filters.sortOrder || 'asc'}
+                        onValueChange={handlePurposeChange}
+                        value={filters.purpose || 'all'}
                       >
-                        <SelectTrigger id="sort-order" className="h-8 text-sm">
-                          <SelectValue placeholder="Select order" />
+                        <SelectTrigger id="purpose-filter" className="h-8 text-sm">
+                          <SelectValue placeholder="All purposes" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="asc">Ascending</SelectItem>
-                          <SelectItem value="desc">Descending</SelectItem>
+                          <SelectItem value="all">All purposes</SelectItem>
+                          <SelectItem value="passenger">Passenger</SelectItem>
+                          <SelectItem value="freight">Freight/Cargo</SelectItem>
+                          <SelectItem value="military">Military</SelectItem>
+                          <SelectItem value="general">General Aviation</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                  )}
-                </TabsContent>
-              </Tabs>
-            </PopoverContent>
-          </Popover>
+                  </TabsContent>
+                  
+                  <TabsContent value="display" className="mt-2 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="weather-toggle" className="text-xs text-neutral-600">Weather Overlay</Label>
+                      <Switch
+                        id="weather-toggle"
+                        checked={filters.showWeather}
+                        onCheckedChange={handleToggleWeather}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="flight-paths-toggle" className="text-xs text-neutral-600">Flight Paths</Label>
+                      <Switch
+                        id="flight-paths-toggle"
+                        checked={filters.showFlightPaths}
+                        onCheckedChange={handleToggleFlightPaths}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="airports-toggle" className="text-xs text-neutral-600">Show Airports</Label>
+                      <Switch
+                        id="airports-toggle"
+                        checked={filters.showAirports}
+                        onCheckedChange={handleToggleAirports}
+                      />
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="sort" className="mt-2 space-y-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="sort-by" className="text-xs text-neutral-600">Sort By</Label>
+                      <Select 
+                        onValueChange={handleSortChange}
+                        value={filters.sortBy || ''}
+                      >
+                        <SelectTrigger id="sort-by" className="h-8 text-sm">
+                          <SelectValue placeholder="Sort by..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="airline">Airline</SelectItem>
+                          <SelectItem value="altitude">Altitude</SelectItem>
+                          <SelectItem value="speed">Speed</SelectItem>
+                          <SelectItem value="departure">Departure Airport</SelectItem>
+                          <SelectItem value="arrival">Arrival Airport</SelectItem>
+                          <SelectItem value="time">Departure Time</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {filters.sortBy && (
+                      <div className="space-y-2">
+                        <Label htmlFor="sort-order" className="text-xs text-neutral-600">Sort Order</Label>
+                        <Select 
+                          onValueChange={handleSortOrderChange}
+                          value={filters.sortOrder || 'asc'}
+                        >
+                          <SelectTrigger id="sort-order" className="h-8 text-sm">
+                            <SelectValue placeholder="Select order" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="asc">Ascending</SelectItem>
+                            <SelectItem value="desc">Descending</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }

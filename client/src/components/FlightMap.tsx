@@ -250,14 +250,16 @@ export default function FlightMap({
   const mapRef = useRef<L.Map>(null);
   const [airports, setAirports] = useState<Airport[]>([]);
   const [loadingAirports, setLoadingAirports] = useState(false);
+  const [currentZoom, setCurrentZoom] = useState(5);
   
   // Default center if no flights are available
   const defaultCenter: [number, number] = [37.0902, -95.7129]; // US center
   const defaultZoom = 5;
 
-  // Fetch airports when showAirports is enabled
+  // Fetch airports, even when showAirports is disabled (for improved UX)
   useEffect(() => {
-    if (filters.showAirports && airports.length === 0) {
+    // Always fetch airports data to have it ready
+    if (airports.length === 0) {
       setLoadingAirports(true);
       
       axios.get('/api/airports')
@@ -271,7 +273,30 @@ export default function FlightMap({
           setLoadingAirports(false);
         });
     }
-  }, [filters.showAirports, airports.length]);
+  }, [airports.length]);
+  
+  // Component to monitor zoom level changes
+  const ZoomMonitor = () => {
+    const map = useMap();
+    
+    useEffect(() => {
+      const updateZoom = () => {
+        setCurrentZoom(map.getZoom());
+      };
+      
+      // Set initial zoom
+      updateZoom();
+      
+      // Add event listener for zoom changes
+      map.on('zoom', updateZoom);
+      
+      return () => {
+        map.off('zoom', updateZoom);
+      };
+    }, [map]);
+    
+    return null;
+  };
 
   const handleZoomIn = () => {
     mapRef.current?.zoomIn();
@@ -349,12 +374,12 @@ export default function FlightMap({
   };
 
   return (
-    <div className={`w-full md:w-2/3 lg:w-3/4 relative h-[50vh] md:h-[calc(100vh-4rem)] p-2 ${
+    <div className={`w-full md:w-2/3 lg:w-3/4 relative h-[50vh] md:h-[calc(100vh-4rem)] p-0 ${
       isDarkMode ? 'bg-neutral-900' : 'bg-white'
     } ${isFullscreen ? 'fixed inset-0 z-50 h-screen w-screen p-0' : ''}`}>
-      <div className={`w-full h-full ${isDarkMode ? 'bg-neutral-900' : 'bg-white'} rounded-sm overflow-hidden`}>
+      <div className={`w-full h-full ${isDarkMode ? 'bg-neutral-900' : 'bg-white'} rounded-sm overflow-hidden pt-12`}>
         {!isConnected && (
-          <Alert variant="destructive" className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 w-auto">
+          <Alert variant="destructive" className="absolute top-16 left-1/2 transform -translate-x-1/2 z-50 w-auto">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>Connecting to flight data server...</AlertDescription>
           </Alert>
@@ -475,7 +500,11 @@ export default function FlightMap({
           
           {/* Display airports if enabled */}
           {filters.showAirports && airports.map(airport => (
-            <AirportMarker key={airport.id} airport={airport} />
+            <AirportMarker 
+              key={airport.id} 
+              airport={airport} 
+              currentZoom={currentZoom} 
+            />
           ))}
           
           {/* Weather overlay would go here if enabled */}
@@ -495,6 +524,7 @@ export default function FlightMap({
           )}
           
           <MapUpdater flight={selectedFlight} />
+          <ZoomMonitor />
           <MapControlButtons 
             isDarkMode={isDarkMode}
             isFullscreen={isFullscreen}
