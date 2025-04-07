@@ -121,6 +121,14 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
                   ? 'text-[#a0d0ec] hover:text-white hover:bg-[#003a65]/40 border border-[#003a65]/30' 
                   : 'text-[#003a65] hover:bg-[#4995fd]/10 border border-[#4995fd]/20'
               }`}
+              style={{
+                background: isDarkMode
+                  ? 'linear-gradient(to right, rgba(0,58,101,0.3), rgba(73,149,253,0.1))'
+                  : 'linear-gradient(to right, rgba(73,149,253,0.05), rgba(160,208,236,0.1))',
+                boxShadow: isDarkMode
+                  ? 'inset 0 1px 1px rgba(73,149,253,0.1)'
+                  : 'inset 0 1px 1px rgba(255,255,255,0.7)'
+              }}
             >
               <BarChart3Icon className="h-4 w-4 mr-1.5" />
               <span className="text-xs">Stats</span> 
@@ -130,41 +138,55 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
           <Button 
             variant="ghost" 
             size="icon"
-            className={`h-9 w-9 rounded-full ${
+            className={`h-9 w-9 rounded-full relative overflow-hidden ${
               isDarkMode 
-                ? 'text-[#a0d0ec] hover:text-white hover:bg-[#003a65]/40' 
-                : 'text-[#003a65] hover:bg-[#4995fd]/10'
+                ? 'text-[#a0d0ec] hover:text-white hover:bg-[#003a65]/40 border border-[#003a65]/30' 
+                : 'text-[#003a65] hover:bg-[#4995fd]/10 border border-[#4995fd]/20'
             }`}
+            style={{
+              boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.1)'
+            }}
           >
-            <BellIcon className="h-5 w-5" />
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#4995fd]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <BellIcon className="h-5 w-5 relative z-10" />
+            <div className="absolute top-1 right-1.5 h-2 w-2 bg-[#4995fd] rounded-full transform scale-0 animate-pulse"></div>
           </Button>
           
           <Button 
             variant="ghost" 
             size="icon"
-            className={`h-9 w-9 rounded-full ${
+            className={`h-9 w-9 rounded-full relative overflow-hidden ${
               isDarkMode 
-                ? 'text-[#a0d0ec] hover:text-white hover:bg-[#003a65]/40' 
-                : 'text-[#003a65] hover:bg-[#4995fd]/10'
+                ? 'text-[#a0d0ec] hover:text-white hover:bg-[#003a65]/40 border border-[#003a65]/30' 
+                : 'text-[#003a65] hover:bg-[#4995fd]/10 border border-[#4995fd]/20'
             }`}
+            style={{
+              boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.1)'
+            }}
           >
-            <Settings className="h-5 w-5" />
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#4995fd]/5 opacity-0 hover:opacity-100 transition-opacity"></div>
+            <Settings className="h-5 w-5 relative z-10" />
           </Button>
           
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={onThemeToggle}
-            className={`h-9 w-9 rounded-full ${
+            className={`h-9 w-9 rounded-full relative overflow-hidden ${
               isDarkMode 
-                ? 'text-[#a0d0ec] hover:text-white hover:bg-[#003a65]/40' 
-                : 'text-[#003a65] hover:bg-[#4995fd]/10'
+                ? 'text-[#a0d0ec] hover:text-white hover:bg-[#003a65]/40 border border-[#003a65]/30' 
+                : 'text-[#003a65] hover:bg-[#4995fd]/10 border border-[#4995fd]/20'
             } transition-all duration-300`}
+            style={{
+              boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.1)'
+            }}
           >
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#4995fd]/5 opacity-0 hover:opacity-100 transition-opacity"></div>
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#003a65]/10 to-transparent opacity-0 hover:opacity-100 transition-opacity"></div>
             {isDarkMode ? (
-              <SunIcon className="h-5 w-5" />
+              <SunIcon className="h-5 w-5 relative z-10" />
             ) : (
-              <MoonIcon className="h-5 w-5" />
+              <MoonIcon className="h-5 w-5 relative z-10" />
             )}
           </Button>
           
@@ -181,8 +203,10 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
             }}
           >
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-[#a0d0ec]/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+            <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute h-[1px] bottom-0 left-0 right-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
             <UserIcon className="h-4 w-4 mr-2 text-[#a0d0ec] group-hover:scale-110 transition-transform duration-300" />
-            <span className="relative z-10">Sign In</span>
+            <span className="relative z-10 font-medium">Sign In</span>
           </Button>
         </div>
         
@@ -220,7 +244,7 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
           
           <Button 
             size="icon"
-            className={`relative h-8 w-8 rounded-full overflow-hidden ${
+            className={`relative h-8 w-8 rounded-full overflow-hidden group ${
               isDarkMode 
                 ? 'bg-gradient-to-r from-[#003a65] to-[#4995fd] text-white' 
                 : 'bg-gradient-to-r from-[#4995fd] to-[#a0d0ec] text-white'
@@ -232,7 +256,9 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
             }}
           >
             <div className="absolute inset-0 bg-[#a0d0ec]/10 opacity-30"></div>
-            <UserIcon className="h-4 w-4 relative z-10" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute h-[1px] bottom-0 left-0 right-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+            <UserIcon className="h-4 w-4 relative z-10 group-hover:scale-110 transition-transform duration-300" />
           </Button>
         </div>
       </div>

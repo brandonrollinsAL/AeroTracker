@@ -318,7 +318,7 @@ export default function MapFilters({ filters, onFilterChange, isDarkMode = false
                   variant="outline"
                   size="sm"
                   className={`
-                    rounded h-7 text-xs px-2.5 
+                    rounded h-7 text-xs px-2.5 group relative overflow-hidden
                     ${isDarkMode 
                       ? 'border-[#4995fd]/30 text-[#a0d0ec] hover:border-[#4995fd]/60 hover:bg-[#003a65]/80'
                       : 'border-[#4995fd]/20 text-[#003a65] hover:border-[#4995fd]/50 hover:bg-[#4995fd]/10'
@@ -334,16 +334,24 @@ export default function MapFilters({ filters, onFilterChange, isDarkMode = false
                       : '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(73,149,253,0.03)'
                   }}
                 >
-                  <Filter className="h-3 w-3 mr-1.5" />
-                  Advanced
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#4995fd]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#4995fd]/40 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                  <Filter className={`h-3 w-3 mr-1.5 relative z-10 group-hover:text-[#4995fd] transition-colors duration-300 ${
+                    isDarkMode ? 'text-[#a0d0ec]' : 'text-[#003a65]'
+                  }`} />
+                  <span className="relative z-10 group-hover:font-medium transition-all duration-300">Advanced</span>
                   {advancedFilterCount > 0 && (
                     <span className={`
-                      ml-1.5 w-4 h-4 rounded-full text-[10px] font-medium flex items-center justify-center
+                      ml-1.5 w-4 h-4 rounded-full text-[10px] font-medium flex items-center justify-center relative z-10
                       ${isDarkMode 
-                        ? 'bg-[#4995fd] text-white'
-                        : 'bg-[#4995fd] text-white'
+                        ? 'bg-gradient-to-r from-[#003a65] to-[#4995fd] text-white'
+                        : 'bg-gradient-to-r from-[#4995fd] to-[#a0d0ec] text-white'
                       }
-                    `}>
+                    `}
+                    style={{
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.1), 0 0 0 1px rgba(73,149,253,0.3)'
+                    }}
+                    >
                       {advancedFilterCount}
                     </span>
                   )}
@@ -410,41 +418,65 @@ export default function MapFilters({ filters, onFilterChange, isDarkMode = false
                     <TabsTrigger 
                       value="filters" 
                       className={`
-                        flex-1 data-[state=active]:shadow-sm text-xs
+                        flex-1 text-xs relative overflow-hidden
                         ${isDarkMode
-                          ? 'data-[state=active]:bg-[#4995fd] data-[state=active]:text-white'
-                          : 'data-[state=active]:bg-[#4995fd] data-[state=active]:text-white'
+                          ? 'data-[state=active]:bg-gradient-to-r from-[#003a65] to-[#4995fd] data-[state=active]:text-white data-[state=active]:shadow'
+                          : 'data-[state=active]:bg-gradient-to-r from-[#4995fd] to-[#a0d0ec] data-[state=active]:text-white data-[state=active]:shadow-sm'
                         }
+                        group transition-all duration-300
                       `}
+                      style={{
+                        boxShadow: isDarkMode 
+                          ? 'data-[state=active]:0 2px 5px rgba(0,58,101,0.4)'
+                          : 'data-[state=active]:0 2px 5px rgba(73,149,253,0.3)'
+                      }}
                     >
-                      <Filter className="h-3 w-3 mr-1.5" />
-                      Filters
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#a0d0ec]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 group-data-[state=active]:opacity-30"></div>
+                      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-[#4995fd]/40 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 group-data-[state=active]:hidden"></div>
+                      <Filter className="h-3 w-3 mr-1.5 relative z-10 group-data-[state=active]:text-white group-hover:text-[#4995fd] transition-colors duration-300" />
+                      <span className="relative z-10 group-hover:font-medium transition-all duration-300">Filters</span>
                     </TabsTrigger>
                     <TabsTrigger 
                       value="display" 
                       className={`
-                        flex-1 data-[state=active]:shadow-sm text-xs
+                        flex-1 text-xs relative overflow-hidden
                         ${isDarkMode
-                          ? 'data-[state=active]:bg-[#4995fd] data-[state=active]:text-white'
-                          : 'data-[state=active]:bg-[#4995fd] data-[state=active]:text-white'
+                          ? 'data-[state=active]:bg-gradient-to-r from-[#003a65] to-[#4995fd] data-[state=active]:text-white data-[state=active]:shadow'
+                          : 'data-[state=active]:bg-gradient-to-r from-[#4995fd] to-[#a0d0ec] data-[state=active]:text-white data-[state=active]:shadow-sm'
                         }
+                        group transition-all duration-300
                       `}
+                      style={{
+                        boxShadow: isDarkMode 
+                          ? 'data-[state=active]:0 2px 5px rgba(0,58,101,0.4)'
+                          : 'data-[state=active]:0 2px 5px rgba(73,149,253,0.3)'
+                      }}
                     >
-                      <Plane className="h-3 w-3 mr-1.5" />
-                      Display
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#a0d0ec]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 group-data-[state=active]:opacity-30"></div>
+                      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-[#4995fd]/40 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 group-data-[state=active]:hidden"></div>
+                      <Plane className="h-3 w-3 mr-1.5 relative z-10 group-data-[state=active]:text-white group-hover:text-[#4995fd] transition-colors duration-300" />
+                      <span className="relative z-10 group-hover:font-medium transition-all duration-300">Display</span>
                     </TabsTrigger>
                     <TabsTrigger 
                       value="sort" 
                       className={`
-                        flex-1 data-[state=active]:shadow-sm text-xs
+                        flex-1 text-xs relative overflow-hidden
                         ${isDarkMode
-                          ? 'data-[state=active]:bg-[#4995fd] data-[state=active]:text-white'
-                          : 'data-[state=active]:bg-[#4995fd] data-[state=active]:text-white'
+                          ? 'data-[state=active]:bg-gradient-to-r from-[#003a65] to-[#4995fd] data-[state=active]:text-white data-[state=active]:shadow'
+                          : 'data-[state=active]:bg-gradient-to-r from-[#4995fd] to-[#a0d0ec] data-[state=active]:text-white data-[state=active]:shadow-sm'
                         }
+                        group transition-all duration-300
                       `}
+                      style={{
+                        boxShadow: isDarkMode 
+                          ? 'data-[state=active]:0 2px 5px rgba(0,58,101,0.4)'
+                          : 'data-[state=active]:0 2px 5px rgba(73,149,253,0.3)'
+                      }}
                     >
-                      <SlidersHorizontal className="h-3 w-3 mr-1.5" />
-                      Sort
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#a0d0ec]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 group-data-[state=active]:opacity-30"></div>
+                      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-[#4995fd]/40 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 group-data-[state=active]:hidden"></div>
+                      <SlidersHorizontal className="h-3 w-3 mr-1.5 relative z-10 group-data-[state=active]:text-white group-hover:text-[#4995fd] transition-colors duration-300" />
+                      <span className="relative z-10 group-hover:font-medium transition-all duration-300">Sort</span>
                     </TabsTrigger>
                   </TabsList>
                   
@@ -575,12 +607,18 @@ export default function MapFilters({ filters, onFilterChange, isDarkMode = false
                         checked={filters.showWeather}
                         onCheckedChange={handleToggleWeather}
                         className={`
-                          data-[state=checked]:bg-[#4995fd]
+                          data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-[#4995fd] data-[state=checked]:to-[#a0d0ec]
                           ${isDarkMode 
                             ? 'border-[#4995fd]/30 bg-[#003a65]/50' 
                             : 'border-[#4995fd]/20'
                           }
                         `}
+                        style={{
+                          boxShadow: filters.showWeather 
+                            ? '0 2px 4px rgba(73,149,253,0.3)' 
+                            : 'none',
+                          transition: 'all 0.2s ease'
+                        }}
                       />
                     </div>
                     
@@ -596,12 +634,18 @@ export default function MapFilters({ filters, onFilterChange, isDarkMode = false
                         checked={filters.showFlightPaths}
                         onCheckedChange={handleToggleFlightPaths}
                         className={`
-                          data-[state=checked]:bg-[#4995fd]
+                          data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-[#4995fd] data-[state=checked]:to-[#a0d0ec]
                           ${isDarkMode 
                             ? 'border-[#4995fd]/30 bg-[#003a65]/50' 
                             : 'border-[#4995fd]/20'
                           }
                         `}
+                        style={{
+                          boxShadow: filters.showFlightPaths 
+                            ? '0 2px 4px rgba(73,149,253,0.3)' 
+                            : 'none',
+                          transition: 'all 0.2s ease'
+                        }}
                       />
                     </div>
                     
@@ -617,12 +661,18 @@ export default function MapFilters({ filters, onFilterChange, isDarkMode = false
                         checked={filters.showAirports}
                         onCheckedChange={handleToggleAirports}
                         className={`
-                          data-[state=checked]:bg-[#4995fd]
+                          data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-[#4995fd] data-[state=checked]:to-[#a0d0ec]
                           ${isDarkMode 
                             ? 'border-[#4995fd]/30 bg-[#003a65]/50' 
                             : 'border-[#4995fd]/20'
                           }
                         `}
+                        style={{
+                          boxShadow: filters.showAirports 
+                            ? '0 2px 4px rgba(73,149,253,0.3)' 
+                            : 'none',
+                          transition: 'all 0.2s ease'
+                        }}
                       />
                     </div>
                   </TabsContent>

@@ -163,12 +163,31 @@
   letter-spacing: 0.5px;
   position: relative;
   overflow: hidden;
+  background-image: linear-gradient(to right, #4995fd, #4995fd);
+  background-size: 200% auto;
+}
+
+.aviation-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0));
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
 }
 
 .aviation-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 3px 8px rgba(10, 73, 149, 0.25);
-  background: var(--aviation-blue-dark);
+  box-shadow: 0 3px 8px rgba(10, 73, 149, 0.25), 0 0 15px rgba(73, 149, 253, 0.3);
+  background-image: linear-gradient(to right, #003a65, #4995fd);
+  background-position: right center;
+}
+
+.aviation-btn:hover::before {
+  transform: translateX(100%);
 }
 
 .aviation-btn:active {
@@ -179,11 +198,13 @@
 .dark .aviation-btn {
   background: var(--aviation-dark-accent);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background-image: linear-gradient(to right, #002b4c, #003a65);
 }
 
 .dark .aviation-btn:hover {
-  background: var(--aviation-blue-dark);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  background-image: linear-gradient(to right, #003a65, #4995fd);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3), 0 0 15px rgba(73, 149, 253, 0.2);
+  border: 1px solid rgba(73, 149, 253, 0.1);
 }
 
 /* Card-style containers */
@@ -460,32 +481,87 @@
 
 .aviation-select-trigger {
   transition: all 0.3s ease;
-  border: 1px solid rgba(85, 255, 221, 0.2);
+  border: 1px solid rgba(73, 149, 253, 0.2);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.97), rgba(240, 248, 255, 0.97));
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 1px 3px rgba(73, 149, 253, 0.08);
 }
 
 .aviation-select-trigger:hover, .aviation-select-trigger:focus {
-  border-color: rgba(85, 255, 221, 0.5);
-  box-shadow: 0 0 0 2px rgba(85, 255, 221, 0.1);
+  border-color: rgba(73, 149, 253, 0.5);
+  box-shadow: 0 0 0 2px rgba(73, 149, 253, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.99), rgba(240, 248, 255, 0.99));
+}
+
+.dark .aviation-select-trigger {
+  background: linear-gradient(to bottom, rgba(0, 58, 101, 0.5), rgba(0, 43, 76, 0.5));
+  border-color: rgba(73, 149, 253, 0.3);
+  box-shadow: inset 0 1px 1px rgba(73, 149, 253, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.dark .aviation-select-trigger:hover, .dark .aviation-select-trigger:focus {
+  border-color: rgba(73, 149, 253, 0.6);
+  box-shadow: 0 0 0 2px rgba(73, 149, 253, 0.2), inset 0 1px 1px rgba(73, 149, 253, 0.15);
+  background: linear-gradient(to bottom, rgba(0, 58, 101, 0.6), rgba(0, 43, 76, 0.6));
 }
 
 .aviation-select-content {
-  border: 1px solid rgba(85, 255, 221, 0.2);
-  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(73, 149, 253, 0.2);
+  background: rgba(255, 255, 255, 0.97);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 6px 20px rgba(73, 149, 253, 0.15), 0 2px 6px rgba(73, 149, 253, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.dark .aviation-select-content {
+  background: rgba(0, 43, 76, 0.95);
+  border-color: rgba(73, 149, 253, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .aviation-select-item {
   transition: all 0.2s ease;
+  border-radius: 4px;
+  margin: 2px 4px;
+  position: relative;
+  overflow: hidden;
 }
 
 .aviation-select-item:hover {
-  background: rgba(10, 73, 149, 0.05);
+  background: rgba(73, 149, 253, 0.08);
+  color: var(--aviation-blue-dark);
+}
+
+.dark .aviation-select-item:hover {
+  background: rgba(73, 149, 253, 0.2);
+  color: rgba(160, 208, 236, 1);
 }
 
 .aviation-select-item[data-state="checked"] {
-  background: rgba(10, 73, 149, 0.1);
+  background: linear-gradient(to right, rgba(0, 58, 101, 0.1), rgba(73, 149, 253, 0.15));
   color: var(--aviation-blue-dark);
+  font-weight: 500;
+}
+
+.dark .aviation-select-item[data-state="checked"] {
+  background: linear-gradient(to right, rgba(0, 58, 101, 0.6), rgba(73, 149, 253, 0.3));
+  color: white;
+}
+
+.aviation-select-item[data-state="checked"]::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--aviation-blue-dark), var(--aviation-blue-light));
+}
+
+.dark .aviation-select-item[data-state="checked"]::before {
+  background: linear-gradient(to bottom, var(--aviation-blue-light), var(--aviation-sky-blue));
+  box-shadow: 0 0 4px rgba(73, 149, 253, 0.4);
 }
 
 /* Flight tabs */
