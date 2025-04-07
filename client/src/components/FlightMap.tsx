@@ -3,7 +3,6 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline, Tooltip } fro
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import MapControls from './MapControls';
-import MapFilters from './MapFilters';
 import AirportMarker from './AirportMarker';
 import { LiveFlight, MapFilter, Airport } from '@/types';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -573,11 +572,6 @@ export default function FlightMap({
             }}
           />
         </MapContainer>
-        
-        <MapFilters 
-          filters={filters} 
-          onFilterChange={onFilterChange}
-        />
       </div>
     </div>
   );
