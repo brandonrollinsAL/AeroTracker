@@ -31,7 +31,7 @@ export default function FlightList({
   };
   
   // Sort flights based on selected sort criteria
-  const sortedFlights = [...flights].sort((a, b) => {
+  const sortedFlights = Array.isArray(flights) ? [...flights].sort((a, b) => {
     if (sortBy === "updated") {
       return new Date(b.position.timestamp).getTime() - new Date(a.position.timestamp).getTime();
     } else if (sortBy === "airline") {
@@ -44,7 +44,7 @@ export default function FlightList({
       return aTime - bTime;
     }
     return 0;
-  });
+  }) : [];
 
   // Check if a flight is in favorites
   const isFlightFavorited = (flightId: string): boolean => {
@@ -152,7 +152,7 @@ export default function FlightList({
         <div className="flex justify-between items-center mt-2">
           <div>
             <span className="text-xs text-neutral-500">Showing</span>
-            <span className="text-xs font-medium ml-1">{flights.length}</span>
+            <span className="text-xs font-medium ml-1">{Array.isArray(flights) ? flights.length : 0}</span>
             <span className="text-xs text-neutral-500 ml-1">flights</span>
           </div>
           <div className="flex items-center">

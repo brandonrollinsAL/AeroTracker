@@ -336,7 +336,7 @@ export default function FlightMap({
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           
-          {flights.map((flight) => (
+          {Array.isArray(flights) && flights.map((flight) => (
             <React.Fragment key={flight.id}>
               <Marker
                 position={[flight.position.latitude, flight.position.longitude]}

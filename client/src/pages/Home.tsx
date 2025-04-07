@@ -55,11 +55,13 @@ export default function Home() {
       try {
         const data = JSON.parse(event.data);
         if (data.type === 'flights') {
-          setFlights(data.flights);
+          // Ensure data.flights is an array
+          const flightData = Array.isArray(data.flights) ? data.flights : [];
+          setFlights(flightData);
           
           // Update selected flight if it exists in the new data
-          if (selectedFlight) {
-            const updatedFlight = data.flights.find((f: LiveFlight) => f.id === selectedFlight.id);
+          if (selectedFlight && flightData.length > 0) {
+            const updatedFlight = flightData.find((f: LiveFlight) => f.id === selectedFlight.id);
             if (updatedFlight) {
               setSelectedFlight(updatedFlight);
             }
@@ -68,7 +70,7 @@ export default function Home() {
           // Update favorite flights with latest data
           setFavoriteFlights(prevFavorites => {
             return prevFavorites.map(favorite => {
-              const updated = data.flights.find((f: LiveFlight) => f.id === favorite.id);
+              const updated = flightData.find((f: LiveFlight) => f.id === favorite.id);
               return updated || favorite;
             });
           });
