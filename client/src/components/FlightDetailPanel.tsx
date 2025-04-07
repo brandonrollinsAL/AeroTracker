@@ -6,23 +6,30 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-import { X, Star, ChevronUp, ChevronDown, Info, Plane, Map, Clock, Calendar, Navigation, Wind, ArrowUpRight } from 'lucide-react';
+import { 
+  X, Star, ChevronUp, ChevronDown, Info, Plane, Map, Clock, Calendar, 
+  Navigation, Wind, ArrowUpRight, Wifi, Target, BarChart, Ruler, 
+  Circle, Heart, AlertCircle, CheckCircle, RefreshCw, BookOpen
+} from 'lucide-react';
 
 interface FlightDetailPanelProps {
   flight: LiveFlight | null;
   onClose: () => void;
   isPinned?: boolean;
   onTogglePin?: () => void;
+  isDarkMode?: boolean;
 }
 
 export default function FlightDetailPanel({ 
   flight, 
   onClose,
   isPinned = false,
-  onTogglePin
+  onTogglePin,
+  isDarkMode = false
 }: FlightDetailPanelProps) {
   const [aircraftDetails, setAircraftDetails] = React.useState<Aircraft | null>(null);
   const [loading, setLoading] = React.useState(false);
+  const [isFavorite, setIsFavorite] = React.useState(false);
 
   React.useEffect(() => {
     if (flight?.registration) {
@@ -63,292 +70,530 @@ export default function FlightDetailPanel({
 
   // Format speed
   const formatSpeed = (speed: number) => {
-    return `${speed} mph`;
+    return `${speed} kts`;
   };
 
-  // Status color map
-  const statusColorMap = {
-    scheduled: 'aviation-status aviation-status-scheduled',
-    active: 'aviation-status aviation-status-active',
-    landed: 'aviation-status aviation-status-landed',
-    cancelled: 'aviation-status aviation-status-cancelled',
-    diverted: 'aviation-status aviation-status-delayed',
-    delayed: 'bg-amber-100 text-amber-800'
+  // Status mapping
+  const statusInfo = {
+    scheduled: {
+      color: isDarkMode ? 'bg-[#f59e0b]/20 text-[#f59e0b]' : 'bg-[#f59e0b]/10 text-[#f59e0b]',
+      icon: <Clock className="h-3.5 w-3.5 mr-1.5" />,
+      label: 'Scheduled'
+    },
+    active: {
+      color: isDarkMode ? 'bg-[#22c55e]/20 text-[#22c55e]' : 'bg-[#22c55e]/10 text-[#22c55e]',
+      icon: <Wifi className="h-3.5 w-3.5 mr-1.5" />,
+      label: 'In Flight'
+    },
+    landed: {
+      color: isDarkMode ? 'bg-[#3b82f6]/20 text-[#3b82f6]' : 'bg-[#3b82f6]/10 text-[#3b82f6]',
+      icon: <CheckCircle className="h-3.5 w-3.5 mr-1.5" />,
+      label: 'Landed'
+    },
+    cancelled: {
+      color: isDarkMode ? 'bg-[#f43f5e]/20 text-[#f43f5e]' : 'bg-[#f43f5e]/10 text-[#f43f5e]',
+      icon: <X className="h-3.5 w-3.5 mr-1.5" />,
+      label: 'Cancelled'
+    },
+    diverted: {
+      color: isDarkMode ? 'bg-[#8b5cf6]/20 text-[#8b5cf6]' : 'bg-[#8b5cf6]/10 text-[#8b5cf6]',
+      icon: <RefreshCw className="h-3.5 w-3.5 mr-1.5" />,
+      label: 'Diverted'
+    },
+    delayed: {
+      color: isDarkMode ? 'bg-[#ef4444]/20 text-[#ef4444]' : 'bg-[#ef4444]/10 text-[#ef4444]',
+      icon: <AlertCircle className="h-3.5 w-3.5 mr-1.5" />,
+      label: 'Delayed'
+    }
   };
+
+  // Get status display
+  const statusDisplay = statusInfo[flight.status] || statusInfo.scheduled;
 
   return (
     <div 
-      className={`fixed bottom-0 left-0 right-0 bg-white shadow-lg z-[1000] transition-all duration-300 aviation-card ${
-        isPinned ? 'h-[60vh]' : 'h-[300px]'
-      }`}
+      className={`
+        fixed bottom-0 left-0 right-0 z-[1000] transition-all duration-300
+        ${isPinned ? 'h-[60vh]' : 'h-[300px]'}
+        ${isDarkMode 
+          ? 'bg-[#002b4c] border-t border-[#4995fd]/30 shadow-2xl' 
+          : 'bg-white border-t border-[#4995fd]/10 shadow-xl'
+        }
+      `}
       style={{
-        borderRadius: '12px 12px 0 0',
-        borderTop: '3px solid var(--aviation-blue-light)',
-        boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.1)'
+        borderRadius: '16px 16px 0 0',
+        boxShadow: isDarkMode 
+          ? '0 -8px 30px rgba(0, 26, 50, 0.5), 0 0 1px rgba(73, 149, 253, 0.3)' 
+          : '0 -4px 20px rgba(10, 73, 149, 0.15), 0 0 1px rgba(73, 149, 253, 0.2)'
       }}
     >
-      <div className="flex justify-between items-center p-4 border-b"
-           style={{ background: 'linear-gradient(to right, rgba(10, 73, 149, 0.03), rgba(85, 255, 221, 0.05))' }}>
+      {/* Header */}
+      <div 
+        className={`
+          flex justify-between items-center p-4 border-b relative
+          ${isDarkMode 
+            ? 'border-[#4995fd]/20 bg-gradient-to-r from-[#002b4c] to-[#003a65]/80' 
+            : 'border-[#4995fd]/10 bg-gradient-to-r from-white to-[#f8fcff]'
+          }
+        `}
+      >
+        {/* Colored top border line */}
+        <div 
+          className="absolute top-0 left-0 right-0 h-1.5 rounded-t-2xl" 
+          style={{ 
+            background: 'linear-gradient(to right, #003a65, #4995fd)',
+            boxShadow: '0 1px 8px rgba(73, 149, 253, 0.3)'
+          }}
+        />
+        
         <div className="flex items-center">
-          <div className="mr-3">
+          <div className="mr-3 relative">
             <div 
-              className="h-10 w-10 rounded-full flex items-center justify-center overflow-hidden"
+              className="h-11 w-11 rounded-xl flex items-center justify-center overflow-hidden relative"
               style={{ 
-                background: 'var(--aviation-gradient)',
-                boxShadow: '0 3px 6px rgba(10, 73, 149, 0.2)'
+                background: 'linear-gradient(135deg, #003a65, #4995fd)',
+                boxShadow: isDarkMode 
+                  ? '0 3px 12px rgba(73, 149, 253, 0.3)' 
+                  : '0 3px 8px rgba(73, 149, 253, 0.25)'
               }}
             >
-              <Plane className="h-5 w-5 text-white transform rotate-45" />
+              <div className="absolute inset-0 bg-[#4995fd]/20"></div>
+              <Plane className="h-5 w-5 text-white transform rotate-45 relative z-10" />
+              
+              {/* Animated contrail effect */}
+              <div className="absolute h-1 w-6 bg-white/60 rounded-full -bottom-0.5 -left-2 transform rotate-45"></div>
             </div>
+            
+            {/* Status indicator dot */}
+            <div 
+              className={`
+                absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2
+                ${isDarkMode ? 'border-[#002b4c]' : 'border-white'}
+                ${flight.status === 'active' 
+                  ? 'bg-[#22c55e] animate-pulse' 
+                  : flight.status === 'scheduled' 
+                    ? 'bg-[#f59e0b]' 
+                    : flight.status === 'landed' 
+                      ? 'bg-[#3b82f6]' 
+                      : 'bg-[#ef4444]'
+                }
+              `}
+            />
           </div>
+          
           <div>
             <h3 
-              className="font-semibold text-transparent bg-clip-text"
-              style={{ backgroundImage: 'linear-gradient(90deg, var(--aviation-blue-dark), var(--aviation-blue-medium))' }}
+              className={`font-bold text-base ${isDarkMode ? 'text-white' : 'text-[#003a65]'}`}
             >
-              {flight.callsign || flight.flightNumber || 'Unknown Flight'}
+              <span className="bg-gradient-to-r from-[#003a65] to-[#4995fd] bg-clip-text text-transparent">
+                {flight.callsign || flight.flightNumber || 'Unknown Flight'}
+              </span>
             </h3>
-            <p className="text-sm text-neutral-500 flex items-center">
-              {flight.airline?.name || 'Unknown Airline'}
+            <div className="flex items-center">
+              <p className={`text-sm ${isDarkMode ? 'text-[#a0d0ec]/80' : 'text-[#003a65]/70'}`}>
+                {flight.airline?.name || 'Unknown Airline'}
+              </p>
               {flight.status === 'active' && (
                 <span 
-                  className="ml-2 inline-block px-1.5 py-0.5 text-[10px] rounded-sm text-white font-semibold animate-pulse"
-                  style={{ backgroundColor: 'var(--aviation-blue-accent)' }}
+                  className={`
+                    ml-2 inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] rounded-sm font-medium
+                    ${isDarkMode ? 'bg-[#22c55e]/20 text-[#22c55e]' : 'bg-[#22c55e]/10 text-[#22c55e]'}
+                  `}
                 >
+                  <span className="relative flex h-1.5 w-1.5 mr-0.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#22c55e]"></span>
+                  </span>
                   LIVE
                 </span>
               )}
-            </p>
+            </div>
           </div>
         </div>
+        
         <div className="flex items-center">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setIsFavorite(!isFavorite)}
+            className={`
+              h-8 w-8 rounded-full
+              ${isDarkMode 
+                ? 'text-[#a0d0ec] hover:bg-[#003a65]/50' 
+                : 'text-[#003a65] hover:bg-[#4995fd]/10'
+              }
+              transition-all
+            `}
+          >
+            <Heart 
+              className={`h-[18px] w-[18px] ${isFavorite ? 'fill-[#4995fd] text-[#4995fd]' : ''}`}
+            />
+          </Button>
+          
           {onTogglePin && (
             <Button 
               variant="ghost" 
               size="icon" 
               onClick={onTogglePin}
-              className="aviation-icon-btn ml-2"
-              style={{ width: "32px", height: "32px" }}
+              className={`
+                h-8 w-8 rounded-full ml-1
+                ${isDarkMode 
+                  ? 'text-[#a0d0ec] hover:bg-[#003a65]/50' 
+                  : 'text-[#003a65] hover:bg-[#4995fd]/10'
+                }
+                transition-all
+              `}
             >
               {isPinned ? 
-                <ChevronDown className="h-4 w-4" /> : 
-                <ChevronUp className="h-4 w-4" />
+                <ChevronDown className="h-[18px] w-[18px]" /> : 
+                <ChevronUp className="h-[18px] w-[18px]" />
               }
             </Button>
           )}
+          
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={onClose}
-            className="aviation-icon-btn ml-2"
-            style={{ width: "32px", height: "32px" }}
+            className={`
+              h-8 w-8 rounded-full ml-1
+              ${isDarkMode 
+                ? 'text-[#a0d0ec] hover:bg-[#003a65]/50' 
+                : 'text-[#003a65] hover:bg-[#4995fd]/10'
+              }
+              transition-all
+            `}
           >
-            <X className="h-4 w-4" />
+            <X className="h-[18px] w-[18px]" />
           </Button>
         </div>
       </div>
 
+      {/* Content */}
       <div className="overflow-auto h-[calc(100%-64px)]">
         <Tabs defaultValue="overview" className="w-full">
-          <div className="px-4 pt-3 sticky top-0 bg-white z-10">
+          <div className={`px-4 pt-3 sticky top-0 z-10 ${isDarkMode ? 'bg-[#002b4c]' : 'bg-white'}`}>
             <TabsList 
-              className="grid w-full grid-cols-3 p-1 aviation-tabs"
-              style={{ 
-                background: 'rgba(10, 73, 149, 0.05)',
-                borderRadius: '10px',
-                border: '1px solid rgba(85, 255, 221, 0.15)'
-              }}
+              className={`
+                grid w-full grid-cols-3 p-1 
+                ${isDarkMode 
+                  ? 'bg-[#003a65]/50' 
+                  : 'bg-[#4995fd]/5'
+                }
+                rounded-lg
+              `}
             >
               <TabsTrigger 
                 value="overview"
-                className="data-[state=active]:aviation-tab-active aviation-tab"
+                className={`
+                  flex items-center text-xs py-1.5
+                  data-[state=active]:shadow-sm
+                  ${isDarkMode
+                    ? 'data-[state=active]:bg-[#4995fd] data-[state=active]:text-white text-[#a0d0ec]'
+                    : 'data-[state=active]:bg-[#4995fd] data-[state=active]:text-white text-[#003a65]'
+                  }
+                `}
               >
-                <Info className="h-4 w-4 mr-2" />
+                <Info className="h-3.5 w-3.5 mr-1.5" />
                 Overview
               </TabsTrigger>
               <TabsTrigger 
                 value="route"
-                className="data-[state=active]:aviation-tab-active aviation-tab"
+                className={`
+                  flex items-center text-xs py-1.5
+                  data-[state=active]:shadow-sm
+                  ${isDarkMode
+                    ? 'data-[state=active]:bg-[#4995fd] data-[state=active]:text-white text-[#a0d0ec]'
+                    : 'data-[state=active]:bg-[#4995fd] data-[state=active]:text-white text-[#003a65]'
+                  }
+                `}
               >
-                <Map className="h-4 w-4 mr-2" />
+                <Map className="h-3.5 w-3.5 mr-1.5" />
                 Route
               </TabsTrigger>
               <TabsTrigger 
                 value="aircraft"
-                className="data-[state=active]:aviation-tab-active aviation-tab"
+                className={`
+                  flex items-center text-xs py-1.5
+                  data-[state=active]:shadow-sm
+                  ${isDarkMode
+                    ? 'data-[state=active]:bg-[#4995fd] data-[state=active]:text-white text-[#a0d0ec]'
+                    : 'data-[state=active]:bg-[#4995fd] data-[state=active]:text-white text-[#003a65]'
+                  }
+                `}
               >
-                <Plane className="h-4 w-4 mr-2" />
+                <Plane className="h-3.5 w-3.5 mr-1.5" />
                 Aircraft
               </TabsTrigger>
             </TabsList>
           </div>
           
-          <TabsContent value="overview" className="pt-2">
+          <TabsContent value="overview" className="pt-2 pb-6">
             <div className="p-4">
+              {/* Status and squawk section */}
               <div className="flex items-center justify-between mb-4">
                 <Badge 
-                  className={`py-1 px-3 text-sm ${statusColorMap[flight.status] || 'bg-gray-100 text-gray-800'}`}
-                  style={{ borderRadius: '4px' }}
+                  className={`
+                    py-1 px-3 font-medium text-xs flex items-center
+                    ${statusDisplay.color}
+                    ${isDarkMode ? 'bg-opacity-20' : 'bg-opacity-10'}
+                  `}
                 >
-                  {flight.status === 'active' ? 'In Flight' : 
-                   flight.status.charAt(0).toUpperCase() + flight.status.slice(1)}
+                  {statusDisplay.icon}
+                  {statusDisplay.label}
                 </Badge>
                 
                 {flight.squawk && (
                   <div 
-                    className="text-xs font-mono font-semibold py-1 px-2 rounded-sm"
-                    style={{ background: 'rgba(10, 73, 149, 0.08)', color: '#0a4995' }}
+                    className={`
+                      text-xs font-mono font-medium py-1 px-2 rounded-sm flex items-center
+                      ${isDarkMode 
+                        ? 'bg-[#4995fd]/10 text-[#a0d0ec]' 
+                        : 'bg-[#4995fd]/5 text-[#0a4995]'
+                      }
+                    `}
                   >
-                    SQUAWK: {flight.squawk}
+                    <Target className="h-3 w-3 mr-1.5 opacity-80" />
+                    {flight.squawk}
                   </div>
                 )}
               </div>
 
+              {/* Flight route card */}
               <div 
-                className="p-4 rounded-md aviation-card mb-6"
-                style={{ 
-                  background: 'linear-gradient(to right, rgba(255,255,255,0.9), rgba(248,252,255,0.9))',
-                  border: '1px solid rgba(10, 73, 149, 0.1)'
-                }}
+                className={`
+                  p-4 rounded-lg mb-6
+                  ${isDarkMode
+                    ? 'bg-[#003a65]/50 border border-[#4995fd]/20'
+                    : 'bg-white border border-[#4995fd]/10 shadow-sm'
+                  }
+                `}
               >
                 <div className="flex items-center justify-between mb-5 relative">
                   <div className="text-center flex-1">
                     <div 
-                      className="text-2xl font-bold bg-clip-text text-transparent"
-                      style={{ backgroundImage: 'linear-gradient(90deg, var(--aviation-blue-dark), var(--aviation-blue-medium))' }}
+                      className={`
+                        text-2xl font-bold 
+                        ${isDarkMode ? 'text-white' : 'text-[#003a65]'}
+                      `}
                     >
                       {flight.departure?.icao || 'N/A'}
                     </div>
-                    <div className="text-sm text-neutral-600 font-medium truncate max-w-[120px] mx-auto">
+                    <div className={`
+                      text-sm font-medium truncate max-w-[120px] mx-auto
+                      ${isDarkMode ? 'text-[#a0d0ec]/70' : 'text-[#003a65]/70'}
+                    `}>
                       {formatTime(flight.departure?.time)}
                     </div>
                   </div>
                   
+                  {/* Progress indicator */}
                   <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 flex flex-col items-center">
-                    <div className="text-xs font-medium text-[#0a4995] mb-1">{flightProgress}%</div>
+                    <div className={`text-xs font-medium ${isDarkMode ? 'text-[#a0d0ec]' : 'text-[#0a4995]'} mb-1`}>
+                      {flightProgress}%
+                    </div>
                     <div 
-                      className="w-8 h-8 rounded-full flex items-center justify-center mb-1"
+                      className="w-8 h-8 rounded-full flex items-center justify-center mb-1 relative"
                       style={{ 
-                        background: 'linear-gradient(135deg, var(--aviation-blue-dark), var(--aviation-blue-light))',
-                        boxShadow: '0 2px 8px rgba(10, 73, 149, 0.3)'
+                        background: 'linear-gradient(135deg, #003a65, #4995fd)',
+                        boxShadow: isDarkMode 
+                          ? '0 2px 10px rgba(73, 149, 253, 0.4)' 
+                          : '0 2px 8px rgba(10, 73, 149, 0.3)'
                       }}
                     >
-                      <Plane className="h-4 w-4 text-white transform rotate-45" />
+                      <div className="absolute inset-0 rounded-full bg-[#4995fd]/20"></div>
+                      <Plane className="h-4 w-4 text-white transform rotate-45 relative z-10" />
                     </div>
                   </div>
                   
                   <div className="text-center flex-1">
                     <div 
-                      className="text-2xl font-bold bg-clip-text text-transparent"
-                      style={{ backgroundImage: 'linear-gradient(90deg, var(--aviation-blue-medium), var(--aviation-blue-light))' }}
+                      className={`
+                        text-2xl font-bold 
+                        ${isDarkMode ? 'text-white' : 'text-[#003a65]'}
+                      `}
                     >
                       {flight.arrival?.icao || 'N/A'}
                     </div>
-                    <div className="text-sm text-neutral-600 font-medium truncate max-w-[120px] mx-auto">
+                    <div className={`
+                      text-sm font-medium truncate max-w-[120px] mx-auto
+                      ${isDarkMode ? 'text-[#a0d0ec]/70' : 'text-[#003a65]/70'}
+                    `}>
                       {formatTime(flight.arrival?.time)}
                     </div>
                   </div>
                 </div>
                 
-                <div className="relative h-3 bg-white rounded-full my-4 overflow-hidden border border-[#5fd]/20">
+                {/* Progress bar */}
+                <div className={`
+                  relative h-2 rounded-full my-4 overflow-hidden
+                  ${isDarkMode ? 'bg-[#002b4c]' : 'bg-[#f5f9ff]'}
+                  ${isDarkMode ? 'border border-[#4995fd]/10' : 'border border-[#4995fd]/5'}
+                `}>
+                  {/* Progress fill */}
                   <div 
                     className="absolute top-0 left-0 h-full rounded-full" 
                     style={{ 
                       width: `${flightProgress}%`,
-                      background: 'linear-gradient(to right, var(--aviation-blue-dark), var(--aviation-blue-light))'
+                      background: 'linear-gradient(to right, #003a65, #4995fd)'
                     }}
                   />
+                  
+                  {/* Plane marker */}
                   <div 
-                    className="absolute -top-1.5 h-6 w-6 rounded-full border-2 border-white shadow-md flex items-center justify-center" 
+                    className={`
+                      absolute -top-2 h-6 w-6 rounded-full border-2 flex items-center justify-center
+                      ${isDarkMode ? 'border-[#002b4c]' : 'border-white'}
+                    `}
                     style={{ 
                       left: `${flightProgress}%`, 
                       transform: 'translateX(-50%)',
-                      background: 'var(--aviation-blue-medium)'
+                      background: 'linear-gradient(to bottom right, #4995fd, #003a65)',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                     }} 
                   >
-                    <Plane className="h-3 w-3 text-white transform rotate-45" />
+                    <Plane className="h-2.5 w-2.5 text-white transform rotate-45" />
                   </div>
                 </div>
                 
-                <div className="flex justify-between items-center text-xs">
-                  <div className="text-center">
-                    <div className="font-medium text-neutral-700">Departure</div>
-                    <div className="text-[#0a4995] font-semibold">
+                {/* Airport names */}
+                <div className="flex justify-between items-center text-xs mt-6">
+                  <div className="text-left max-w-[45%]">
+                    <div className={`font-medium ${isDarkMode ? 'text-[#a0d0ec]/70' : 'text-[#003a65]/70'}`}>
+                      Departure
+                    </div>
+                    <div className={`font-semibold truncate ${isDarkMode ? 'text-white' : 'text-[#0a4995]'}`}>
                       {flight.departure?.name || flight.departure?.icao || 'N/A'}
                     </div>
                   </div>
-                  <div className="text-center">
-                    <div className="font-medium text-neutral-700">Arrival</div>
-                    <div className="text-[#0a4995] font-semibold">
+                  <div className="text-right max-w-[45%]">
+                    <div className={`font-medium ${isDarkMode ? 'text-[#a0d0ec]/70' : 'text-[#003a65]/70'}`}>
+                      Arrival
+                    </div>
+                    <div className={`font-semibold truncate ${isDarkMode ? 'text-white' : 'text-[#0a4995]'}`}>
                       {flight.arrival?.name || flight.arrival?.icao || 'N/A'}
                     </div>
                   </div>
                 </div>
               </div>
 
+              {/* Flight parameters grid */}
               <div 
-                className="p-4 rounded-md aviation-card"
-                style={{ 
-                  background: 'linear-gradient(to right, rgba(255,255,255,0.9), rgba(248,252,255,0.9))',
-                  border: '1px solid rgba(10, 73, 149, 0.1)'
-                }}
+                className={`
+                  p-4 rounded-lg
+                  ${isDarkMode
+                    ? 'bg-[#003a65]/50 border border-[#4995fd]/20'
+                    : 'bg-white border border-[#4995fd]/10 shadow-sm'
+                  }
+                `}
               >
                 <h4 
-                  className="text-sm font-semibold mb-4 pb-2 border-b"
-                  style={{ borderColor: 'rgba(10, 73, 149, 0.1)' }}
+                  className={`
+                    text-sm font-semibold mb-4 pb-2 border-b
+                    ${isDarkMode 
+                      ? 'text-white border-[#4995fd]/20' 
+                      : 'text-[#003a65] border-[#4995fd]/10'
+                    }
+                  `}
                 >
                   Flight Parameters
                 </h4>
                 <div className="grid grid-cols-2 gap-5">
+                  {/* Heading */}
                   <div className="flex items-start">
                     <div 
-                      className="w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0"
-                      style={{ background: 'var(--aviation-gradient)' }}
+                      className="w-9 h-9 rounded-lg flex items-center justify-center mr-3 flex-shrink-0"
+                      style={{ 
+                        background: isDarkMode 
+                          ? 'linear-gradient(135deg, #003a65, #0a4995)' 
+                          : 'linear-gradient(135deg, #0a4995, #4995fd)',
+                        boxShadow: isDarkMode 
+                          ? '0 2px 8px rgba(10, 73, 149, 0.3)' 
+                          : '0 2px 6px rgba(10, 73, 149, 0.2)'
+                      }}
                     >
                       <Navigation className="h-4 w-4 text-white" />
                     </div>
                     <div>
-                      <div className="text-xs uppercase text-neutral-500 font-medium">Heading</div>
-                      <div className="text-lg font-semibold text-neutral-800">{flight.position.heading}°</div>
+                      <div className={`text-xs uppercase font-medium ${isDarkMode ? 'text-[#a0d0ec]/70' : 'text-[#003a65]/70'}`}>
+                        Heading
+                      </div>
+                      <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-[#003a65]'}`}>
+                        {flight.position.heading}°
+                      </div>
                     </div>
                   </div>
                   
+                  {/* Altitude */}
                   <div className="flex items-start">
                     <div 
-                      className="w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0"
-                      style={{ background: 'var(--aviation-gradient)' }}
+                      className="w-9 h-9 rounded-lg flex items-center justify-center mr-3 flex-shrink-0"
+                      style={{ 
+                        background: isDarkMode 
+                          ? 'linear-gradient(135deg, #003a65, #0a4995)' 
+                          : 'linear-gradient(135deg, #0a4995, #4995fd)',
+                        boxShadow: isDarkMode 
+                          ? '0 2px 8px rgba(10, 73, 149, 0.3)' 
+                          : '0 2px 6px rgba(10, 73, 149, 0.2)'
+                      }}
                     >
                       <Plane className="h-4 w-4 text-white" />
                     </div>
                     <div>
-                      <div className="text-xs uppercase text-neutral-500 font-medium">Altitude</div>
-                      <div className="text-lg font-semibold text-neutral-800">{formatAltitude(flight.position.altitude)}</div>
+                      <div className={`text-xs uppercase font-medium ${isDarkMode ? 'text-[#a0d0ec]/70' : 'text-[#003a65]/70'}`}>
+                        Altitude
+                      </div>
+                      <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-[#003a65]'}`}>
+                        {formatAltitude(flight.position.altitude)}
+                      </div>
                     </div>
                   </div>
                   
+                  {/* Ground Speed */}
                   <div className="flex items-start">
                     <div 
-                      className="w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0"
-                      style={{ background: 'var(--aviation-gradient)' }}
+                      className="w-9 h-9 rounded-lg flex items-center justify-center mr-3 flex-shrink-0"
+                      style={{ 
+                        background: isDarkMode 
+                          ? 'linear-gradient(135deg, #003a65, #0a4995)' 
+                          : 'linear-gradient(135deg, #0a4995, #4995fd)',
+                        boxShadow: isDarkMode 
+                          ? '0 2px 8px rgba(10, 73, 149, 0.3)' 
+                          : '0 2px 6px rgba(10, 73, 149, 0.2)'
+                      }}
                     >
                       <Wind className="h-4 w-4 text-white" />
                     </div>
                     <div>
-                      <div className="text-xs uppercase text-neutral-500 font-medium">Ground Speed</div>
-                      <div className="text-lg font-semibold text-neutral-800">{formatSpeed(flight.position.groundSpeed)}</div>
+                      <div className={`text-xs uppercase font-medium ${isDarkMode ? 'text-[#a0d0ec]/70' : 'text-[#003a65]/70'}`}>
+                        Ground Speed
+                      </div>
+                      <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-[#003a65]'}`}>
+                        {formatSpeed(flight.position.groundSpeed)}
+                      </div>
                     </div>
                   </div>
                   
+                  {/* Vertical Speed */}
                   <div className="flex items-start">
                     <div 
-                      className="w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0"
-                      style={{ background: 'var(--aviation-gradient)' }}
+                      className="w-9 h-9 rounded-lg flex items-center justify-center mr-3 flex-shrink-0"
+                      style={{ 
+                        background: isDarkMode 
+                          ? 'linear-gradient(135deg, #003a65, #0a4995)' 
+                          : 'linear-gradient(135deg, #0a4995, #4995fd)',
+                        boxShadow: isDarkMode 
+                          ? '0 2px 8px rgba(10, 73, 149, 0.3)' 
+                          : '0 2px 6px rgba(10, 73, 149, 0.2)'
+                      }}
                     >
                       <ArrowUpRight className="h-4 w-4 text-white" />
                     </div>
                     <div>
-                      <div className="text-xs uppercase text-neutral-500 font-medium">Vertical Speed</div>
-                      <div className="text-lg font-semibold text-neutral-800">
+                      <div className={`text-xs uppercase font-medium ${isDarkMode ? 'text-[#a0d0ec]/70' : 'text-[#003a65]/70'}`}>
+                        Vertical Speed
+                      </div>
+                      <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-[#003a65]'}`}>
                         {flight.position.verticalSpeed 
                           ? `${flight.position.verticalSpeed > 0 ? '+' : ''}${flight.position.verticalSpeed} ft/min` 
                           : 'Level'}
@@ -360,16 +605,21 @@ export default function FlightDetailPanel({
             </div>
           </TabsContent>
           
-          <TabsContent value="route" className="pt-2">
+          <TabsContent value="route" className="pt-2 pb-6">
             <div className="p-4">
+              {/* Route info */}
               <div className="mb-4">
-                <h4 className="font-medium text-sm text-neutral-500 mb-1">Flight Path</h4>
+                <h4 className={`font-medium text-sm mb-2 ${isDarkMode ? 'text-[#a0d0ec]' : 'text-[#003a65]/70'}`}>
+                  Flight Path
+                </h4>
                 <div 
-                  className="p-4 rounded-md aviation-card"
-                  style={{ 
-                    background: 'linear-gradient(to right, rgba(255,255,255,0.9), rgba(248,252,255,0.9))',
-                    border: '1px solid rgba(10, 73, 149, 0.1)'
-                  }}
+                  className={`
+                    p-4 rounded-lg
+                    ${isDarkMode
+                      ? 'bg-[#003a65]/50 border border-[#4995fd]/20'
+                      : 'bg-white border border-[#4995fd]/10 shadow-sm'
+                    }
+                  `}
                 >
                   <div className="flex justify-between items-center mb-4 relative">
                     <div className="text-center flex-1">

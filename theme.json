@@ -20,16 +20,42 @@
       "cancelled": "#f43f5e",
       "diverted": "#8b5cf6"
     },
+    "aviation": {
+      "altitude": {
+        "high": "#003a65",
+        "medium": "#4995fd",
+        "low": "#a0d0ec"
+      },
+      "weather": {
+        "clear": "#22c55e",
+        "clouds": "#94a3b8",
+        "rain": "#60a5fa",
+        "storm": "#8b5cf6",
+        "snow": "#e2e8f0",
+        "fog": "#cbd5e1"
+      },
+      "airports": {
+        "international": "#4995fd",
+        "domestic": "#a0d0ec",
+        "regional": "#93c5fd"
+      }
+    },
     "gradients": {
       "primary": "linear-gradient(135deg, #003a65, #0a4995)",
       "accent": "linear-gradient(to right, #4995fd, #6ec0e9)",
       "light": "linear-gradient(135deg, #0a4995, #4995fd)",
-      "sky": "linear-gradient(to bottom, #a0d0ec, #6ec0e9)"
+      "sky": "linear-gradient(to bottom, #a0d0ec, #6ec0e9)",
+      "altitude": "linear-gradient(to top, #a0d0ec, #4995fd, #003a65)",
+      "horizon": "linear-gradient(to bottom, #003a65 0%, #4995fd 45%, #a0d0ec 100%)",
+      "cockpit": "linear-gradient(135deg, #003a65 0%, #0a4995 35%, #4995fd 100%)"
     },
     "effects": {
       "glowSmall": "0 0 8px rgba(73, 149, 253, 0.3)",
       "glowMedium": "0 0 15px rgba(73, 149, 253, 0.5)",
-      "glowLarge": "0 0 25px rgba(73, 149, 253, 0.7)"
+      "glowLarge": "0 0 25px rgba(73, 149, 253, 0.7)",
+      "insetSmall": "inset 0 1px 3px rgba(0, 58, 101, 0.2)",
+      "flightPath": "0 0 0 2px rgba(73, 149, 253, 0.25), 0 0 10px rgba(73, 149, 253, 0.3)",
+      "runwayLight": "0 0 5px rgba(160, 208, 236, 0.7), 0 0 15px rgba(73, 149, 253, 0.5)"
     }
   }
 }
