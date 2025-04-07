@@ -248,25 +248,46 @@ export default function Home() {
         {/* Keyboard shortcuts help button */}
         <div className="fixed bottom-4 left-4 z-50">
           <Button 
-            variant="outline" 
-            className="bg-white/80 backdrop-blur-sm"
+            style={{ 
+              background: isDarkMode 
+                ? 'linear-gradient(135deg, rgba(10, 73, 149, 0.8), rgba(36, 96, 167, 0.8))' 
+                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(230, 247, 255, 0.9))',
+              borderWidth: '1px',
+              borderColor: isDarkMode ? 'var(--aviation-blue-accent)' : 'rgba(85, 255, 221, 0.3)',
+              color: isDarkMode ? '#e6f7ff' : 'var(--aviation-blue-dark)',
+              boxShadow: '0 3px 8px rgba(10, 73, 149, 0.2)',
+              backdropFilter: 'blur(8px)'
+            }}
+            className="rounded-full px-4 py-2 font-medium text-sm transition-all hover:-translate-y-1"
             onClick={() => 
               toast({
                 title: 'Keyboard Shortcuts',
                 description: (
-                  <ul className="text-sm mt-2 space-y-1">
-                    <li>ESC - Close flight details</li>
-                    <li>F - Add/remove flight from favorites</li>
-                    <li>P - Pin/unpin flight details</li>
-                    <li>Ctrl+D - Toggle dark mode</li>
+                  <ul className="text-sm mt-2 space-y-2">
+                    <li className="flex items-center">
+                      <span className="inline-block mr-2 p-1 rounded text-xs bg-black/10 dark:bg-white/10">ESC</span>
+                      <span>Close flight details</span>
+                    </li>
+                    <li className="flex items-center">
+                      <span className="inline-block mr-2 p-1 rounded text-xs bg-black/10 dark:bg-white/10">F</span>
+                      <span>Add/remove flight from favorites</span>
+                    </li>
+                    <li className="flex items-center">
+                      <span className="inline-block mr-2 p-1 rounded text-xs bg-black/10 dark:bg-white/10">P</span>
+                      <span>Pin/unpin flight details</span>
+                    </li>
+                    <li className="flex items-center">
+                      <span className="inline-block mr-2 p-1 rounded text-xs bg-black/10 dark:bg-white/10">Ctrl+D</span>
+                      <span>Toggle dark mode</span>
+                    </li>
                   </ul>
                 ),
-                duration: 5000,
+                duration: 6000,
               })
             }
           >
-            <span className="material-icons mr-1 text-sm">keyboard</span>
-            Shortcuts
+            <span className="material-icons mr-2 text-sm">keyboard</span>
+            Keyboard Shortcuts
           </Button>
         </div>
       </div>

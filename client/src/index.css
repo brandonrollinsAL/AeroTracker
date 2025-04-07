@@ -51,18 +51,32 @@
 
 /* Aviation Blues Color Palette */
 :root {
+  /* Core aviation blues */
   --aviation-blue-dark: #0a4995;    /* Deep aviation blue */
   --aviation-blue-medium: #2460a7;  /* Medium aviation blue */
   --aviation-blue-light: #55ffdd;   /* Light cyan blue */
   --aviation-blue-accent: #449999;  /* Accent blue */
   --aviation-blue-ultra-light: #e6f7ff; /* Ultra light blue for backgrounds */
+  
+  /* Extended aviation color palette */
+  --aviation-sky-blue: #89cff0;     /* Sky blue */
+  --aviation-navy: #001f3f;         /* Navy blue for night flights */
+  --aviation-highlight: #56ccf2;    /* Highlight blue for selections */
+  --aviation-alert: #ff5a5f;        /* Alert red for warnings */
+  --aviation-success: #00c07f;      /* Success green for confirmations */
+  
+  /* Gradients */
   --aviation-gradient: linear-gradient(135deg, var(--aviation-blue-dark), var(--aviation-blue-medium));
   --aviation-gradient-light: linear-gradient(135deg, var(--aviation-blue-medium), var(--aviation-blue-light));
   --aviation-gradient-accent: linear-gradient(135deg, var(--aviation-blue-dark), var(--aviation-blue-accent));
+  --aviation-gradient-sky: linear-gradient(135deg, var(--aviation-blue-light), var(--aviation-sky-blue));
+  --aviation-gradient-alert: linear-gradient(135deg, var(--aviation-alert), #ff8c8f);
   
   /* Dark mode aviation colors */
   --aviation-dark-blue: #05274d;    /* Darker blue for dark mode */
   --aviation-dark-accent: #2d7987;  /* Darker accent for dark mode */
+  --aviation-dark-gradient: linear-gradient(135deg, var(--aviation-dark-blue), var(--aviation-dark-accent));
+  --aviation-dark-highlight: rgba(85, 255, 221, 0.2); /* Subtle highlight for dark mode */
 }
 
 /* Material icons */ 
@@ -97,29 +111,73 @@
   background: var(--aviation-gradient);
   color: white;
   border: none;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  border-radius: 30px; /* More rounded buttons */
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 4px 10px rgba(10, 73, 149, 0.25);
+  padding: 0.5rem 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.aviation-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
 }
 
 .aviation-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(10, 73, 149, 0.35);
+  background: linear-gradient(135deg, var(--aviation-blue-dark), var(--aviation-blue-light));
+}
+
+.aviation-btn:hover::before {
+  transform: translateX(100%);
+}
+
+.aviation-btn:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(10, 73, 149, 0.2);
+}
+
+.dark .aviation-btn {
+  background: var(--aviation-dark-gradient);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.dark .aviation-btn:hover {
+  background: linear-gradient(135deg, var(--aviation-dark-blue), var(--aviation-blue-light));
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
 
 /* Card-style containers */
 .aviation-card {
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid rgba(10, 73, 149, 0.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 
+    0 6px 16px rgba(10, 73, 149, 0.1),
+    0 0 0 1px rgba(85, 255, 221, 0.05);
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
   overflow: hidden;
   position: relative;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .aviation-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 24px rgba(10, 73, 149, 0.15),
+    0 0 0 1px rgba(85, 255, 221, 0.1);
+  transform: translateY(-3px) scale(1.01);
 }
 
 .aviation-card::before {
@@ -128,66 +186,212 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 3px;
+  height: 4px;
   background: var(--aviation-gradient-light);
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.4s ease;
 }
 
 .aviation-card:hover::before {
   opacity: 1;
 }
 
+.aviation-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle at bottom right, var(--aviation-blue-light), transparent 70%);
+  opacity: 0;
+  border-radius: 0 0 12px 0;
+  transition: opacity 0.4s ease;
+}
+
+.aviation-card:hover::after {
+  opacity: 0.5;
+}
+
 /* Dark mode card styles */
 .dark .aviation-card {
-  background: rgba(5, 39, 77, 0.7);
+  background: rgba(5, 39, 77, 0.85);
   border-color: rgba(45, 121, 135, 0.2);
+  box-shadow: 
+    0 6px 16px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(85, 255, 221, 0.05);
+}
+
+.dark .aviation-card:hover {
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(85, 255, 221, 0.15);
 }
 
 /* Accent elements */
 .accent-border {
-  border-left: 3px solid var(--aviation-blue-light);
-  padding-left: 12px;
+  border-left: 4px solid var(--aviation-blue-light);
+  padding-left: 14px;
   position: relative;
+  margin-left: 2px;
 }
 
 .accent-border::before {
   content: '';
   position: absolute;
-  left: -3px;
+  left: -4px;
   top: 0;
   bottom: 0;
-  width: 3px;
+  width: 4px;
   background: var(--aviation-gradient-light);
-  border-radius: 4px;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(85, 255, 221, 0.5);
+  animation: pulseAccent 3s infinite alternate;
+}
+
+@keyframes pulseAccent {
+  0% {
+    opacity: 0.7;
+    box-shadow: 0 0 5px rgba(85, 255, 221, 0.3);
+  }
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 15px rgba(85, 255, 221, 0.7);
+  }
+}
+
+.dark .accent-border::before {
+  animation: pulseAccentDark 3s infinite alternate;
+}
+
+@keyframes pulseAccentDark {
+  0% {
+    opacity: 0.6;
+    box-shadow: 0 0 8px rgba(85, 255, 221, 0.2);
+  }
+  100% {
+    opacity: 0.9;
+    box-shadow: 0 0 12px rgba(85, 255, 221, 0.5);
+  }
 }
 
 /* Data labels and values */
 .aviation-label {
   font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.7px;
   color: var(--aviation-blue-dark);
   font-weight: 600;
+  margin-bottom: 0.2rem;
+  display: block;
+  position: relative;
+  padding-left: 1px;
+}
+
+.aviation-label::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: 50%;
+  width: 0;
+  height: 0;
+  background: var(--aviation-blue-light);
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.aviation-value:hover + .aviation-label::before,
+.aviation-label:hover::before {
+  width: 4px;
+  height: 4px;
+  margin-top: -2px;
+  opacity: 1;
 }
 
 .aviation-value {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: #2a2a2a;
-  margin-top: 0.2rem;
+  margin-top: 0.1rem;
+  padding-bottom: 0.25rem;
+  position: relative;
+  display: inline-block;
+}
+
+.aviation-value::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--aviation-gradient-light);
+  transition: width 0.3s ease;
+}
+
+.aviation-value:hover::after {
+  width: 100%;
+}
+
+.dark .aviation-label {
+  color: var(--aviation-blue-light);
 }
 
 .dark .aviation-value {
   color: #f0f0f0;
 }
 
+/* Special value displays for numeric data */
+.aviation-value.numeric {
+  font-family: 'Roboto Mono', monospace, system-ui;
+  letter-spacing: 0.5px;
+  background: linear-gradient(to right, var(--aviation-blue-dark), var(--aviation-blue-medium));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 700;
+}
+
+.dark .aviation-value.numeric {
+  background: linear-gradient(to right, var(--aviation-blue-light), var(--aviation-sky-blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
 /* Custom styles for the flight map */
 .leaflet-container {
-  border: 2px solid white;
-  border-radius: 12px;
+  border: 1px solid white;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(10, 73, 149, 0.15);
+  box-shadow: 
+    0 10px 40px rgba(10, 73, 149, 0.15),
+    0 0 0 1px rgba(85, 255, 221, 0.1);
+  position: relative;
+}
+
+.leaflet-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--aviation-gradient-light);
+  z-index: 1000;
+  opacity: 0.8;
+}
+
+.leaflet-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--aviation-gradient);
+  z-index: 1000;
+  opacity: 0.8;
 }
 
 /* Flight path styles */
@@ -195,16 +399,32 @@
   stroke: var(--aviation-blue-medium);
   stroke-width: 3;
   stroke-linecap: round;
-  stroke-dasharray: 1, 8;
+  stroke-dasharray: 2, 8;
   stroke-opacity: 0.8;
-  animation: dash 30s linear infinite;
-  filter: drop-shadow(0 0 5px rgba(10, 73, 149, 0.5));
+  animation: dash 40s linear infinite;
+  filter: drop-shadow(0 0 6px rgba(10, 73, 149, 0.6));
 }
 
 @keyframes dash {
   to {
     stroke-dashoffset: 1000;
   }
+}
+
+.flight-path-active {
+  stroke: var(--aviation-blue-light);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 0;
+  stroke-opacity: 0.9;
+  filter: drop-shadow(0 0 8px rgba(85, 255, 221, 0.7));
+}
+
+.flight-path-historic {
+  stroke: var(--aviation-blue-accent);
+  stroke-width: 2;
+  stroke-opacity: 0.5;
+  stroke-dasharray: 2, 6;
 }
 
 /* Map controls */
@@ -215,67 +435,164 @@
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.map-controls::before {
+  content: '';
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  bottom: -15px;
+  left: -15px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-radius: 20px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.map-controls:hover::before {
+  opacity: 0.3;
 }
 
 .map-control-button {
-  background: white;
-  border: none;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(85, 255, 221, 0.2);
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--aviation-blue-dark);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(10, 73, 149, 0.15);
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.map-control-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(85, 255, 221, 0.2), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .map-control-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  background: var(--aviation-blue-ultra-light);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 15px rgba(10, 73, 149, 0.25);
+}
+
+.map-control-button:hover::before {
+  opacity: 1;
 }
 
 .map-control-button.active {
   background: var(--aviation-gradient);
   color: white;
+  box-shadow: 
+    0 4px 12px rgba(10, 73, 149, 0.3),
+    0 0 0 2px rgba(85, 255, 221, 0.4);
+}
+
+.map-control-button.active::before {
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3), transparent 70%);
+  opacity: 1;
 }
 
 /* Flight markers */
 .flight-marker {
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .flight-marker:hover {
   z-index: 1000 !important;
-  filter: drop-shadow(0 0 8px rgba(10, 73, 149, 0.7));
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 12px rgba(85, 255, 221, 0.8));
+}
+
+.flight-marker.selected {
+  z-index: 1100 !important;
+  filter: drop-shadow(0 0 15px rgba(85, 255, 221, 1));
+  animation: pulseMarker 2s infinite alternate;
+}
+
+@keyframes pulseMarker {
+  0% {
+    filter: drop-shadow(0 0 10px rgba(85, 255, 221, 0.7));
+  }
+  100% {
+    filter: drop-shadow(0 0 20px rgba(85, 255, 221, 1));
+  }
 }
 
 /* Popup styles */
 .leaflet-popup-content-wrapper {
-  border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(85, 255, 221, 0.1);
   overflow: hidden;
   padding: 0;
+  border: 1px solid rgba(85, 255, 221, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.leaflet-popup-tip {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--aviation-blue-light);
 }
 
 .leaflet-popup-content {
   margin: 0;
   padding: 0;
+  min-width: 200px;
 }
 
 .popup-header {
   background: var(--aviation-gradient);
   color: white;
-  padding: 10px 15px;
+  padding: 12px 16px;
   font-weight: bold;
+  position: relative;
+  overflow: hidden;
+}
+
+.popup-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 100%;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.2), transparent);
 }
 
 .popup-content {
-  padding: 15px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.dark .popup-content {
+  background: rgba(5, 39, 77, 0.95);
+  color: white;
+}
+
+.dark .leaflet-popup-tip {
+  background: var(--aviation-dark-blue);
+  border: 1px solid var(--aviation-dark-accent);
 }
 
 .dark .leaflet-container {
@@ -283,12 +600,21 @@
 }
 
 .dark .map-control-button {
-  background: var(--aviation-dark-blue);
-  color: white;
+  background: rgba(5, 39, 77, 0.9);
+  color: var(--aviation-blue-light);
+  border-color: var(--aviation-dark-accent);
 }
 
 .dark .map-control-button:hover {
-  background: var(--aviation-dark-accent);
+  background: var(--aviation-dark-blue);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.dark .map-control-button.active {
+  background: var(--aviation-dark-gradient);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    0 0 0 2px rgba(85, 255, 221, 0.2);
 }
 
 /* Custom scrollbar for flight list */
