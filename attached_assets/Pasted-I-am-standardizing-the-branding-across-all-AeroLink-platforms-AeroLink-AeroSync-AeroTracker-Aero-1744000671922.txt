@@ -1,0 +1,67 @@
+I am standardizing the branding across all AeroLink platforms (AeroLink, AeroSync, AeroTracker, AeroFlight) to ensure a uniform look and feel, aligning with AeroLink’s vision of becoming the number one aviation platform globally by 2030. Each platform must use the same color scheme to create a cohesive user experience while maintaining their existing functionality and features. Update the platform’s styling to apply the specified AeroLink color palette consistently across all UI elements, ensuring accessibility and a modern, aviation-themed design that surpasses industry standards like ForeFlight. Do not modify the platform’s functionality, features, or backend logic—focus solely on updating the design to reflect the uniform branding.
+
+AeroLink Platform Color Scheme
+Primary AeroLink Color: #4995fd (AeroLink Blue)
+Use for primary buttons, interactive elements (e.g., links, icons), flight routes on maps, and key highlights.
+Secondary Color: #003a65 (Deep Blue)
+Use for text (headers, body text), dark accents, and backgrounds for high-contrast elements (e.g., headers, footers).
+Third Color: #a0d0ec (Sky Light Blue)
+Use for backgrounds, secondary elements (e.g., cards, overlays), airspace overlays on maps, and subtle highlights.
+Branding and Design Requirements
+Apply the AeroLink color scheme consistently across all UI elements in the platform, ensuring a unified aviation-themed design that reflects the AeroLink brand identity. Specific requirements include:
+
+Global Styling:
+Update the global CSS file (e.g., /styles/global.css) to define the AeroLink color palette as CSS variables for easy reuse:
+--primary-color: #4995fd
+--secondary-color: #003a65
+--third-color: #a0d0ec
+Apply these variables to all UI elements to ensure consistency.
+Set the default background of the app to a sky-themed gradient transitioning from #a0d0ec (top) to #6ec0e9 (bottom), reflecting an aviation aesthetic.
+Typography:
+Use a clean, sans-serif font (e.g., Inter or Roboto) for all text, ensuring readability across devices.
+Set the default text color to #003a65 for headers, body text, and labels to ensure high contrast against #a0d0ec backgrounds.
+Ensure all text meets WCAG 2.1 AA contrast standards (4.5:1 ratio for text, 3:1 for UI elements).
+Use font sizes ranging from 14px (small text, e.g., captions) to 24px (headers, e.g., page titles) for readability.
+Headers and Navigation:
+Update all headers (e.g., page headers, navigation bars) to use a #4995fd background with white text for high visibility.
+Apply a subtle shadow (e.g., box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1)) to headers for depth.
+For navigation bars (e.g., sticky nav bar, Hamburger Menu), use #4995fd for the background, white text for menu items, and #a0d0ec for hover states with a 0.3-second fade transition.
+Ensure the Hamburger Menu (containing the "Groups" option for AeroSync) uses a community icon (from lucide-react) in white, with the label “Groups” in white text, and opens with a 0.3-second slide animation.
+Buttons and Interactive Elements:
+Style all primary buttons (e.g., "Create Group", "Log Flight", "Add to Cart") with a #4995fd background, white text, and a 0.3-second hover scale animation (e.g., scale up by 5%).
+Use #a0d0ec for secondary buttons (e.g., "Cancel", "View More") with #003a65 text, applying a 0.3-second fade animation on hover.
+Apply a 0.3-second button ripple effect (using framer-motion) on click for all interactive elements, using a lighter shade of #4995fd (e.g., #6ec0e9) for the ripple.
+Style links and icons (e.g., navigation icons, social interaction icons like likes/comments) with #4995fd, changing to #2f90d4 on hover with a 0.3-second transition.
+Cards and Containers:
+Update all cards (e.g., group cards, product cards, post cards, flight log cards) to use a #a0d0ec background, #003a65 text for titles/descriptions, and #4995fd for interactive elements (e.g., buttons, links).
+Apply a subtle border (e.g., border: 1px solid #6ec0e9) and a 0.3-second hover scale animation to cards for interactivity.
+Use glassmorphism effects for overlays (e.g., modals, sidebars) with a semi-transparent #a0d0ec background, blur effect, and #003a65 text, ensuring a 0.3-second fade animation when shown/hidden.
+Flight Map Specifics:
+On the flight map (used in AeroLink, AeroFlight), style flight routes with #4995fd (solid line, 3px width), airspace overlays with a semi-transparent #a0d0ec (50% opacity), and weather overlays with #6ec0e9.
+Use a pulsating plane icon (0.5-second pulse animation) in #4995fd for the user’s current position.
+Style the Flight Info Sidebar with a glassmorphism effect (semi-transparent #a0d0ec background, blur), #003a65 text, and #ff0000 for terrain proximity warnings, with a 0.3-second slide animation to show/hide.
+Forms and Inputs:
+Style all form inputs (e.g., group creation wizard, search bars, login forms) with a #a0d0ec background, #003a65 text, and a 4px border radius.
+Use #4995fd for focused states (e.g., input borders on focus) with a 0.3-second transition.
+Apply autocomplete suggestions (e.g., for airport inputs) with a dropdown styled in #a0d0ec, #003a65 text, and #4995fd for selected items.
+Notifications and Alerts:
+Style in-app notifications and toasts (using @radix-ui/react-toast) with a #4995fd background for success messages, #ff0000 for errors, and #a0d0ec for info messages, with white text and a 0.3-second fade animation.
+Use #003a65 for notification text in high-contrast areas (e.g., on #a0d0ec backgrounds).
+Backgrounds and Themes:
+Apply a sky-themed background gradient (transitioning from #a0d0ec at the top to #6ec0e9 at the bottom) across all pages to maintain an aviation aesthetic.
+For group-specific themes (in AeroSync), allow customization while ensuring the AeroLink color palette is the default (e.g., #a0d0ec background, #4995fd buttons, #003a65 text).
+Aviation Flair:
+Incorporate aviation-inspired design elements, such as cloud-shaped dividers (styled with #a0d0ec), propeller icons for loading spinners (in #4995fd), and airplane-shaped cursors for interactive elements (e.g., tappable cards).
+Include optional aviation sound effects (e.g., a jet takeoff sound on page load), toggleable in user settings, ensuring no impact on performance.
+Accessibility:
+Ensure WCAG 2.1 AA compliance with ARIA labels for all interactive elements, keyboard navigation support, and high contrast ratios (4.5:1 for text, 3:1 for UI elements like buttons).
+Provide a high-contrast mode toggle, switching to a #003a65 background with white text for better visibility.
+Use @radix-ui components to ensure screen reader compatibility across all UI elements.
+Task at Hand
+Update the platform’s styling to apply the AeroLink color scheme (#4995fd, #003a65, #a0d0ec) consistently across all UI elements, ensuring a uniform branding experience.
+Retain all existing functionality and features (e.g., authentication, flight map, Pilot Shop, social features, groups, notifications), focusing solely on design updates.
+Implement the specified design requirements, including global styling, typography, headers, buttons, cards, forms, notifications, backgrounds, and aviation flair.
+Ensure the updated design meets accessibility standards (WCAG 2.1 AA) and maintains performance (e.g., FCP < 1.2 seconds, TTI < 2 seconds).
+Test thoroughly to confirm the new branding is applied uniformly across the platform without affecting functionality, providing a cohesive, aviation-themed user experience.
+Final Note
+Focus on applying the AeroLink color palette to create a uniform branding experience across the platform, enhancing its aviation-themed aesthetic while ensuring accessibility and performance. Do not modify the platform’s functionality or backend logic—only update the design to reflect the specified color scheme and requirements. Update /docs with the new branding guidelines and implementation details for future reference.

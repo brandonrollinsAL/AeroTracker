@@ -21,7 +21,7 @@
     --accent-foreground: 222.2 47.4% 11.2%;
     
     /* Additional aviation colors */
-    --aviation-sky: 213 97% 73%; /* #78b0fd - Aviation sky blue */
+    --aviation-sky: 199 68% 78%; /* #a0d0ec - Sky Light Blue */
     
     /* Standard interface colors */
     --muted: 210 40% 96.1%;
@@ -34,11 +34,11 @@
     --radius: 0.5rem;
     
     /* Custom aviation variables */
-    --aviation-blue-dark: #0a4995;
-    --aviation-blue-medium: #2460a7; 
-    --aviation-blue-light: #3f78bf;
-    --aviation-cyan: #55ffdd;
-    --aviation-teal-color: #449999;
+    --aviation-blue-dark: #003a65;
+    --aviation-blue-medium: #0a4995; 
+    --aviation-blue-light: #4995fd;
+    --aviation-cyan: #a0d0ec;
+    --aviation-teal-color: #6ec0e9;
     
     /* Status colors */
     --status-active: #22c55e;
@@ -66,7 +66,7 @@
     --accent-foreground: 222.2 47.4% 11.2%;
     
     /* Additional aviation colors - adjusted for dark mode */
-    --aviation-sky: 213 97% 73%; /* #78b0fd - Aviation sky blue */
+    --aviation-sky: 199 68% 78%; /* #a0d0ec - Sky Light Blue */
     
     /* Standard interface colors */
     --muted: 217.2 32.6% 17.5%;
@@ -86,16 +86,16 @@
   --aviation-blue-medium: #0a4995;  /* Medium aviation blue */
   --aviation-blue-light: #4995fd;   /* Light aviation blue */
   --aviation-blue-accent: #4995fd;  /* Accent blue */
-  --aviation-blue-ultra-light: #e6f0ff; /* Ultra light blue for backgrounds */
+  --aviation-blue-ultra-light: #a0d0ec; /* Sky Light Blue for backgrounds */
   
   /* Extended aviation color palette */
-  --aviation-sky-blue: #78b0fd;     /* Sky blue */
+  --aviation-sky-blue: #a0d0ec;     /* Sky Light Blue */
   --aviation-navy: #001f3f;         /* Navy blue for night flights */
   --aviation-highlight: #4995fd;    /* Highlight blue for selections */
   --aviation-alert: #ff5a5f;        /* Alert red for warnings */
   --aviation-success: #00c07f;      /* Success green for confirmations */
   --aviation-deep-ocean: #002b4c;   /* Deeper blue for serious elements */
-  --aviation-cyan: #4995fd;         /* Previously teal, now aviation blue */
+  --aviation-cyan: #a0d0ec;         /* Sky Light Blue */
   
   /* Gradients */
   --aviation-gradient: linear-gradient(135deg, var(--aviation-blue-dark), var(--aviation-blue-medium));
@@ -103,9 +103,9 @@
   --aviation-gradient-accent: linear-gradient(135deg, var(--aviation-blue-dark), var(--aviation-blue-accent));
   --aviation-gradient-sky: linear-gradient(135deg, var(--aviation-blue-light), var(--aviation-sky-blue));
   --aviation-gradient-alert: linear-gradient(135deg, var(--aviation-alert), #ff8c8f);
-  --aviation-gradient-glow: linear-gradient(135deg, var(--aviation-blue-light), var(--aviation-sky-blue));
+  --aviation-gradient-glow: linear-gradient(135deg, var(--aviation-blue-light), var(--aviation-cyan));
   --aviation-gradient-deep: linear-gradient(135deg, var(--aviation-deep-ocean), var(--aviation-blue-dark));
-  --aviation-gradient-accent-strong: linear-gradient(135deg, var(--aviation-teal-highlight), var(--aviation-blue-accent));
+  --aviation-gradient-accent-strong: linear-gradient(135deg, var(--aviation-blue-accent), var(--aviation-cyan));
   --aviation-gradient-button: linear-gradient(to right, var(--aviation-blue-medium), var(--aviation-blue-accent));
   
   /* Dark mode aviation colors */
@@ -113,7 +113,8 @@
   --aviation-dark-accent: #003a65;  /* Darker accent for dark mode */
   --aviation-dark-gradient: linear-gradient(135deg, var(--aviation-dark-blue), var(--aviation-dark-accent));
   --aviation-dark-gradient-glow: linear-gradient(135deg, var(--aviation-dark-blue), var(--aviation-blue-light));
-  --aviation-dark-highlight: rgba(73, 149, 253, 0.3); /* Subtle highlight for dark mode */
+  --aviation-dark-gradient-sky: linear-gradient(135deg, var(--aviation-dark-accent), var(--aviation-cyan));
+  --aviation-dark-highlight: rgba(160, 208, 236, 0.3); /* Subtle Sky Light Blue highlight for dark mode */
   
   /* Glow effects */
   --aviation-glow-sm: 0 0 8px rgba(73, 149, 253, 0.3);
