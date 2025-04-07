@@ -1980,6 +1980,137 @@
   }
 }
 
+/* Aviation-themed custom scrollbars */
+.aviation-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--aviation-blue-accent) rgba(255,255,255,0.1);
+}
+
+.aviation-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.aviation-scroll::-webkit-scrollbar-track {
+  background: rgba(240,248,255,0.6);
+  border-radius: 8px;
+}
+
+.aviation-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #4995fd, #003a65);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.aviation-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #003a65, #4995fd);
+}
+
+.dark .aviation-scroll::-webkit-scrollbar-track {
+  background: rgba(0,42,77,0.4);
+}
+
+.dark .aviation-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #4995fd, #0a4995);
+}
+
+.dark .aviation-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #0a4995, #4995fd);
+  box-shadow: 0 0 5px rgba(73,149,253,0.5);
+}
+
+/* Apply aviation scrollbars to specific elements throughout the app */
+.aviation-tabs-content,
+.aviation-dropdown-content,
+.aviation-sidebar,
+.aviation-flight-list,
+.aviation-panel-content,
+.leaflet-container,
+.flight-detail-panel,
+.aviation-modal-content {
+  @apply aviation-scroll;
+}
+
+/* Default scrollbar styles for the entire app */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--aviation-blue-accent) rgba(255,255,255,0.1);
+}
+
+html::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html::-webkit-scrollbar-track {
+  background: rgba(240,248,255,0.6);
+}
+
+html::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #4995fd, #003a65);
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #003a65, #4995fd);
+}
+
+.dark html::-webkit-scrollbar-track {
+  background: rgba(0,42,77,0.4);
+}
+
+.dark html::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #4995fd, #0a4995);
+}
+
+.dark html::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #0a4995, #4995fd);
+  box-shadow: 0 0 5px rgba(73,149,253,0.5);
+}
+
+/* Aviation Focus Ring */
+.aviation-focus-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(73,149,253,0.5), 0 0 0 4px rgba(73,149,253,0.2);
+  transition: box-shadow 0.2s ease;
+}
+
+.dark .aviation-focus-ring:focus {
+  box-shadow: 0 0 0 2px rgba(73,149,253,0.5), 0 0 0 4px rgba(73,149,253,0.2);
+}
+
+/* Custom file type indicator tag */
+.aviation-file-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  background: linear-gradient(to right, var(--aviation-blue-dark), var(--aviation-blue-medium));
+  color: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  letter-spacing: 0.5px;
+}
+
+.dark .aviation-file-tag {
+  background: linear-gradient(to right, var(--aviation-blue-medium), var(--aviation-blue-light));
+}
+
+/* Loader animation */
+.aviation-loader {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(73,149,253,0.2);
+  border-radius: 50%;
+  border-top-color: var(--aviation-blue-accent);
+  animation: aviation-spin 1s linear infinite;
+  margin: 0 auto;
+}
+
 .aviation-shimmer {
   position: relative;
   overflow: hidden;
@@ -2001,12 +2132,6 @@
     rgba(255, 255, 255, 0)
   );
   animation: shimmer 2.5s infinite;
-}
-
-@keyframes shimmer {
-  100% {
-    transform: translateX(100%);
-  }
 }
 
 .dark .aviation-shimmer::after {

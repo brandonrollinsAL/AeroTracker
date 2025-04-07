@@ -8,6 +8,7 @@ import {
   BellIcon, 
   UserIcon, 
   PlaneIcon, 
+  PlaneTakeoffIcon,
   Settings, 
   MapIcon, 
   BarChart3Icon, 
@@ -16,7 +17,9 @@ import {
   RadarIcon,
   LayoutDashboardIcon,
   CalendarIcon,
-  BellRingIcon
+  BellRingIcon,
+  PlusIcon,
+  MinusIcon
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -101,33 +104,39 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
       <div className="flex items-center">
         <div className="mr-3 relative group">
           <div 
-            className={`h-10 w-10 rounded-lg flex items-center justify-center relative overflow-hidden ${
+            className={`h-11 w-11 rounded-lg flex items-center justify-center relative overflow-hidden ${
               isDarkMode ? 'bg-[#4995fd]' : 'bg-[#4995fd]'
             }`}
             style={{
               boxShadow: isDarkMode 
-                ? '0 0 15px rgba(73, 149, 253, 0.35)' 
-                : '0 0 10px rgba(73, 149, 253, 0.25)'
+                ? '0 0 18px rgba(73, 149, 253, 0.4)' 
+                : '0 0 15px rgba(73, 149, 253, 0.3)'
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-[#4995fd] to-[#003a65] opacity-90"></div>
-            <PlaneIcon className="h-5 w-5 text-white transform rotate-45 relative z-10" />
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjAgMGMxMS4wNDYgMCAyMCA4Ljk1NCAyMCAyMHMtOC45NTQgMjAtMjAgMjBTMCAzMS4wNDYgMCAyMCA4Ljk1NCAwIDIwIDB6bTUgMTVhNSA1IDAgMTAtMTAgMCA1IDUgMCAwMDEwIDB6IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9Ii4xIi8+PC9zdmc+')] bg-no-repeat bg-center bg-contain opacity-20"></div>
             
-            {/* Animated trail effect */}
-            <div className="absolute h-1 w-8 bg-[#a0d0ec]/60 rounded-full -bottom-0.5 -left-3 transform rotate-45 origin-bottom-right group-hover:w-12 transition-all duration-300"></div>
+            <div className="relative group">
+              <PlaneTakeoffIcon className="h-5 w-5 text-white transform rotate-45 relative z-10 group-hover:scale-110 transition-transform duration-300" />
+              <div className="absolute w-6 h-1 bg-[#a0d0ec]/60 rounded-full -bottom-0.5 -left-3 transform rotate-45 origin-bottom-right group-hover:w-9 transition-all duration-500"></div>
+            </div>
+            
+            {/* Animated pulsing radar effect */}
+            <div className="absolute inset-0 rounded-full border-2 border-[#a0d0ec]/20 scale-0 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-1000"></div>
           </div>
-          <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-[#4995fd] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-[#4995fd] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
         </div>
         
         <div>
-          <h1 className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-[#003a65]'}`}>
-            <span className="bg-gradient-to-r from-[#003a65] to-[#4995fd] bg-clip-text text-transparent">
-              AeroTracker
+          <h1 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-[#003a65]'}`}>
+            <span className="bg-gradient-to-r from-[#003a65] to-[#4995fd] bg-clip-text text-transparent flex items-center">
+              <span className="mr-1">AeroTracker</span>
+              <span className="text-xs px-1.5 py-0.5 bg-[#4995fd]/10 rounded-sm text-[#4995fd] font-medium">PRO</span>
             </span>
           </h1>
           <div className="flex items-center">
             <span className={`text-xs ${isDarkMode ? 'text-[#a0d0ec]/80' : 'text-[#003a65]/70'}`}>
-              Flight Tracking
+              Advanced Flight Tracking
             </span>
             <div className="relative ml-2">
               <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-gradient-to-r from-[#003a65] to-[#4995fd] text-white">
@@ -138,6 +147,37 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
             </div>
           </div>
         </div>
+        
+        {/* New navigation buttons */}
+        <div className="hidden lg:flex ml-8 space-x-1">
+          {menuItems.map((item, index) => (
+            <Button
+              key={index}
+              variant="ghost"
+              size="sm"
+              className={`h-8 px-3 rounded text-xs font-medium flex items-center gap-1.5 border border-transparent ${
+                item.active
+                  ? isDarkMode
+                    ? 'bg-[#003a65]/60 text-white border-[#4995fd]/30'
+                    : 'bg-[#4995fd]/10 text-[#003a65] border-[#4995fd]/20'
+                  : isDarkMode
+                    ? 'text-[#a0d0ec]/80 hover:text-white hover:bg-[#003a65]/40'
+                    : 'text-[#003a65]/70 hover:text-[#003a65] hover:bg-[#4995fd]/10'
+              }`}
+              style={{
+                boxShadow: item.active
+                  ? isDarkMode
+                    ? 'inset 0 1px 1px rgba(0,0,0,0.1), 0 1px 1px rgba(73,149,253,0.1)'
+                    : 'inset 0 1px 1px rgba(0,0,0,0.05), 0 1px 1px rgba(73,149,253,0.05)'
+                  : 'none',
+              }}
+            >
+              <span className="opacity-80">{item.icon}</span>
+              {item.label}
+              {item.active && <div className="h-1 w-1 rounded-full bg-[#4995fd] ml-0.5 animate-pulse"></div>}
+            </Button>
+          ))}
+        </div>
       </div>
       
       <div className="flex items-center space-x-3">
@@ -145,47 +185,50 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
           <div 
             className={`absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none ${
               isDarkMode ? 'text-[#a0d0ec]/70' : 'text-[#4995fd]/70'
-            } group-focus-within:text-[#4995fd]`}
+            } group-focus-within:text-[#4995fd] group-hover:scale-105 transition-transform duration-200`}
           >
             <SearchIcon className="h-4 w-4" />
           </div>
           <input 
             type="search" 
-            className={`pl-10 pr-4 py-2 text-sm rounded-full border ${
+            className={`pl-10 pr-12 py-2 text-sm rounded-full border ${
               isDarkMode 
                 ? 'border-[#4995fd]/30 bg-[#002b4c]/50 text-white placeholder-[#a0d0ec]/50 focus:border-[#4995fd]/70' 
                 : 'border-[#4995fd]/20 focus:border-[#4995fd] placeholder-[#003a65]/50'
-            } focus:outline-none focus:ring-1 focus:ring-[#4995fd]/30 w-[240px] transition-all duration-300 focus:w-[300px]`} 
+            } focus:outline-none focus:ring-1 focus:ring-[#4995fd]/30 w-[240px] transition-all duration-300 focus:w-[320px]`} 
             placeholder="Search flights, airports, routes..." 
             style={{
               boxShadow: isDarkMode
-                ? 'inset 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(73,149,253,0.1)'
-                : 'inset 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(73,149,253,0.1)'
+                ? 'inset 0 1px 3px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.1)'
+                : 'inset 0 1px 3px rgba(0,0,0,0.05), 0 2px 4px rgba(73,149,253,0.1)'
             }}
           />
           <div className={`absolute inset-y-0 right-0 flex items-center pr-3 ${
             isDarkMode ? 'text-[#a0d0ec]/30' : 'text-[#4995fd]/30'
           } pointer-events-none`}>
-            <span className="text-xs">⌘K</span>
+            <span className="inline-flex items-center justify-center rounded text-xs bg-[#4995fd]/10 px-1.5 py-0.5 border border-[#4995fd]/20">⌘K</span>
           </div>
         </div>
         
         <div className="hidden md:flex items-center space-x-2">
-          <div className="flex items-center mr-2 p-1 bg-[#4995fd]/10 rounded-lg border border-[#4995fd]/20">
+          <div className="flex items-center mr-2 p-1.5 bg-[#4995fd]/10 rounded-lg border border-[#4995fd]/20">
             <Button 
               size="sm"
               className={`flex items-center h-8 px-3 ${
                 isDarkMode 
                   ? 'bg-gradient-to-r from-[#003a65] to-[#4995fd] hover:from-[#003a65]/90 hover:to-[#4995fd]/90 text-white' 
-                  : 'bg-gradient-to-r from-[#4995fd] to-[#a0d0ec] hover:from-[#0a4995] hover:to-[#4995fd] text-white'
-              } rounded-md transition-all duration-200`}
+                  : 'bg-gradient-to-r from-[#4995fd] to-[#003a65] hover:from-[#0a4995] hover:to-[#4995fd] text-white'
+              } rounded-md transition-all duration-200 relative overflow-hidden group`}
               style={{
                 boxShadow: '0 2px 5px rgba(73, 149, 253, 0.3)'
               }}
             >
-              <MapIcon className="h-4 w-4 mr-1.5" />
-              <span className="text-xs font-medium">Map</span>
+              <div className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+              <MapIcon className="h-4 w-4 mr-1.5 relative z-10" />
+              <span className="text-xs font-medium relative z-10">Map</span>
             </Button>
+            
+            <div className="mx-1 h-6 w-px bg-[#4995fd]/20"></div>
             
             <Button 
               variant="ghost" 
@@ -194,7 +237,7 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
                 isDarkMode 
                   ? 'text-[#a0d0ec] hover:text-white hover:bg-[#003a65]/40 border border-[#003a65]/30' 
                   : 'text-[#003a65] hover:bg-[#4995fd]/10 border border-[#4995fd]/20'
-              }`}
+              } relative overflow-hidden group`}
               style={{
                 background: isDarkMode
                   ? 'linear-gradient(to right, rgba(0,58,101,0.3), rgba(73,149,253,0.1))'
@@ -204,9 +247,37 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
                   : 'inset 0 1px 1px rgba(255,255,255,0.7)'
               }}
             >
-              <BarChart3Icon className="h-4 w-4 mr-1.5" />
-              <span className="text-xs">Stats</span> 
+              <div className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-[#4995fd]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+              <BarChart3Icon className="h-4 w-4 mr-1.5 relative z-10" />
+              <span className="text-xs relative z-10">Stats</span> 
             </Button>
+            
+            <div className="mx-1 h-6 w-px bg-[#4995fd]/20"></div>
+            
+            <div className="px-1 flex items-center space-x-0.5">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`rounded p-1 ${
+                  isDarkMode
+                    ? 'text-[#a0d0ec]/80 hover:text-white hover:bg-[#003a65]/40'
+                    : 'text-[#003a65]/70 hover:text-[#003a65] hover:bg-[#4995fd]/10'
+                }`}
+              >
+                <PlusIcon size={14} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`rounded p-1 ${
+                  isDarkMode
+                    ? 'text-[#a0d0ec]/80 hover:text-white hover:bg-[#003a65]/40'
+                    : 'text-[#003a65]/70 hover:text-[#003a65] hover:bg-[#4995fd]/10'
+                }`}
+              >
+                <MinusIcon size={14} />
+              </Button>
+            </div>
           </div>
           
           <div className="relative">
@@ -215,17 +286,25 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
               variant="ghost" 
               size="icon"
               onClick={() => setShowNotifications(!showNotifications)}
-              className={`h-9 w-9 rounded-full relative overflow-hidden ${
+              className={`h-9 w-9 rounded-full relative overflow-hidden group ${
                 isDarkMode 
                   ? 'text-[#a0d0ec] hover:text-white hover:bg-[#003a65]/40 border border-[#003a65]/30' 
                   : 'text-[#003a65] hover:bg-[#4995fd]/10 border border-[#4995fd]/20'
               }`}
               style={{
-                boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.1)'
+                boxShadow: isDarkMode 
+                  ? 'inset 0 1px 1px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.1)'
+                  : 'inset 0 1px 1px rgba(255,255,255,0.3), 0 2px 4px rgba(73,149,253,0.1)'
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#4995fd]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <BellIcon className="h-5 w-5 relative z-10" />
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-[#4995fd]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="absolute h-[1px] w-full bg-[#4995fd]/20 bottom-0 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+              
+              {/* Pulsing rings effect */}
+              <div className="absolute inset-0 rounded-full border border-[#4995fd]/10 scale-0 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-700"></div>
+              <div className="absolute inset-0 rounded-full border border-[#4995fd]/5 scale-0 opacity-0 group-hover:scale-110 group-hover:opacity-100 transition-all duration-1000 delay-100"></div>
+              
+              <BellIcon className="h-5 w-5 relative z-10 group-hover:scale-110 transition-transform duration-300" />
               <div className="absolute top-1 right-1.5 h-2 w-2 bg-[#4995fd] rounded-full animate-pulse"></div>
             </Button>
             
@@ -319,39 +398,56 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
           <Button 
             variant="ghost" 
             size="icon"
-            className={`h-9 w-9 rounded-full relative overflow-hidden ${
+            className={`h-9 w-9 rounded-full relative overflow-hidden group ${
               isDarkMode 
                 ? 'text-[#a0d0ec] hover:text-white hover:bg-[#003a65]/40 border border-[#003a65]/30' 
                 : 'text-[#003a65] hover:bg-[#4995fd]/10 border border-[#4995fd]/20'
             }`}
             style={{
-              boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.1)'
+              boxShadow: isDarkMode 
+                ? 'inset 0 1px 1px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.1)'
+                : 'inset 0 1px 1px rgba(255,255,255,0.3), 0 2px 4px rgba(73,149,253,0.1)'
             }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#4995fd]/5 opacity-0 hover:opacity-100 transition-opacity"></div>
-            <Settings className="h-5 w-5 relative z-10" />
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-[#4995fd]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute h-[1px] w-full bg-[#4995fd]/20 bottom-0 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+            
+            {/* Rotating gear animation */}
+            <Settings className="h-5 w-5 relative z-10 group-hover:rotate-45 transition-transform duration-500" />
+            
+            {/* Subtle glow effect */}
+            <div className="absolute inset-0 rounded-full bg-[#4995fd]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-[2px]"></div>
           </Button>
           
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={onThemeToggle}
-            className={`h-9 w-9 rounded-full relative overflow-hidden ${
+            className={`h-9 w-9 rounded-full relative overflow-hidden group ${
               isDarkMode 
                 ? 'text-[#a0d0ec] hover:text-white hover:bg-[#003a65]/40 border border-[#003a65]/30' 
                 : 'text-[#003a65] hover:bg-[#4995fd]/10 border border-[#4995fd]/20'
             } transition-all duration-300`}
             style={{
-              boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.1)'
+              boxShadow: isDarkMode 
+                ? 'inset 0 1px 1px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.1)'
+                : 'inset 0 1px 1px rgba(255,255,255,0.3), 0 2px 4px rgba(73,149,253,0.1)'
             }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#4995fd]/5 opacity-0 hover:opacity-100 transition-opacity"></div>
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#003a65]/10 to-transparent opacity-0 hover:opacity-100 transition-opacity"></div>
-            {isDarkMode ? (
-              <SunIcon className="h-5 w-5 relative z-10" />
-            ) : (
-              <MoonIcon className="h-5 w-5 relative z-10" />
-            )}
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-[#4995fd]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute h-[1px] w-full bg-[#4995fd]/20 bottom-0 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+            
+            {/* Animated theme icon transition */}
+            <div className="relative h-5 w-5">
+              {isDarkMode ? (
+                <SunIcon className="h-5 w-5 absolute inset-0 z-10 group-hover:scale-110 transition-transform duration-300 group-hover:rotate-45 transition-all" />
+              ) : (
+                <MoonIcon className="h-5 w-5 absolute inset-0 z-10 group-hover:scale-110 transition-transform duration-300 group-hover:-rotate-12 transition-all" />
+              )}
+            </div>
+            
+            {/* Subtle glow effect */}
+            <div className="absolute inset-0 rounded-full bg-[#4995fd]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-[2px]"></div>
           </Button>
           
           <div className="relative">
@@ -468,39 +564,55 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
             variant="ghost" 
             size="icon" 
             onClick={onThemeToggle}
-            className={`relative h-8 w-8 rounded-full overflow-hidden ${
+            className={`relative h-8 w-8 rounded-full overflow-hidden group ${
               isDarkMode 
                 ? 'text-[#a0d0ec] hover:text-white hover:bg-[#003a65]/40 border border-[#003a65]/30' 
                 : 'text-[#003a65] hover:bg-[#4995fd]/10 border border-[#4995fd]/20'
             }`}
+            style={{
+              boxShadow: isDarkMode 
+                ? 'inset 0 1px 1px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.1)'
+                : 'inset 0 1px 1px rgba(255,255,255,0.3), 0 2px 4px rgba(73,149,253,0.1)'
+            }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#4995fd]/5 opacity-50"></div>
-            {isDarkMode ? (
-              <SunIcon className="h-4 w-4 relative z-10" />
-            ) : (
-              <MoonIcon className="h-4 w-4 relative z-10" />
-            )}
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-[#4995fd]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute h-[1px] w-full bg-[#4995fd]/20 bottom-0 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+            <div className="relative h-4 w-4">
+              {isDarkMode ? (
+                <SunIcon className="h-4 w-4 absolute inset-0 z-10 group-hover:scale-110 transition-transform duration-300 group-hover:rotate-45 transition-all" />
+              ) : (
+                <MoonIcon className="h-4 w-4 absolute inset-0 z-10 group-hover:scale-110 transition-transform duration-300 group-hover:-rotate-12 transition-all" />
+              )}
+            </div>
           </Button>
           
           <Button 
             variant="ghost" 
             size="icon"
-            className={`relative h-8 w-8 rounded-full overflow-hidden ${
+            className={`relative h-8 w-8 rounded-full overflow-hidden group ${
               isDarkMode 
                 ? 'text-[#a0d0ec] hover:text-white hover:bg-[#003a65]/40 border border-[#003a65]/30' 
                 : 'text-[#003a65] hover:bg-[#4995fd]/10 border border-[#4995fd]/20'
             }`}
+            style={{
+              boxShadow: isDarkMode 
+                ? 'inset 0 1px 1px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.1)'
+                : 'inset 0 1px 1px rgba(255,255,255,0.3), 0 2px 4px rgba(73,149,253,0.1)'
+            }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#4995fd]/5 opacity-50"></div>
-            <SearchIcon className="h-4 w-4 relative z-10" />
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-[#4995fd]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute h-[1px] w-full bg-[#4995fd]/20 bottom-0 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+            <SearchIcon className="h-4 w-4 relative z-10 group-hover:scale-110 transition-transform duration-300" />
           </Button>
           
           <Button 
+            ref={menuButtonRef}
+            onClick={() => setShowMenu(!showMenu)}
             size="icon"
             className={`relative h-8 w-8 rounded-full overflow-hidden group ${
               isDarkMode 
                 ? 'bg-gradient-to-r from-[#003a65] to-[#4995fd] text-white' 
-                : 'bg-gradient-to-r from-[#4995fd] to-[#a0d0ec] text-white'
+                : 'bg-gradient-to-r from-[#4995fd] to-[#003a65] text-white'
             }`}
             style={{
               boxShadow: isDarkMode
@@ -509,7 +621,7 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
             }}
           >
             <div className="absolute inset-0 bg-[#a0d0ec]/10 opacity-30"></div>
-            <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
             <div className="absolute h-[1px] bottom-0 left-0 right-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
             <UserIcon className="h-4 w-4 relative z-10 group-hover:scale-110 transition-transform duration-300" />
           </Button>
