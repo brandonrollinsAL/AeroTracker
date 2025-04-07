@@ -88,7 +88,7 @@ export default function MapFilters({ filters, onFilterChange }: MapFiltersProps)
   ].filter(Boolean).length;
 
   return (
-    <div className="absolute top-4 left-4 bg-white rounded-lg shadow-md p-3 max-w-sm z-[900]">
+    <div className="absolute top-4 left-4 bg-white rounded-md shadow-md p-3 max-w-[260px] z-[900]">
       <div className="flex flex-col space-y-3">
         <div className="flex justify-between items-center">
           <h3 className="font-medium text-sm text-neutral-800">Map Filters</h3>

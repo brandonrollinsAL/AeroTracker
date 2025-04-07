@@ -7,6 +7,7 @@ import MapFilters from './MapFilters';
 import AirportMarker from './AirportMarker';
 import { LiveFlight, MapFilter, Airport } from '@/types';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { AlertTriangle } from 'lucide-react';
 import axios from 'axios';
 
@@ -59,6 +60,70 @@ function MapUpdater({ flight }: { flight: LiveFlight | null }) {
   return null;
 }
 
+// Component to handle direct map control
+function MapControlButtons() {
+  const map = useMap();
+  
+  const handleZoomIn = () => {
+    map.zoomIn();
+  };
+  
+  const handleZoomOut = () => {
+    map.zoomOut();
+  };
+  
+  const handleMyLocation = () => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      map.setView(
+        [position.coords.latitude, position.coords.longitude],
+        10,
+        { animate: true }
+      );
+    }, (error) => {
+      console.error('Error getting location:', error);
+    });
+  };
+  
+  return (
+    <div className="absolute top-4 right-4 flex flex-col space-y-2 z-[900]">
+      <Button 
+        variant="outline" 
+        size="icon" 
+        className="bg-white rounded-full shadow-md hover:bg-neutral-100 h-9 w-9"
+        onClick={handleZoomIn}
+      >
+        <span className="material-icons text-neutral-800">add</span>
+      </Button>
+      
+      <Button 
+        variant="outline" 
+        size="icon" 
+        className="bg-white rounded-full shadow-md hover:bg-neutral-100 h-9 w-9"
+        onClick={handleZoomOut}
+      >
+        <span className="material-icons text-neutral-800">remove</span>
+      </Button>
+      
+      <Button 
+        variant="outline" 
+        size="icon" 
+        className="bg-white rounded-full shadow-md hover:bg-neutral-100 h-9 w-9"
+      >
+        <span className="material-icons text-neutral-800">layers</span>
+      </Button>
+      
+      <Button 
+        variant="outline" 
+        size="icon" 
+        className="bg-white rounded-full shadow-md hover:bg-neutral-100 h-9 w-9"
+        onClick={handleMyLocation}
+      >
+        <span className="material-icons text-neutral-800">my_location</span>
+      </Button>
+    </div>
+  );
+}
+
 export default function FlightMap({ 
   flights, 
   selectedFlight, 
@@ -67,7 +132,7 @@ export default function FlightMap({
   onFilterChange,
   isConnected
 }: FlightMapProps) {
-  const mapRef = useRef<L.Map | null>(null);
+  const mapRef = useRef<L.Map>(null);
   const [airports, setAirports] = useState<Airport[]>([]);
   const [loadingAirports, setLoadingAirports] = useState(false);
   
@@ -114,8 +179,8 @@ export default function FlightMap({
   };
 
   return (
-    <div className="w-full md:w-2/3 lg:w-3/4 relative h-[50vh] md:h-[calc(100vh-4rem)] p-3 bg-neutral-100">
-      <div className="w-full h-full bg-neutral-200 rounded-lg shadow-sm overflow-hidden">
+    <div className="w-full md:w-2/3 lg:w-3/4 relative h-[50vh] md:h-[calc(100vh-4rem)] p-2 bg-white">
+      <div className="w-full h-full bg-white rounded-sm overflow-hidden">
         {!isConnected && (
           <Alert variant="destructive" className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 w-auto">
             <AlertTriangle className="h-4 w-4" />
@@ -127,7 +192,6 @@ export default function FlightMap({
           center={defaultCenter}
           zoom={defaultZoom}
           style={{ height: '100%', width: '100%' }}
-          whenCreated={(map) => { mapRef.current = map; }}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -176,13 +240,8 @@ export default function FlightMap({
           )}
           
           <MapUpdater flight={selectedFlight} />
+          <MapControlButtons />
         </MapContainer>
-        
-        <MapControls 
-          onZoomIn={handleZoomIn} 
-          onZoomOut={handleZoomOut} 
-          onMyLocation={handleMyLocation} 
-        />
         
         <MapFilters 
           filters={filters} 
