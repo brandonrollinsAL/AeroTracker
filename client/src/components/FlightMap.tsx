@@ -266,6 +266,7 @@ export default function FlightMap({
       
       axios.get('/api/airports')
         .then(response => {
+          console.log('Airport data loaded:', response.data);
           setAirports(response.data);
         })
         .catch(error => {

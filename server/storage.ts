@@ -384,7 +384,9 @@ export class DatabaseStorage implements IStorage {
       city: insertAirport.city,
       country: insertAirport.country,
       latitude: insertAirport.latitude,
-      longitude: insertAirport.longitude
+      longitude: insertAirport.longitude,
+      size: insertAirport.size ?? null,
+      type: insertAirport.type ?? null
     };
     
     const [airport] = await db.insert(airports).values([airportValues]).returning();
