@@ -374,12 +374,12 @@ export default function FlightMap({
   };
 
   return (
-    <div className={`w-full md:w-2/3 lg:w-3/4 relative h-[50vh] md:h-[calc(100vh-4rem)] p-0 ${
+    <div className={`w-full md:w-full lg:w-full relative h-[50vh] md:h-[calc(100vh-4rem)] p-0 ${
       isDarkMode ? 'bg-neutral-900' : 'bg-white'
     } ${isFullscreen ? 'fixed inset-0 z-50 h-screen w-screen p-0' : ''}`}>
-      <div className={`w-full h-full ${isDarkMode ? 'bg-neutral-900' : 'bg-white'} rounded-sm overflow-hidden pt-12`}>
+      <div className={`w-full h-full ${isDarkMode ? 'bg-neutral-900' : 'bg-white'} rounded-sm overflow-hidden pt-[30px]`}>
         {!isConnected && (
-          <Alert variant="destructive" className="absolute top-16 left-1/2 transform -translate-x-1/2 z-50 w-auto">
+          <Alert variant="destructive" className="absolute top-[84px] left-1/2 transform -translate-x-1/2 z-50 w-auto">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>Connecting to flight data server...</AlertDescription>
           </Alert>

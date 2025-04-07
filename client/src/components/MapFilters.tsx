@@ -90,112 +90,92 @@ export default function MapFilters({ filters, onFilterChange }: MapFiltersProps)
 
   return (
     <TooltipProvider>
-      <div className="absolute top-0 left-0 right-0 bg-white/95 border-b shadow-sm px-4 py-2 z-[900] w-full">
-        <div className="flex flex-row items-center justify-between max-w-7xl mx-auto">
-          {/* Left side - Flight type buttons */}
+      <div className="absolute top-[64px] left-0 right-0 bg-white flex items-center border-b shadow-sm px-4 py-1.5 z-[900] w-full">
+        <div className="flex flex-row items-center">
           <div className="flex gap-1">
             <Button
               variant={filters.type === 'all' ? 'default' : 'outline'}
               size="sm"
-              className="h-7 px-2 text-xs rounded"
+              className="h-7 px-3 py-1 text-xs rounded-md bg-blue-100 hover:bg-blue-200 border-none text-blue-800"
               onClick={() => handleTypeChange('all')}
             >
-              <Plane className="h-3 w-3 mr-1" />
               All
             </Button>
             
             <Button
               variant={filters.type === 'commercial' ? 'default' : 'outline'}
               size="sm"
-              className="h-7 px-2 text-xs rounded"
+              className="h-7 px-3 py-1 text-xs rounded-md border-none"
               onClick={() => handleTypeChange('commercial')}
             >
-              <Plane className="h-3 w-3 mr-1" />
               Commercial
             </Button>
             
             <Button
               variant={filters.type === 'private' ? 'default' : 'outline'}
               size="sm"
-              className="h-7 px-2 text-xs rounded"
+              className="h-7 px-3 py-1 text-xs rounded-md border-none"
               onClick={() => handleTypeChange('private')}
             >
-              <Plane className="h-3 w-3 mr-1" />
               Private
             </Button>
             
             <Button
               variant={filters.type === 'cargo' ? 'default' : 'outline'}
               size="sm"
-              className="h-7 px-2 text-xs rounded"
+              className="h-7 px-3 py-1 text-xs rounded-md border-none"
               onClick={() => handleTypeChange('cargo')}
             >
-              <Plane className="h-3 w-3 mr-1" />
               Cargo
             </Button>
           </div>
 
-          {/* Middle - Display toggle buttons */}
-          <div className="flex space-x-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant={filters.showWeather ? 'default' : 'outline'}
-                  size="sm"
-                  className="h-8 w-8 p-0 rounded-full"
-                  onClick={() => handleToggleWeather(!filters.showWeather)}
+          <div className="border-l h-5 mx-4 border-gray-200"></div>
+
+          {/* Display toggle buttons */}
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center">
+              <Cloud className="h-4 w-4 mr-1.5 text-blue-500" />
+              <button 
+                className="flex items-center"
+                onClick={() => handleToggleWeather(!filters.showWeather)}
+              >
+                <div 
+                  className={`w-6 h-3 rounded-full flex items-center p-0.5 transition-colors ${filters.showWeather ? 'bg-blue-500' : 'bg-gray-300'}`}
                 >
-                  <Cloud className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p className="text-xs">Weather Overlay</p>
-              </TooltipContent>
-            </Tooltip>
+                  <div 
+                    className={`w-2 h-2 bg-white rounded-full transition-transform ${filters.showWeather ? 'translate-x-3' : 'translate-x-0'}`}
+                  />
+                </div>
+              </button>
+            </div>
             
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant={filters.showFlightPaths ? 'default' : 'outline'}
-                  size="sm"
-                  className="h-8 w-8 p-0 rounded-full"
-                  onClick={() => handleToggleFlightPaths(!filters.showFlightPaths)}
+            <div className="flex items-center">
+              <MapPin className="h-4 w-4 mr-1.5 text-blue-500" />
+              <button 
+                className="flex items-center"
+                onClick={() => handleToggleAirports(!filters.showAirports)}
+              >
+                <div 
+                  className={`w-6 h-3 rounded-full flex items-center p-0.5 transition-colors ${filters.showAirports ? 'bg-blue-500' : 'bg-gray-300'}`}
                 >
-                  <Layers className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p className="text-xs">Flight Paths</p>
-              </TooltipContent>
-            </Tooltip>
-            
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant={filters.showAirports ? 'default' : 'outline'}
-                  size="sm"
-                  className="h-8 w-8 p-0 rounded-full"
-                  onClick={() => handleToggleAirports(!filters.showAirports)}
-                >
-                  <MapPin className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p className="text-xs">Airports</p>
-              </TooltipContent>
-            </Tooltip>
+                  <div 
+                    className={`w-2 h-2 bg-white rounded-full transition-transform ${filters.showAirports ? 'translate-x-3' : 'translate-x-0'}`}
+                  />
+                </div>
+              </button>
+            </div>
           </div>
-          
-          {/* Right side - Advanced filters */}
-          <div>
+
+          <div className="ml-auto">
             <Popover open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   size="sm"
-                  className={`rounded h-7 text-xs px-2 ${advancedFilterCount > 0 ? 'border-primary text-primary' : ''}`}
+                  className="rounded-md h-7 text-xs px-2 border-gray-200"
                 >
-                  <SlidersHorizontal className="h-3 w-3 mr-1" />
+                  <SlidersHorizontal className="h-3 w-3 mr-1.5" />
                   Advanced
                   {advancedFilterCount > 0 && (
                     <span className="ml-1 bg-primary text-white w-4 h-4 rounded-full text-[10px] flex items-center justify-center">

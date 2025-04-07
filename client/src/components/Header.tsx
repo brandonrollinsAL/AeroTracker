@@ -10,81 +10,21 @@ interface HeaderProps {
 export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
   return (
     <header 
-      className="border-b h-16 py-2 px-6 flex items-center justify-between sticky top-0 z-50 backdrop-blur-md"
-      style={{
-        background: isDarkMode 
-          ? 'rgba(0, 58, 101, 0.95)' 
-          : 'rgba(255, 255, 255, 0.95)',
-        borderColor: isDarkMode ? 'var(--aviation-blue-dark)' : 'rgba(10, 73, 149, 0.1)',
-        boxShadow: isDarkMode 
-          ? '0 2px 10px rgba(0, 0, 0, 0.2)' 
-          : '0 2px 10px rgba(10, 73, 149, 0.1)'
-      }}
+      className="border-b h-16 py-2 px-6 flex items-center justify-between sticky top-0 z-50 bg-white"
     >
       <div className="flex items-center">
-        <div className="mr-5 relative ml-1">
-          <div 
-            className="h-11 w-11 rounded-full flex items-center justify-center overflow-hidden"
-            style={{ 
-              background: isDarkMode ? 'var(--aviation-dark-accent)' : 'var(--aviation-blue-accent)',
-              boxShadow: isDarkMode
-                ? '0 4px 12px rgba(0, 0, 0, 0.25)'
-                : '0 4px 12px rgba(10, 73, 149, 0.2)',
-              transition: 'all 0.3s ease',
-              border: isDarkMode ? '1px solid rgba(160, 208, 236, 0.2)' : '1px solid rgba(0, 58, 101, 0.1)'
-            }}
-          >
+        <div className="mr-3">
+          <div className="h-9 w-9 bg-blue-500 rounded flex items-center justify-center">
             <PlaneIcon className="h-5 w-5 text-white transform rotate-45" />
           </div>
-          <div 
-            className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full aviation-pulse" 
-            style={{ 
-              background: isDarkMode ? 'var(--aviation-cyan)' : 'var(--aviation-blue-light)',
-              boxShadow: isDarkMode ? '0 1px 3px rgba(0, 0, 0, 0.3)' : '0 1px 3px rgba(10, 73, 149, 0.2)'
-            }}
-          />
         </div>
-        <div className="mr-2">
-          <h1 
-            className="text-xl font-bold tracking-tight relative"
-            style={{
-              color: isDarkMode 
-                ? 'var(--aviation-blue-light)' 
-                : 'var(--aviation-blue-accent)',
-              marginBottom: '2px'
-            }}
-          >
+        <div>
+          <h1 className="text-base font-bold text-blue-500">
             AeroTracker
-            <span 
-              className="absolute -top-0.5 -right-8 text-xs text-white px-1.5 py-0.5 rounded-sm opacity-90 tracking-wide" 
-              style={{ 
-                fontSize: '8px', 
-                background: isDarkMode ? 'var(--aviation-dark-accent)' : 'var(--aviation-blue-accent)'
-              }}
-            >
-              BETA
-            </span>
           </h1>
           <div className="flex items-center">
-            <span 
-              className="mr-2 font-medium text-[11px] tracking-wide"
-              style={{ 
-                color: isDarkMode ? 'var(--aviation-blue-ultra-light)' : 'var(--aviation-blue-dark)',
-                textShadow: isDarkMode ? '0 0 8px rgba(85, 255, 221, 0.3)' : 'none'
-              }}
-            >
-              Advanced Flight Tracking
-            </span>
-            <span 
-              className="inline-block px-1.5 py-0.5 text-[9px] rounded text-white font-semibold"
-              style={{ 
-                background: isDarkMode ? 'var(--aviation-dark-accent)' : 'var(--aviation-blue-accent)',
-                boxShadow: isDarkMode 
-                  ? '0 2px 4px rgba(0, 0, 0, 0.3)' 
-                  : '0 2px 4px rgba(10, 73, 149, 0.2)'
-              }}
-            >
-              PRO
+            <span className="text-xs text-gray-500">
+              Flight Tracking
             </span>
           </div>
         </div>
@@ -93,68 +33,33 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
       <div className="flex items-center space-x-3">
         <div className="relative hidden md:block">
           <div 
-            className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none" 
-            style={{ 
-              color: isDarkMode ? 'var(--aviation-blue-light)' : 'var(--aviation-blue-accent)'
-            }}
+            className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400"
           >
             <SearchIcon className="h-4 w-4" />
           </div>
           <input 
             type="search" 
-            style={{ 
-              backgroundColor: isDarkMode ? 'rgba(5, 39, 77, 0.7)' : 'rgba(255, 255, 255, 0.9)',
-              borderColor: isDarkMode ? 'var(--aviation-dark-accent)' : 'var(--aviation-blue-light)', 
-              color: isDarkMode ? 'var(--aviation-blue-ultra-light)' : 'var(--aviation-blue-dark)',
-              boxShadow: isDarkMode 
-                ? '0 2px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(85, 255, 221, 0.1)'
-                : '0 2px 10px rgba(10, 73, 149, 0.1), 0 0 0 1px rgba(85, 255, 221, 0.1)'
-            }}
-            className="pl-10 pr-4 py-2 text-sm rounded-full border focus:outline-none transition-all duration-200 backdrop-blur-md w-52" 
+            className="pl-10 pr-4 py-2 text-sm rounded-full border border-gray-200 focus:outline-none focus:border-blue-300 w-56" 
             placeholder="Search flights, airports..." 
           />
         </div>
         
-        <div className="hidden md:flex items-center space-x-3">
-          <div 
-            className="flex items-center space-x-1 p-1 rounded-full backdrop-blur-md"
-            style={{
-              background: isDarkMode 
-                ? 'rgba(5, 39, 77, 0.4)' 
-                : 'rgba(255, 255, 255, 0.7)',
-              border: isDarkMode 
-                ? '1px solid rgba(85, 255, 221, 0.1)' 
-                : '1px solid rgba(85, 255, 221, 0.2)',
-              boxShadow: isDarkMode 
-                ? '0 2px 8px rgba(0, 0, 0, 0.2)' 
-                : '0 2px 8px rgba(10, 73, 149, 0.1)'
-            }}
-          >
+        <div className="hidden md:flex items-center space-x-2">
+          <div className="flex items-center mr-2">
             <Button 
-              variant="ghost" 
               size="sm"
-              className="aviation-tab-button active flex items-center space-x-1 rounded-full px-3"
-              style={{ 
-                height: '32px',
-                background: isDarkMode ? 'var(--aviation-dark-accent)' : 'var(--aviation-blue-accent)',
-                color: 'white',
-                boxShadow: isDarkMode ? '0 2px 4px rgba(0, 0, 0, 0.2)' : '0 2px 4px rgba(10, 73, 149, 0.1)'
-              }}
+              className="flex items-center h-8 px-3 bg-blue-500 text-white rounded-md"
             >
-              <MapIcon className="h-4 w-4" />
-              <span className="text-xs font-semibold">Map</span>
+              <MapIcon className="h-4 w-4 mr-1.5" />
+              <span className="text-xs font-medium">Map</span>
             </Button>
             
             <Button 
               variant="ghost" 
               size="sm"
-              className="aviation-tab-button flex items-center space-x-1 rounded-full px-3"
-              style={{ 
-                height: '32px',
-                color: isDarkMode ? 'var(--aviation-blue-light)' : 'var(--aviation-blue-dark)'
-              }}
+              className="flex items-center h-8 px-3 text-gray-600 rounded-md"
             >
-              <BarChart3Icon className="h-4 w-4" />
+              <BarChart3Icon className="h-4 w-4 mr-1.5" />
               <span className="text-xs">Stats</span> 
             </Button>
           </div>
@@ -162,23 +67,15 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
           <Button 
             variant="ghost" 
             size="icon"
-            className="aviation-icon-btn relative"
+            className="h-9 w-9 rounded-full text-gray-600"
           >
             <BellIcon className="h-5 w-5" />
-            <span 
-              className="absolute -top-1 -right-1 h-3 w-3 rounded-full aviation-pulse"
-              style={{ 
-                background: isDarkMode ? 'var(--aviation-cyan)' : 'var(--aviation-blue-light)',
-                boxShadow: isDarkMode ? '0 1px 3px rgba(0, 0, 0, 0.3)' : '0 1px 3px rgba(10, 73, 149, 0.2)',
-                border: isDarkMode ? '2px solid var(--aviation-dark-blue)' : '2px solid white'
-              }}
-            ></span>
           </Button>
           
           <Button 
             variant="ghost" 
             size="icon"
-            className="aviation-icon-btn"
+            className="h-9 w-9 rounded-full text-gray-600"
           >
             <Settings className="h-5 w-5" />
           </Button>
@@ -187,23 +84,17 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
             variant="ghost" 
             size="icon" 
             onClick={onThemeToggle}
-            className="aviation-icon-btn"
+            className="h-9 w-9 rounded-full text-gray-600"
           >
             {isDarkMode ? (
-              <SunIcon className="h-5 w-5 text-yellow-400" />
+              <SunIcon className="h-5 w-5" />
             ) : (
               <MoonIcon className="h-5 w-5" />
             )}
           </Button>
           
           <Button 
-            className="ml-2"
-            style={{
-              background: isDarkMode ? 'var(--aviation-dark-accent)' : 'var(--aviation-blue-accent)',
-              color: 'white',
-              borderRadius: '5px',
-              boxShadow: isDarkMode ? '0 2px 4px rgba(0, 0, 0, 0.2)' : '0 2px 4px rgba(10, 73, 149, 0.1)'
-            }}
+            className="ml-1 bg-blue-500 text-white rounded-md h-9 px-4"
           >
             <UserIcon className="h-4 w-4 mr-2" />
             Sign In
@@ -215,37 +106,29 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
             variant="ghost" 
             size="icon" 
             onClick={onThemeToggle}
-            className="aviation-icon-btn"
+            className="h-8 w-8 rounded-full text-gray-600"
           >
             {isDarkMode ? (
-              <SunIcon className="h-5 w-5 text-yellow-400" />
+              <SunIcon className="h-4 w-4" />
             ) : (
-              <MoonIcon className="h-5 w-5" />
+              <MoonIcon className="h-4 w-4" />
             )}
           </Button>
           
           <Button 
             variant="ghost" 
             size="icon"
-            className="aviation-icon-btn"
+            className="h-8 w-8 rounded-full text-gray-600"
           >
-            <SearchIcon className="h-5 w-5" />
+            <SearchIcon className="h-4 w-4" />
           </Button>
           
           <Button 
             variant="ghost" 
             size="icon"
-            className="aviation-icon-btn relative"
+            className="h-8 w-8 rounded-full text-gray-600"
           >
-            <BellIcon className="h-5 w-5" />
-            <span 
-              className="absolute -top-1 -right-1 h-2 w-2 rounded-full aviation-pulse"
-              style={{ 
-                background: isDarkMode ? 'var(--aviation-cyan)' : 'var(--aviation-blue-light)',
-                boxShadow: isDarkMode ? '0 1px 3px rgba(0, 0, 0, 0.3)' : '0 1px 3px rgba(10, 73, 149, 0.2)',
-                border: isDarkMode ? '1px solid var(--aviation-dark-blue)' : '1px solid white'
-              }}
-            ></span>
+            <BellIcon className="h-4 w-4" />
           </Button>
         </div>
       </div>
