@@ -163,6 +163,26 @@ export type LiveFlight = {
   squawk?: string;
 };
 
+export type WeatherImpact = {
+  windImpact: number;
+  visibilityImpact: number;
+  precipitationImpact: number;
+  turbulenceImpact: number;
+  overallImpact: number;
+  flightCategory: 'VFR' | 'MVFR' | 'IFR' | 'LIFR';
+  recommendations: string[];
+};
+
+export type WeatherAlert = {
+  event: string;
+  severity: string; 
+  headline: string;
+  description: string;
+  effective: string;
+  expires: string;
+  instruction: string;
+};
+
 export type WeatherData = {
   location: {
     name: string;
@@ -173,13 +193,21 @@ export type WeatherData = {
     tempC: number;
     tempF: number;
     condition: string;
+    conditionIcon?: string;
     windMph: number;
     windDir: string;
     pressureInHg: number;
     humidity: number;
     visibilityMiles: number;
     dewpointF: number;
+    feelsLikeF?: number;
     cloudCeiling?: string;
+    isDay?: boolean;
+    uv?: number;
+    airQuality?: {
+      usEpaIndex: number;
+      pm2_5: number;
+    };
   };
   forecast?: {
     daily: Array<{
@@ -187,9 +215,30 @@ export type WeatherData = {
       tempMaxF: number;
       tempMinF: number;
       condition: string;
+      conditionIcon?: string;
       precipChance: number;
+      windMph?: number;
+      humidity?: number;
+      visibility?: number;
+      uvIndex?: number;
+    }>;
+    hourly?: Array<{
+      time: string;
+      tempF: number;
+      condition: string;
+      conditionIcon?: string;
+      windMph: number;
+      windDir: string;
+      precipChance: number;
+      humidity: number;
+      cloudCover: number;
+      feelsLikeF: number;
+      windGustMph: number;
+      visibilityMiles: number;
     }>;
   };
+  alerts?: WeatherAlert[];
+  flightImpact?: WeatherImpact;
 };
 
 export type MapFilter = {

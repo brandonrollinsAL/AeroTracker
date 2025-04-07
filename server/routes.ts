@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { setupWebSocketServer } from "./webSocket";
 import { fetchFlights, fetchFlightDetails, fetchAircraft } from "./api/aviation";
-import { fetchWeather } from "./api/weather";
+import { fetchWeather, getRouteWeatherImpact } from "./api/weather";
 import { fetchUSAirports, searchAirports } from "./api/airports";
 import { 
   getFlightPerformanceMetrics, 
@@ -425,6 +425,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error calculating optimized route:", error);
       res.status(500).json({ message: "Failed to calculate optimized route" });
+    }
+  });
+
+  // Get weather impact for a route between airports
+  app.get("/api/weather/route-impact", async (req, res) => {
+    try {
+      const { departureCode, arrivalCode } = req.query;
+      
+      if (!departureCode || !arrivalCode) {
+        return res.status(400).json({ 
+          message: "Missing required parameters: departureCode and arrivalCode are required" 
+        });
+      }
+      
+      const weatherImpact = await getRouteWeatherImpact(
+        departureCode as string, 
+        arrivalCode as string
+      );
+      
+      res.json(weatherImpact);
+    } catch (error) {
+      console.error("Error fetching route weather impact:", error);
+      res.status(500).json({ message: "Failed to fetch weather impact for route" });
     }
   });
 

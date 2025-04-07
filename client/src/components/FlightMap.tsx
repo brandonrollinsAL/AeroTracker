@@ -4,12 +4,15 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import MapControls from './MapControls';
 import AirportMarker from './AirportMarker';
+import WeatherOverlay from './WeatherOverlay';
+import WeatherImpactPanel from './WeatherImpactPanel';
 import { LiveFlight, MapFilter, Airport } from '@/types';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { AlertTriangle, Info, Zap, Wind, Eye, Layers, Maximize, Minimize, FullscreenIcon } from 'lucide-react';
+import { AlertTriangle, Info, Zap, Wind, Eye, Layers, Maximize, Minimize, FullscreenIcon, CloudRain } from 'lucide-react';
 import axios from 'axios';
 
 // Fix the default icon issue with Leaflet
@@ -543,10 +546,13 @@ export default function FlightMap({
             />
           ))}
           
-          {/* Weather overlay would go here if enabled */}
+          {/* Weather overlay */}
           {filters.showWeather && (
-            // This would be a weather overlay component
-            <></>
+            <WeatherOverlay 
+              enabled={filters.showWeather}
+              airportCode={selectedFlight?.departure?.icao || selectedFlight?.arrival?.icao} 
+              zoom={currentZoom}
+            />
           )}
           
           {/* Loading indicator for airports */}
