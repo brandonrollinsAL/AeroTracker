@@ -1,15 +1,20 @@
 {
-  "variant": "tint",
+  "variant": "vibrant",
   "primary": "#0a4995",
   "appearance": "system", 
-  "radius": 1.2,
+  "radius": 1.5,
   "colors": {
     "blue": {
       "dark": "#0a4995",
       "medium": "#2460a7",
-      "light": "#3f78bf",
-      "accent": "#55ffdd",
-      "teal": "#449999"
+      "light": "#55ffdd",
+      "ultraLight": "#e6f7ff",
+      "accent": "#449999",
+      "cyan": "#55ffdd",
+      "teal": "#449999",
+      "sky": "#89cff0",
+      "navy": "#001f3f",
+      "deepOcean": "#05274d"
     },
     "status": {
       "active": "#22c55e",
@@ -18,6 +23,17 @@
       "delayed": "#ef4444",
       "cancelled": "#f43f5e",
       "diverted": "#8b5cf6"
+    },
+    "gradients": {
+      "primary": "linear-gradient(135deg, #0a4995, #2460a7)",
+      "accent": "linear-gradient(to right, #55ffdd, #449999)",
+      "light": "linear-gradient(135deg, #2460a7, #55ffdd)",
+      "glow": "linear-gradient(135deg, #55ffdd, #3effff)"
+    },
+    "effects": {
+      "glowSmall": "0 0 8px rgba(85, 255, 221, 0.5)",
+      "glowMedium": "0 0 15px rgba(85, 255, 221, 0.7)",
+      "glowLarge": "0 0 25px rgba(85, 255, 221, 0.9)"
     }
   }
 }

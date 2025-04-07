@@ -18,21 +18,38 @@ export function formatTime(timestamp: string | undefined): string {
 }
 
 // Format the duration between two timestamps or return a duration in minutes
+// Also handles milliseconds value as a string for ETA calculation
 export function formatDuration(
-  startTime?: string | Date,
+  startTimeOrMillis?: string | Date,
   endTime?: string | Date,
   durationMinutes?: number
 ): string {
+  // If duration in minutes is provided directly
   if (durationMinutes) {
     const hours = Math.floor(durationMinutes / 60);
     const minutes = durationMinutes % 60;
     return `${hours}h ${minutes}m`;
   }
   
-  if (!startTime || !endTime) return 'Unknown';
+  // If a millisecond value is provided as a string (for ETA calculation)
+  if (startTimeOrMillis && typeof startTimeOrMillis === 'string' && !isNaN(Number(startTimeOrMillis))) {
+    const milliseconds = Number(startTimeOrMillis);
+    const minutes = Math.floor(milliseconds / 60000);
+    
+    if (minutes < 60) {
+      return `${minutes}m`;
+    } else {
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
+      return `${hours}h ${remainingMinutes}m`;
+    }
+  }
+  
+  // For normal duration between two dates
+  if (!startTimeOrMillis || !endTime) return 'Unknown';
   
   try {
-    const start = typeof startTime === 'string' ? new Date(startTime) : startTime;
+    const start = typeof startTimeOrMillis === 'string' ? new Date(startTimeOrMillis) : startTimeOrMillis;
     const end = typeof endTime === 'string' ? new Date(endTime) : endTime;
     return formatDistance(start, end);
   } catch (error) {

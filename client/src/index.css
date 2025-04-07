@@ -438,6 +438,234 @@
   opacity: 0.8;
 }
 
+/* Flight list styles */
+.aviation-panel-sidebar {
+  background: linear-gradient(to bottom, rgba(255,255,255,0.97), rgba(240,248,255,0.97));
+  border-color: rgba(85, 255, 221, 0.2);
+  box-shadow: -4px 0 20px rgba(10, 73, 149, 0.05);
+}
+
+.dark .aviation-panel-sidebar {
+  background: linear-gradient(to bottom, rgba(5, 39, 77, 0.95), rgba(3, 28, 58, 0.95));
+  border-color: rgba(85, 255, 221, 0.1);
+}
+
+.aviation-glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(85, 255, 221, 0.15);
+}
+
+.dark .aviation-glass {
+  background: rgba(5, 39, 77, 0.8);
+  border-bottom: 1px solid rgba(85, 255, 221, 0.05);
+}
+
+.aviation-data-highlight {
+  background: rgba(10, 73, 149, 0.07);
+  color: var(--aviation-blue-dark);
+  border: 1px solid rgba(85, 255, 221, 0.2);
+}
+
+.dark .aviation-data-highlight {
+  background: rgba(85, 255, 221, 0.1);
+  color: var(--aviation-cyan);
+  border: 1px solid rgba(85, 255, 221, 0.1);
+}
+
+.aviation-select-trigger {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(85, 255, 221, 0.2);
+}
+
+.aviation-select-trigger:hover, .aviation-select-trigger:focus {
+  border-color: rgba(85, 255, 221, 0.5);
+  box-shadow: 0 0 0 2px rgba(85, 255, 221, 0.1);
+}
+
+.aviation-select-content {
+  border: 1px solid rgba(85, 255, 221, 0.2);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.aviation-select-item {
+  transition: all 0.2s ease;
+}
+
+.aviation-select-item:hover {
+  background: rgba(10, 73, 149, 0.05);
+}
+
+.aviation-select-item[data-state="checked"] {
+  background: rgba(10, 73, 149, 0.1);
+  color: var(--aviation-blue-dark);
+}
+
+/* Flight tabs */
+.aviation-tabs-list {
+  padding: 3px;
+}
+
+.aviation-tab {
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  color: var(--aviation-blue-dark);
+  position: relative;
+  overflow: hidden;
+}
+
+.aviation-tab::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, var(--aviation-blue-dark), var(--aviation-blue-light));
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.aviation-tab:hover::before {
+  transform: translateY(0);
+}
+
+.aviation-tab-active {
+  background: linear-gradient(to bottom, rgba(10, 73, 149, 0.08), rgba(85, 255, 221, 0.05)) !important;
+  color: var(--aviation-blue-dark) !important;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(10, 73, 149, 0.1);
+}
+
+.aviation-tab-active::before {
+  transform: translateY(0);
+  height: 3px;
+  background: linear-gradient(to right, var(--aviation-blue-light), var(--aviation-cyan-glow));
+  box-shadow: 0 0 10px rgba(85, 255, 221, 0.5);
+}
+
+.dark .aviation-tab {
+  color: var(--aviation-blue-light);
+}
+
+.dark .aviation-tab-active {
+  background: rgba(85, 255, 221, 0.1) !important;
+  color: white !important;
+}
+
+/* Flight item styles */
+.aviation-flight-item {
+  transition: all 0.3s ease;
+}
+
+.aviation-flight-item:hover {
+  background: linear-gradient(to right, rgba(240,248,255,0.5), rgba(230,247,255,0.9)) !important;
+  transform: translateX(2px);
+  box-shadow: 
+    -4px 0 0 var(--aviation-blue-light),
+    0 4px 15px rgba(10, 73, 149, 0.05);
+}
+
+.dark .aviation-flight-item {
+  background: linear-gradient(to right, rgba(5, 39, 77, 0.4), rgba(3, 28, 58, 0.2));
+  border-color: rgba(85, 255, 221, 0.05);
+}
+
+.dark .aviation-flight-item:hover {
+  background: linear-gradient(to right, rgba(10, 73, 149, 0.3), rgba(45, 121, 135, 0.2)) !important;
+  box-shadow: 
+    -4px 0 0 var(--aviation-blue-light),
+    0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.aviation-progress-container {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(85, 255, 221, 0.15);
+}
+
+.dark .aviation-progress-container {
+  background: rgba(5, 39, 77, 0.3);
+  border-color: rgba(85, 255, 221, 0.05);
+}
+
+.aviation-data-metric {
+  background: rgba(10, 73, 149, 0.03);
+  border: 1px solid rgba(85, 255, 221, 0.1);
+  transition: all 0.3s ease;
+}
+
+.aviation-data-metric:hover {
+  background: rgba(10, 73, 149, 0.07);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(10, 73, 149, 0.1);
+}
+
+.dark .aviation-data-metric {
+  background: rgba(5, 39, 77, 0.4);
+  border-color: rgba(85, 255, 221, 0.05);
+}
+
+.dark .aviation-data-metric:hover {
+  background: rgba(85, 255, 221, 0.1);
+}
+
+/* Status badges */
+.aviation-status-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.aviation-status-active {
+  background: linear-gradient(to right, #1cb35b, #22c55e);
+  box-shadow: 0 2px 5px rgba(34, 197, 94, 0.3);
+}
+
+.aviation-status-landed {
+  background: linear-gradient(to right, #2563eb, #3b82f6);
+  box-shadow: 0 2px 5px rgba(59, 130, 246, 0.3);
+}
+
+.aviation-status-scheduled {
+  background: linear-gradient(to right, #d97706, #f59e0b);
+  box-shadow: 0 2px 5px rgba(245, 158, 11, 0.3);
+}
+
+.aviation-status-cancelled {
+  background: linear-gradient(to right, #e11d48, #f43f5e);
+  box-shadow: 0 2px 5px rgba(244, 63, 94, 0.3);
+}
+
+.aviation-status-diverted, .aviation-status-delayed {
+  background: linear-gradient(to right, #7c3aed, #8b5cf6);
+  box-shadow: 0 2px 5px rgba(139, 92, 246, 0.3);
+}
+
+/* Animation for live indicator */
+.aviation-pulse {
+  animation: pulseLive 2s infinite;
+}
+
+@keyframes pulseLive {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
 /* Flight path styles */
 .flight-path {
   stroke: var(--aviation-blue-medium);
@@ -856,6 +1084,34 @@
   transition: all 0.2s ease;
   border: 1px solid transparent;
   color: var(--aviation-blue-dark);
+}
+
+.aviation-tab-button {
+  border-radius: 100px !important;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
+  overflow: hidden;
+  position: relative;
+}
+
+.aviation-tab-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.aviation-tab-button:hover::after {
+  transform: translateX(100%);
+}
+
+.aviation-tab-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(10, 73, 149, 0.2);
 }
 
 .aviation-tab:hover {
