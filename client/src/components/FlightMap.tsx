@@ -26,13 +26,43 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// Custom airplane icon
-const createAirplaneIcon = (heading: number) => {
+// Custom airplane icon with aviation blues
+const createAirplaneIcon = (heading: number, isSelected: boolean = false, altitude: number = 0) => {
+  // Calculate color based on altitude (lower = more cyan, higher = more dark blue)
+  const altitudePercent = Math.min(Math.max(altitude / 40000, 0), 1); // Normalize between 0-40,000 ft
+  
+  let iconColor: string;
+  let iconSize: number = isSelected ? 32 : 28;
+  let iconClass: string = isSelected ? 'airplane-icon selected' : 'airplane-icon';
+  let glowEffect: string = '';
+  
+  if (isSelected) {
+    // Selected flights use the accent cyan with glow
+    iconColor = '#55ffdd';
+    glowEffect = 'filter: drop-shadow(0 0 8px rgba(85, 255, 221, 0.8));';
+  } else {
+    // Normal flights use a gradient between cyan and dark blue based on altitude
+    if (altitudePercent < 0.2) {
+      iconColor = '#55ffdd'; // Low altitude - cyan
+    } else if (altitudePercent < 0.5) {
+      iconColor = '#2460a7'; // Medium altitude - medium blue
+    } else {
+      iconColor = '#0a4995'; // High altitude - dark blue
+    }
+  }
+  
   return L.divIcon({
-    html: `<span class="material-icons text-primary" style="transform: rotate(${heading}deg)">flight</span>`,
-    className: 'airplane-icon',
-    iconSize: [24, 24],
-    iconAnchor: [12, 12]
+    html: `
+      <div class="${iconClass}" style="transform: rotate(${heading}deg); ${glowEffect}">
+        <svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" 
+                fill="${iconColor}" />
+        </svg>
+      </div>
+    `,
+    className: 'custom-airplane-icon',
+    iconSize: [iconSize, iconSize],
+    iconAnchor: [iconSize/2, iconSize/2]
   });
 };
 
@@ -99,107 +129,111 @@ function MapControlButtons({
     });
   };
   
-  const buttonClass = isDarkMode 
-    ? "bg-neutral-800 rounded-full shadow-md hover:bg-neutral-700 h-9 w-9 border-neutral-700" 
-    : "bg-white rounded-full shadow-md hover:bg-neutral-100 h-9 w-9";
-    
-  const iconClass = isDarkMode ? "text-neutral-200" : "text-neutral-800";
-  
   return (
-    <div className="absolute top-4 right-4 flex flex-col space-y-2 z-[900]">
-      <TooltipProvider>
-        <UITooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className={buttonClass}
-              onClick={handleZoomIn}
-            >
-              <span className={`material-icons ${iconClass}`}>add</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="left">
-            <p className="text-xs">Zoom in</p>
-          </TooltipContent>
-        </UITooltip>
-      </TooltipProvider>
-      
-      <TooltipProvider>
-        <UITooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className={buttonClass}
-              onClick={handleZoomOut}
-            >
-              <span className={`material-icons ${iconClass}`}>remove</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="left">
-            <p className="text-xs">Zoom out</p>
-          </TooltipContent>
-        </UITooltip>
-      </TooltipProvider>
-      
-      <TooltipProvider>
-        <UITooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className={buttonClass}
-              onClick={toggleFlightTrails}
-            >
-              <span className={`material-icons ${iconClass} ${showFlightTrails ? 'text-primary' : ''}`}>
-                timeline
-              </span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="left">
-            <p className="text-xs">{showFlightTrails ? 'Hide' : 'Show'} flight trails</p>
-          </TooltipContent>
-        </UITooltip>
-      </TooltipProvider>
-      
-      <TooltipProvider>
-        <UITooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className={buttonClass}
-              onClick={handleMyLocation}
-            >
-              <span className={`material-icons ${iconClass}`}>my_location</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="left">
-            <p className="text-xs">Go to my location</p>
-          </TooltipContent>
-        </UITooltip>
-      </TooltipProvider>
-      
-      <TooltipProvider>
-        <UITooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className={buttonClass}
-              onClick={toggleFullscreen}
-            >
-              <span className={`material-icons ${iconClass}`}>
-                {isFullscreen ? 'fullscreen_exit' : 'fullscreen'}
-              </span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="left">
-            <p className="text-xs">{isFullscreen ? 'Exit' : 'Enter'} fullscreen</p>
-          </TooltipContent>
-        </UITooltip>
-      </TooltipProvider>
+    <div className="map-controls">
+      <div className="aviation-glass p-1.5 rounded-xl backdrop-blur-md flex flex-col space-y-2 border border-[#55ffdd]/20">
+        <TooltipProvider>
+          <UITooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                className="map-control-button"
+                onClick={handleZoomIn}
+              >
+                <Layers className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left" className="aviation-tooltip">
+              <p className="text-xs font-medium">Zoom in</p>
+            </TooltipContent>
+          </UITooltip>
+        </TooltipProvider>
+        
+        <TooltipProvider>
+          <UITooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                className="map-control-button"
+                onClick={handleZoomOut}
+              >
+                <Minimize className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left" className="aviation-tooltip">
+              <p className="text-xs font-medium">Zoom out</p>
+            </TooltipContent>
+          </UITooltip>
+        </TooltipProvider>
+        
+        <TooltipProvider>
+          <UITooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                className={`map-control-button ${showFlightTrails ? 'active' : ''}`}
+                onClick={toggleFlightTrails}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 3l-5 5.5L8 7l-5 5"/>
+                  <path d="M15 3h2v2"/>
+                  <path d="M3 12h2v2"/>
+                  <path d="M17 17l-5 5.5-4-1.5-5-5"/>
+                  <path d="M15 17h2v2"/>
+                  <path d="M3 8h2v2"/>
+                </svg>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left" className="aviation-tooltip">
+              <p className="text-xs font-medium">{showFlightTrails ? 'Hide' : 'Show'} flight trails</p>
+            </TooltipContent>
+          </UITooltip>
+        </TooltipProvider>
+        
+        <div className="h-px w-full bg-[#55ffdd]/10"></div>
+        
+        <TooltipProvider>
+          <UITooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                className="map-control-button"
+                onClick={handleMyLocation}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <circle cx="12" cy="12" r="4"/>
+                  <line x1="12" y1="2" x2="12" y2="4"/>
+                  <line x1="12" y1="20" x2="12" y2="22"/>
+                  <line x1="4" y1="12" x2="2" y2="12"/>
+                  <line x1="22" y1="12" x2="20" y2="12"/>
+                </svg>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left" className="aviation-tooltip">
+              <p className="text-xs font-medium">Go to my location</p>
+            </TooltipContent>
+          </UITooltip>
+        </TooltipProvider>
+        
+        <TooltipProvider>
+          <UITooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                className="map-control-button"
+                onClick={toggleFullscreen}
+              >
+                {isFullscreen ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
+                  </svg>
+                ) : (
+                  <FullscreenIcon className="h-4 w-4" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left" className="aviation-tooltip">
+              <p className="text-xs font-medium">{isFullscreen ? 'Exit' : 'Enter'} fullscreen</p>
+            </TooltipContent>
+          </UITooltip>
+        </TooltipProvider>
+      </div>
     </div>
   );
 }
@@ -340,31 +374,84 @@ export default function FlightMap({
             <React.Fragment key={flight.id}>
               <Marker
                 position={[flight.position.latitude, flight.position.longitude]}
-                icon={createAirplaneIcon(flight.position.heading)}
+                icon={createAirplaneIcon(
+                  flight.position.heading, 
+                  selectedFlight?.id === flight.id,
+                  flight.position.altitude
+                )}
                 eventHandlers={{
                   click: () => onFlightSelect(flight)
                 }}
               >
-                <Tooltip direction="top" offset={[0, -20]} permanent={selectedFlight?.id === flight.id}>
-                  <div className="text-xs font-medium">
+                <Tooltip 
+                  direction="top" 
+                  offset={[0, -15]} 
+                  permanent={selectedFlight?.id === flight.id}
+                  className="aviation-map-tooltip"
+                >
+                  <div className="text-xs font-bold bg-clip-text text-transparent px-1"
+                    style={{ 
+                      backgroundImage: 'linear-gradient(90deg, var(--aviation-blue-dark), var(--aviation-blue-light))',
+                      whiteSpace: 'nowrap' 
+                    }}
+                  >
                     {flight.callsign || flight.flightNumber}
                   </div>
                 </Tooltip>
                 
-                <Popup>
-                  <div className="text-sm">
-                    <div className="font-bold">{flight.callsign || flight.flightNumber}</div>
-                    <div>{flight.departure?.icao} → {flight.arrival?.icao}</div>
-                    <div>Alt: {flight.position.altitude.toLocaleString()} ft</div>
-                    <div>Speed: {flight.position.groundSpeed} mph</div>
+                <Popup className="aviation-popup">
+                  <div className="popup-header bg-gradient-to-r from-[#0a4995] to-[#2460a7] text-white px-3 py-2 -mx-2 -mt-2 rounded-t-lg flex items-center mb-2">
+                    <div className="h-7 w-7 rounded-full bg-[#55ffdd]/20 flex items-center justify-center mr-2">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" 
+                              fill="#ffffff" />
+                      </svg>
+                    </div>
+                    <div className="font-bold tracking-wide">{flight.callsign || flight.flightNumber}</div>
+                  </div>
+                  
+                  <div className="pb-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="aviation-data-highlight px-2 py-1 text-xs rounded-md">
+                        {flight.departure?.icao || 'N/A'} → {flight.arrival?.icao || 'N/A'}
+                      </div>
+                      <div className={`aviation-status aviation-status-${flight.status} text-xs py-0.5 px-1.5 rounded-full`}>
+                        {flight.status.charAt(0).toUpperCase() + flight.status.slice(1)}
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2 mb-2">
+                      <div className="flex items-center">
+                        <div className="h-5 w-5 rounded-full bg-gradient-to-br from-[#0a4995] to-[#2460a7] flex items-center justify-center mr-1.5">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" 
+                                  fill="#ffffff" />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="text-[10px] text-neutral-500 uppercase font-medium">Altitude</div>
+                          <div className="text-xs font-bold text-[#0a4995]">{flight.position.altitude.toLocaleString()} ft</div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center">
+                        <div className="h-5 w-5 rounded-full bg-gradient-to-br from-[#55ffdd] to-[#449999] flex items-center justify-center mr-1.5">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="text-[10px] text-neutral-500 uppercase font-medium">Speed</div>
+                          <div className="text-xs font-bold text-[#0a4995]">{flight.position.groundSpeed} mph</div>
+                        </div>
+                      </div>
+                    </div>
+                    
                     <Button 
-                      variant="outline" 
-                      size="sm" 
                       onClick={() => onFlightSelect(flight)}
-                      className="mt-2 w-full"
+                      className="w-full mt-1 aviation-btn-accent text-xs py-1 h-auto"
                     >
-                      <span className="material-icons mr-1 text-sm">info</span>
-                      Details
+                      View Flight Details
                     </Button>
                   </div>
                 </Popup>
@@ -375,10 +462,11 @@ export default function FlightMap({
                 <Polyline 
                   positions={generateFlightPath(flight)}
                   pathOptions={{ 
-                    color: selectedFlight?.id === flight.id ? '#3b82f6' : '#94a3b8',
+                    color: selectedFlight?.id === flight.id ? '#55ffdd' : '#2460a7',
                     weight: selectedFlight?.id === flight.id ? 3 : 2,
-                    dashArray: selectedFlight?.id === flight.id ? '' : '5, 5',
-                    opacity: selectedFlight?.id === flight.id ? 0.8 : 0.5
+                    dashArray: selectedFlight?.id === flight.id ? '' : '5, 8',
+                    opacity: selectedFlight?.id === flight.id ? 0.9 : 0.6,
+                    className: selectedFlight?.id === flight.id ? 'flight-path-active' : 'flight-path'
                   }}
                 />
               )}

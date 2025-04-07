@@ -1,6 +1,23 @@
 {
-  "variant": "vibrant",
+  "variant": "tint",
   "primary": "#0a4995",
-  "appearance": "system",
-  "radius": 1.2
+  "appearance": "system", 
+  "radius": 1.2,
+  "colors": {
+    "blue": {
+      "dark": "#0a4995",
+      "medium": "#2460a7",
+      "light": "#3f78bf",
+      "accent": "#55ffdd",
+      "teal": "#449999"
+    },
+    "status": {
+      "active": "#22c55e",
+      "landed": "#3b82f6",
+      "scheduled": "#f59e0b",
+      "delayed": "#ef4444",
+      "cancelled": "#f43f5e",
+      "diverted": "#8b5cf6"
+    }
+  }
 }

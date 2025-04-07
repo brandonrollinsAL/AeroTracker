@@ -4,26 +4,49 @@
 
 @layer base {
   :root {
+    /* Standard ShadCN colors */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
+    
+    /* Aviation blues */
+    --primary: 212 94% 31%; /* #0a4995 - Aviation blue dark */
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 212 64% 40%; /* #2460a7 - Aviation blue medium */
+    --secondary-foreground: 210 40% 98%;
+    --accent: 173 100% 67%; /* #55ffdd - Aviation accent cyan */
+    --accent-foreground: 222.2 47.4% 11.2%;
+    
+    /* Additional aviation colors */
+    --aviation-teal: 180 55% 44%; /* #449999 - Aviation teal */
+    
+    /* Standard interface colors */
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 212 94% 31%;
     --radius: 0.5rem;
+    
+    /* Custom aviation variables */
+    --aviation-blue-dark: #0a4995;
+    --aviation-blue-medium: #2460a7; 
+    --aviation-blue-light: #3f78bf;
+    --aviation-cyan: #55ffdd;
+    --aviation-teal-color: #449999;
+    
+    /* Status colors */
+    --status-active: #22c55e;
+    --status-landed: #3b82f6;
+    --status-scheduled: #f59e0b;
+    --status-delayed: #ef4444;
+    --status-cancelled: #f43f5e;
+    --status-diverted: #8b5cf6;
   }
 
   .dark {
@@ -33,19 +56,26 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
+    
+    /* Aviation blues - adjusted for dark mode */
+    --primary: 212 64% 45%; /* Slightly lightened aviation blue */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 212 55% 50%;
     --secondary-foreground: 210 40% 98%;
+    --accent: 173 90% 67%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    
+    /* Additional aviation colors - adjusted for dark mode */
+    --aviation-teal: 180 55% 49%;
+    
+    /* Standard interface colors */
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --ring: 212 64% 45%;
   }
 }
 
@@ -552,7 +582,7 @@
 }
 
 /* Popup styles */
-.leaflet-popup-content-wrapper {
+.aviation-popup .leaflet-popup-content-wrapper {
   border-radius: 12px;
   box-shadow: 
     0 8px 25px rgba(0, 0, 0, 0.15),
@@ -564,15 +594,34 @@
   -webkit-backdrop-filter: blur(10px);
 }
 
-.leaflet-popup-tip {
+.aviation-popup .leaflet-popup-tip {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   background: var(--aviation-blue-light);
 }
 
-.leaflet-popup-content {
+.aviation-popup .leaflet-popup-content {
   margin: 0;
   padding: 0;
-  min-width: 200px;
+  min-width: 240px;
+}
+
+.aviation-popup .leaflet-popup-close-button {
+  color: white;
+  margin: 6px;
+  width: 22px;
+  height: 22px;
+  font-size: 18px;
+  line-height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+.aviation-popup .leaflet-popup-close-button:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: rotate(90deg);
 }
 
 .popup-header {
