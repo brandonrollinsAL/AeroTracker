@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import FlightMap from '@/components/FlightMap';
-import FlightList from '@/components/FlightList';
+import FlightPanel from '@/components/FlightPanel';
 import Header from '@/components/Header';
 import FlightDetailPanel from '@/components/FlightDetailPanel';
 import { LiveFlight, MapFilter } from '@/types';
@@ -216,23 +216,23 @@ export default function Home() {
         />
         
         <main className="flex flex-col md:flex-row">
-          <FlightMap 
+          <div className="flex-grow">
+            <FlightMap 
+              flights={flights}
+              selectedFlight={selectedFlight}
+              onFlightSelect={handleFlightSelect}
+              filters={mapFilters}
+              onFilterChange={handleFilterChange}
+              isConnected={isConnected}
+              isDarkMode={isDarkMode}
+            />
+          </div>
+          
+          <FlightPanel 
             flights={flights}
             selectedFlight={selectedFlight}
-            onFlightSelect={handleFlightSelect}
-            filters={mapFilters}
-            onFilterChange={handleFilterChange}
-            isConnected={isConnected}
-            isDarkMode={isDarkMode}
-          />
-          
-          <FlightList 
-            flights={flights}
-            onFlightSelect={handleFlightSelect}
-            isConnected={isConnected}
-            favoriteFlights={favoriteFlights}
-            onAddToFavorites={handleAddToFavorites}
-            onRemoveFromFavorites={handleRemoveFromFavorites}
+            onSelectFlight={handleFlightSelect}
+            totalFlights={flights.length}
           />
         </main>
 

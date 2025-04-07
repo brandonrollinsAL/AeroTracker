@@ -90,7 +90,7 @@ export default function MapFilters({ filters, onFilterChange }: MapFiltersProps)
 
   return (
     <TooltipProvider>
-      <div className="absolute top-[64px] left-0 right-0 md:right-1/4 bg-white border-b z-[900]">
+      <div className="absolute top-[64px] left-0 right-0 bg-white border-b z-[900]">
         <div className="mx-4 my-1 flex items-center space-x-2 text-xs">
           <Button
             variant={filters.type === 'commercial' ? 'default' : 'ghost'}

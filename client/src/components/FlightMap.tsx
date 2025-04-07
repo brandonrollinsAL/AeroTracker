@@ -374,10 +374,10 @@ export default function FlightMap({
   };
 
   return (
-    <div className={`w-full md:w-full lg:w-full relative h-[50vh] md:h-[calc(100vh-4rem)] p-0 ${
+    <div className={`w-full relative h-[50vh] md:h-[calc(100vh-4rem)] ${
       isDarkMode ? 'bg-neutral-900' : 'bg-white'
-    } ${isFullscreen ? 'fixed inset-0 z-50 h-screen w-screen p-0' : ''}`}>
-      <div className={`w-full h-full ${isDarkMode ? 'bg-neutral-900' : 'bg-white'} rounded-sm overflow-hidden pt-[30px]`}>
+    } ${isFullscreen ? 'fixed inset-0 z-50 h-screen w-screen' : ''}`}>
+      <div className={`w-full h-full ${isDarkMode ? 'bg-neutral-900' : 'bg-white'} rounded overflow-hidden pt-[40px] px-4 pb-4`}>
         {!isConnected && (
           <Alert variant="destructive" className="absolute top-[84px] left-1/2 transform -translate-x-1/2 z-50 w-auto">
             <AlertTriangle className="h-4 w-4" />
