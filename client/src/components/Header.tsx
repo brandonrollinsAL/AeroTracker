@@ -10,7 +10,7 @@ interface HeaderProps {
 export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
   return (
     <header 
-      className="border-b h-16 py-2 px-4 flex items-center justify-between sticky top-0 z-50 backdrop-blur-md"
+      className="border-b h-16 py-2 px-6 flex items-center justify-between sticky top-0 z-50 backdrop-blur-md"
       style={{
         background: isDarkMode 
           ? 'rgba(0, 58, 101, 0.95)' 
@@ -22,39 +22,41 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
       }}
     >
       <div className="flex items-center">
-        <div className="mr-4 relative">
+        <div className="mr-5 relative ml-1">
           <div 
-            className="h-12 w-12 rounded-full flex items-center justify-center overflow-hidden"
+            className="h-11 w-11 rounded-full flex items-center justify-center overflow-hidden"
             style={{ 
               background: isDarkMode ? 'var(--aviation-dark-accent)' : 'var(--aviation-blue-accent)',
               boxShadow: isDarkMode
                 ? '0 4px 12px rgba(0, 0, 0, 0.25)'
                 : '0 4px 12px rgba(10, 73, 149, 0.2)',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              border: isDarkMode ? '1px solid rgba(160, 208, 236, 0.2)' : '1px solid rgba(0, 58, 101, 0.1)'
             }}
           >
-            <PlaneIcon className="h-6 w-6 text-white transform rotate-45" />
+            <PlaneIcon className="h-5 w-5 text-white transform rotate-45" />
           </div>
           <div 
-            className="absolute -top-1 -right-1 h-4 w-4 rounded-full aviation-pulse" 
+            className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full aviation-pulse" 
             style={{ 
               background: isDarkMode ? 'var(--aviation-cyan)' : 'var(--aviation-blue-light)',
               boxShadow: isDarkMode ? '0 1px 3px rgba(0, 0, 0, 0.3)' : '0 1px 3px rgba(10, 73, 149, 0.2)'
             }}
           />
         </div>
-        <div>
+        <div className="mr-2">
           <h1 
-            className="text-2xl font-bold tracking-tight relative"
+            className="text-xl font-bold tracking-tight relative"
             style={{
               color: isDarkMode 
                 ? 'var(--aviation-blue-light)' 
-                : 'var(--aviation-blue-accent)'
+                : 'var(--aviation-blue-accent)',
+              marginBottom: '2px'
             }}
           >
             AeroTracker
             <span 
-              className="absolute -top-1 -right-1 text-xs text-white px-1.5 py-0.5 rounded-sm opacity-90 tracking-wide" 
+              className="absolute -top-0.5 -right-8 text-xs text-white px-1.5 py-0.5 rounded-sm opacity-90 tracking-wide" 
               style={{ 
                 fontSize: '8px', 
                 background: isDarkMode ? 'var(--aviation-dark-accent)' : 'var(--aviation-blue-accent)'
@@ -65,7 +67,7 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
           </h1>
           <div className="flex items-center">
             <span 
-              className="mr-2 font-medium text-xs tracking-wide"
+              className="mr-2 font-medium text-[11px] tracking-wide"
               style={{ 
                 color: isDarkMode ? 'var(--aviation-blue-ultra-light)' : 'var(--aviation-blue-dark)',
                 textShadow: isDarkMode ? '0 0 8px rgba(85, 255, 221, 0.3)' : 'none'
@@ -74,7 +76,7 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
               Advanced Flight Tracking
             </span>
             <span 
-              className="inline-block px-2 py-0.5 text-[10px] rounded text-white font-semibold"
+              className="inline-block px-1.5 py-0.5 text-[9px] rounded text-white font-semibold"
               style={{ 
                 background: isDarkMode ? 'var(--aviation-dark-accent)' : 'var(--aviation-blue-accent)',
                 boxShadow: isDarkMode 
