@@ -13,15 +13,15 @@
     --popover-foreground: 222.2 84% 4.9%;
     
     /* Aviation blues */
-    --primary: 212 94% 31%; /* #0a4995 - Aviation blue dark */
+    --primary: 213 97% 63%; /* #4995fd - Aviation blue primary */
     --primary-foreground: 210 40% 98%;
-    --secondary: 212 64% 40%; /* #2460a7 - Aviation blue medium */
+    --secondary: 208 100% 20%; /* #003a65 - Aviation blue dark */
     --secondary-foreground: 210 40% 98%;
-    --accent: 173 100% 67%; /* #55ffdd - Aviation accent cyan */
+    --accent: 213 97% 63%; /* #4995fd - Aviation accent */
     --accent-foreground: 222.2 47.4% 11.2%;
     
     /* Additional aviation colors */
-    --aviation-teal: 180 55% 44%; /* #449999 - Aviation teal */
+    --aviation-sky: 213 97% 73%; /* #78b0fd - Aviation sky blue */
     
     /* Standard interface colors */
     --muted: 210 40% 96.1%;
@@ -58,15 +58,15 @@
     --popover-foreground: 210 40% 98%;
     
     /* Aviation blues - adjusted for dark mode */
-    --primary: 212 64% 45%; /* Slightly lightened aviation blue */
+    --primary: 213 97% 63%; /* #4995fd - Aviation blue primary */
     --primary-foreground: 210 40% 98%;
-    --secondary: 212 55% 50%;
+    --secondary: 208 100% 30%; /* Slightly lightened dark blue */
     --secondary-foreground: 210 40% 98%;
-    --accent: 173 90% 67%;
+    --accent: 213 97% 63%; /* #4995fd - Aviation accent */
     --accent-foreground: 222.2 47.4% 11.2%;
     
     /* Additional aviation colors - adjusted for dark mode */
-    --aviation-teal: 180 55% 49%;
+    --aviation-sky: 213 97% 73%; /* #78b0fd - Aviation sky blue */
     
     /* Standard interface colors */
     --muted: 217.2 32.6% 17.5%;
@@ -82,21 +82,20 @@
 /* Aviation Blues Color Palette */
 :root {
   /* Core aviation blues */
-  --aviation-blue-dark: #0a4995;    /* Deep aviation blue */
-  --aviation-blue-medium: #2460a7;  /* Medium aviation blue */
-  --aviation-blue-light: #55ffdd;   /* Light cyan blue */
-  --aviation-blue-accent: #449999;  /* Accent blue */
-  --aviation-blue-ultra-light: #e6f7ff; /* Ultra light blue for backgrounds */
+  --aviation-blue-dark: #003a65;    /* Deep aviation blue */
+  --aviation-blue-medium: #0a4995;  /* Medium aviation blue */
+  --aviation-blue-light: #4995fd;   /* Light aviation blue */
+  --aviation-blue-accent: #4995fd;  /* Accent blue */
+  --aviation-blue-ultra-light: #e6f0ff; /* Ultra light blue for backgrounds */
   
   /* Extended aviation color palette */
-  --aviation-sky-blue: #89cff0;     /* Sky blue */
+  --aviation-sky-blue: #78b0fd;     /* Sky blue */
   --aviation-navy: #001f3f;         /* Navy blue for night flights */
-  --aviation-highlight: #56ccf2;    /* Highlight blue for selections */
+  --aviation-highlight: #4995fd;    /* Highlight blue for selections */
   --aviation-alert: #ff5a5f;        /* Alert red for warnings */
   --aviation-success: #00c07f;      /* Success green for confirmations */
-  --aviation-cyan-glow: #3effff;    /* Glowing cyan for emphasis */
-  --aviation-deep-ocean: #003366;   /* Deeper blue for serious elements */
-  --aviation-teal-highlight: #00cccc; /* Teal for important buttons */
+  --aviation-deep-ocean: #002b4c;   /* Deeper blue for serious elements */
+  --aviation-cyan: #4995fd;         /* Previously teal, now aviation blue */
   
   /* Gradients */
   --aviation-gradient: linear-gradient(135deg, var(--aviation-blue-dark), var(--aviation-blue-medium));
@@ -104,23 +103,23 @@
   --aviation-gradient-accent: linear-gradient(135deg, var(--aviation-blue-dark), var(--aviation-blue-accent));
   --aviation-gradient-sky: linear-gradient(135deg, var(--aviation-blue-light), var(--aviation-sky-blue));
   --aviation-gradient-alert: linear-gradient(135deg, var(--aviation-alert), #ff8c8f);
-  --aviation-gradient-glow: linear-gradient(135deg, var(--aviation-blue-light), var(--aviation-cyan-glow));
+  --aviation-gradient-glow: linear-gradient(135deg, var(--aviation-blue-light), var(--aviation-sky-blue));
   --aviation-gradient-deep: linear-gradient(135deg, var(--aviation-deep-ocean), var(--aviation-blue-dark));
   --aviation-gradient-accent-strong: linear-gradient(135deg, var(--aviation-teal-highlight), var(--aviation-blue-accent));
   --aviation-gradient-button: linear-gradient(to right, var(--aviation-blue-medium), var(--aviation-blue-accent));
   
   /* Dark mode aviation colors */
-  --aviation-dark-blue: #05274d;    /* Darker blue for dark mode */
-  --aviation-dark-accent: #2d7987;  /* Darker accent for dark mode */
+  --aviation-dark-blue: #002b4c;    /* Darker blue for dark mode */
+  --aviation-dark-accent: #003a65;  /* Darker accent for dark mode */
   --aviation-dark-gradient: linear-gradient(135deg, var(--aviation-dark-blue), var(--aviation-dark-accent));
   --aviation-dark-gradient-glow: linear-gradient(135deg, var(--aviation-dark-blue), var(--aviation-blue-light));
-  --aviation-dark-highlight: rgba(85, 255, 221, 0.3); /* Subtle highlight for dark mode */
+  --aviation-dark-highlight: rgba(73, 149, 253, 0.3); /* Subtle highlight for dark mode */
   
   /* Glow effects */
-  --aviation-glow-sm: 0 0 8px rgba(85, 255, 221, 0.5);
-  --aviation-glow-md: 0 0 15px rgba(85, 255, 221, 0.7);
-  --aviation-glow-lg: 0 0 25px rgba(85, 255, 221, 0.9);
-  --aviation-glow-accent: 0 0 12px rgba(68, 153, 153, 0.6);
+  --aviation-glow-sm: 0 0 8px rgba(73, 149, 253, 0.3);
+  --aviation-glow-md: 0 0 15px rgba(73, 149, 253, 0.5);
+  --aviation-glow-lg: 0 0 25px rgba(73, 149, 253, 0.7);
+  --aviation-glow-accent: 0 0 12px rgba(73, 149, 253, 0.4);
 }
 
 /* Material icons */ 
@@ -539,7 +538,7 @@
 }
 
 .aviation-tab-active {
-  background: linear-gradient(to bottom, rgba(10, 73, 149, 0.08), rgba(85, 255, 221, 0.05)) !important;
+  background: linear-gradient(to bottom, rgba(10, 73, 149, 0.08), rgba(73, 149, 253, 0.05)) !important;
   color: var(--aviation-blue-dark) !important;
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(10, 73, 149, 0.1);
@@ -548,8 +547,8 @@
 .aviation-tab-active::before {
   transform: translateY(0);
   height: 3px;
-  background: linear-gradient(to right, var(--aviation-blue-light), var(--aviation-cyan-glow));
-  box-shadow: 0 0 10px rgba(85, 255, 221, 0.5);
+  background: linear-gradient(to right, var(--aviation-blue-light), var(--aviation-sky-blue));
+  box-shadow: 0 0 10px rgba(73, 149, 253, 0.5);
 }
 
 .dark .aviation-tab {
@@ -557,7 +556,7 @@
 }
 
 .dark .aviation-tab-active {
-  background: rgba(85, 255, 221, 0.1) !important;
+  background: rgba(73, 149, 253, 0.1) !important;
   color: white !important;
 }
 
@@ -972,7 +971,7 @@
 
 /* Icon button styles */
 .aviation-icon-btn {
-  background-color: rgba(85, 255, 221, 0.1);
+  background-color: rgba(73, 149, 253, 0.1);
   color: var(--aviation-blue-dark);
   border-radius: 100%;
   transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
@@ -983,7 +982,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(85, 255, 221, 0.2);
+  border: 1px solid rgba(73, 149, 253, 0.2);
 }
 
 .aviation-icon-btn::before {
@@ -1001,7 +1000,7 @@
 .aviation-icon-btn:hover {
   transform: translateY(-2px);
   box-shadow: var(--aviation-glow-sm);
-  background-color: rgba(85, 255, 221, 0.2);
+  background-color: rgba(73, 149, 253, 0.2);
 }
 
 .aviation-icon-btn:hover::before {
@@ -1016,13 +1015,13 @@
 }
 
 .dark .aviation-icon-btn {
-  background-color: rgba(85, 255, 221, 0.05);
+  background-color: rgba(73, 149, 253, 0.05);
   color: var(--aviation-blue-light);
-  border-color: rgba(85, 255, 221, 0.1);
+  border-color: rgba(73, 149, 253, 0.1);
 }
 
 .dark .aviation-icon-btn:hover {
-  background-color: rgba(85, 255, 221, 0.1);
+  background-color: rgba(73, 149, 253, 0.1);
   box-shadow: var(--aviation-glow-sm);
 }
 
@@ -1115,15 +1114,15 @@
 }
 
 .aviation-tab:hover {
-  background-color: rgba(85, 255, 221, 0.1);
-  border-color: rgba(85, 255, 221, 0.2);
+  background-color: rgba(73, 149, 253, 0.1);
+  border-color: rgba(73, 149, 253, 0.2);
 }
 
 .aviation-tab-active {
   background-color: white;
   color: var(--aviation-blue-dark);
   box-shadow: 0 2px 6px rgba(10, 73, 149, 0.1);
-  border-color: rgba(85, 255, 221, 0.2);
+  border-color: rgba(73, 149, 253, 0.2);
   position: relative;
 }
 
@@ -1307,14 +1306,14 @@
   @apply relative overflow-hidden px-5 py-2 rounded-full font-medium transition-all;
   background: rgba(255, 255, 255, 0.8);
   color: var(--aviation-blue-dark);
-  border: 1px solid rgba(85, 255, 221, 0.3);
+  border: 1px solid rgba(73, 149, 253, 0.3);
   box-shadow: 0 4px 8px rgba(10, 73, 149, 0.1);
 }
 
 .aviation-btn-secondary:hover {
   transform: translateY(-2px);
-  background: rgba(85, 255, 221, 0.1);
-  box-shadow: 0 6px 12px rgba(10, 73, 149, 0.2), 0 0 0 1px rgba(85, 255, 221, 0.5);
+  background: rgba(73, 149, 253, 0.1);
+  box-shadow: 0 6px 12px rgba(10, 73, 149, 0.2), 0 0 0 1px rgba(73, 149, 253, 0.5);
 }
 
 .aviation-btn-accent {
@@ -1336,14 +1335,14 @@
 
 .dark .aviation-btn-secondary:hover {
   background: rgba(5, 39, 77, 0.9);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(85, 255, 221, 0.3);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(73, 149, 253, 0.3);
 }
 
 /* Aviation Icon Buttons */
 .aviation-icon-btn {
   @apply flex items-center justify-center rounded-full w-10 h-10 transition-all relative overflow-hidden;
   background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(230,247,255,0.9));
-  border: 1px solid rgba(85, 255, 221, 0.2);
+  border: 1px solid rgba(73, 149, 253, 0.2);
   color: var(--aviation-blue-dark);
   box-shadow: 0 3px 8px rgba(10, 73, 149, 0.15);
 }
@@ -1356,7 +1355,7 @@
 .aviation-icon-btn.active {
   background: var(--aviation-gradient);
   color: white;
-  box-shadow: 0 4px 12px rgba(10, 73, 149, 0.3), 0 0 0 2px rgba(85, 255, 221, 0.4);
+  box-shadow: 0 4px 12px rgba(10, 73, 149, 0.3), 0 0 0 2px rgba(73, 149, 253, 0.4);
 }
 
 .dark .aviation-icon-btn {
@@ -1367,12 +1366,12 @@
 
 .dark .aviation-icon-btn:hover {
   background: var(--aviation-dark-blue);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 8px rgba(85, 255, 221, 0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 8px rgba(73, 149, 253, 0.3);
 }
 
 .dark .aviation-icon-btn.active {
   background: var(--aviation-dark-gradient-glow);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(85, 255, 221, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(73, 149, 253, 0.3);
 }
 
 /* Aviation Cards and Panels */
@@ -1382,7 +1381,7 @@
   border: 1px solid rgba(10, 73, 149, 0.1);
   box-shadow: 
     0 10px 30px rgba(10, 73, 149, 0.15),
-    0 0 0 1px rgba(85, 255, 221, 0.05);
+    0 0 0 1px rgba(73, 149, 253, 0.05);
 }
 
 .aviation-panel::before {
@@ -1398,30 +1397,30 @@
 
 .dark .aviation-panel {
   background: rgba(5, 39, 77, 0.9);
-  border-color: rgba(45, 121, 135, 0.2);
+  border-color: rgba(73, 149, 253, 0.2);
   box-shadow: 
     0 10px 30px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(85, 255, 221, 0.05);
+    0 0 0 1px rgba(73, 149, 253, 0.05);
 }
 
 /* Data highlights */
 .aviation-data-highlight {
   @apply px-3 py-2 rounded-lg inline-flex items-center;
-  background: rgba(85, 255, 221, 0.1);
-  border: 1px solid rgba(85, 255, 221, 0.2);
+  background: rgba(73, 149, 253, 0.1);
+  border: 1px solid rgba(73, 149, 253, 0.2);
   color: var(--aviation-blue-dark);
   font-weight: 600;
 }
 
 .aviation-data-highlight:hover {
-  background: rgba(85, 255, 221, 0.2);
+  background: rgba(73, 149, 253, 0.2);
   box-shadow: var(--aviation-glow-sm);
 }
 
 .dark .aviation-data-highlight {
-  background: rgba(85, 255, 221, 0.15);
+  background: rgba(73, 149, 253, 0.15);
   color: var(--aviation-blue-light);
-  border-color: rgba(45, 121, 135, 0.3);
+  border-color: rgba(73, 149, 253, 0.3);
 }
 
 /* Status indicators */
@@ -1515,8 +1514,8 @@
   background-image: linear-gradient(
     90deg,
     rgba(5, 39, 77, 0) 0,
-    rgba(85, 255, 221, 0.1) 20%,
-    rgba(85, 255, 221, 0.2) 60%,
+    rgba(73, 149, 253, 0.1) 20%,
+    rgba(73, 149, 253, 0.2) 60%,
     rgba(5, 39, 77, 0)
   );
 }
