@@ -1,30 +1,68 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { MapFilter, LiveFlight } from "@/types";
-import { Plane, Info, Clock, Navigation } from "lucide-react";
+import { Plane, Info, Clock, Navigation, Search, Filter, BarChart2 } from "lucide-react";
+import FlightAnalytics from './FlightAnalytics';
 
 interface FlightPanelProps {
   flights: LiveFlight[];
   selectedFlight: LiveFlight | null;
   onSelectFlight: (flight: LiveFlight) => void;
   totalFlights: number;
+  filters: MapFilter;
 }
 
-export default function FlightPanel({ flights, selectedFlight, onSelectFlight, totalFlights }: FlightPanelProps) {
+export default function FlightPanel({ flights, selectedFlight, onSelectFlight, totalFlights, filters }: FlightPanelProps) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('all');
+  
+  // Filter flights based on search term and filter type
+  const filteredFlights = flights.filter(flight => {
+    const matchesSearch = !searchTerm 
+      || (flight.callsign && flight.callsign.toLowerCase().includes(searchTerm.toLowerCase()))
+      || (flight.flightNumber && flight.flightNumber.toLowerCase().includes(searchTerm.toLowerCase()))
+      || (flight.departure?.icao && flight.departure.icao.toLowerCase().includes(searchTerm.toLowerCase()))
+      || (flight.arrival?.icao && flight.arrival.icao.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+    return matchesSearch;
+  });
+
   return (
     <div className="w-full md:w-1/4 bg-white h-[calc(100vh-64px)] border-l overflow-hidden flex flex-col">
       <div className="p-4 border-b">
-        <h2 className="text-blue-500 font-semibold text-base flex items-center">
-          <Plane className="h-4 w-4 mr-2" />
-          Flight Tracker
-        </h2>
-        <p className="text-gray-500 text-xs mt-0.5">
-          Showing {totalFlights} flights
+        <div className="flex justify-between items-center">
+          <h2 className="text-blue-500 font-semibold text-base flex items-center">
+            <Plane className="h-4 w-4 mr-2" />
+            Flight Tracker
+          </h2>
+          
+          <FlightAnalytics 
+            flights={flights} 
+            filters={filters}
+          />
+        </div>
+        
+        <div className="flex items-center mt-2">
+          <div className="relative flex-grow">
+            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+            <Input
+              placeholder="Search flights..."
+              className="h-8 pl-8 text-sm rounded-md"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+        
+        <p className="text-gray-500 text-xs mt-2">
+          Showing {filteredFlights.length} of {totalFlights} flights
         </p>
       </div>
       
       <div className="flex-1 p-2 overflow-y-auto">
-        {flights.length === 0 ? (
+        {filteredFlights.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center p-4">
             <div className="rounded-full bg-blue-100 p-3 mb-3">
               <Info className="h-6 w-6 text-blue-500" />
@@ -34,7 +72,7 @@ export default function FlightPanel({ flights, selectedFlight, onSelectFlight, t
           </div>
         ) : (
           <div className="space-y-2">
-            {flights.map(flight => (
+            {filteredFlights.map(flight => (
               <Card 
                 key={flight.id}
                 className={`cursor-pointer hover:shadow-md transition-shadow ${

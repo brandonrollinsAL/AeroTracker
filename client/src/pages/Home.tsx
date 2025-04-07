@@ -233,6 +233,7 @@ export default function Home() {
             selectedFlight={selectedFlight}
             onSelectFlight={handleFlightSelect}
             totalFlights={flights.length}
+            filters={mapFilters}
           />
         </main>
 
