@@ -116,3 +116,40 @@ export type WeatherData = {
     }>;
   };
 };
+
+// Analytics data types
+export type FlightPerformanceMetrics = {
+  avgGroundSpeed: number;
+  avgAltitude: number;
+  avgVerticalSpeed: number;
+  delayMinutes: number;
+  efficiencyScore: number;
+  fuelEfficiency: number;
+  totalDistance: number;
+  routeDeviation: number;  // percentage away from optimal path
+  weatherImpact: number;   // severity score of weather impact
+  onTimePerformance: number; // percentage of on-time arrivals
+};
+
+export type AirlinePerformanceMetrics = {
+  airlineId: string;
+  airlineName: string;
+  avgFlightDelay: number;
+  onTimePerformance: number;
+  totalFlights: number;
+  avgGroundSpeed: number;
+  avgAltitude: number;
+  cancelRate: number;
+  diversionRate: number;
+};
+
+export type AirportPerformanceMetrics = {
+  airportId: string;
+  airportCode: string;
+  avgDepartureDelay: number;
+  avgArrivalDelay: number;
+  congestionLevel: number;
+  totalDepartures: number;
+  totalArrivals: number;
+  weatherImpactIndex: number;
+};

@@ -10,7 +10,7 @@ const WEATHER_API_BASE_URL = 'https://api.weatherapi.com/v1';
 /**
  * Fetch weather information for a given location (airport code or coordinates)
  */
-export async function fetchWeather(location: string): Promise<WeatherData | null> {
+export async function fetchWeather(location: string): Promise<WeatherData | undefined> {
   try {
     const response = await axios.get(`${WEATHER_API_BASE_URL}/current.json`, {
       params: {
@@ -28,7 +28,8 @@ export async function fetchWeather(location: string): Promise<WeatherData | null
     return transformWeatherData(response.data);
   } catch (error) {
     console.error('Error fetching weather data:', error);
-    return null;
+    // @ts-ignore - This is a valid case where we want to return undefined
+    return undefined;
   }
 }
 

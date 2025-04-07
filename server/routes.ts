@@ -6,6 +6,11 @@ import { setupWebSocketServer } from "./webSocket";
 import { fetchFlights, fetchFlightDetails, fetchAircraft } from "./api/aviation";
 import { fetchWeather } from "./api/weather";
 import { fetchUSAirports, searchAirports } from "./api/airports";
+import { 
+  getFlightPerformanceMetrics, 
+  getAirlinePerformanceMetrics, 
+  getAirportPerformanceMetrics 
+} from "./api/analytics";
 import { MapFilter, insertAlertSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -214,11 +219,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // If no cached data or stale, fetch from API
       if (!weatherData) {
-        weatherData = await fetchWeather(location);
+        const fetchedWeather = await fetchWeather(location);
         
-        if (weatherData) {
+        if (fetchedWeather) {
           // Cache the weather data
-          await storage.cacheWeatherData(location, weatherData);
+          await storage.cacheWeatherData(location, fetchedWeather);
+          weatherData = fetchedWeather;
         } else {
           return res.status(404).json({ message: "Weather data not found" });
         }
@@ -240,7 +246,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Query parameter is required" });
       }
       
-      let results = [];
+      // Define a more specific type for our search results array
+      interface SearchResult {
+        type: 'flight' | 'airport' | 'aircraft';
+        id: string | number;
+        [key: string]: any; // To allow for the spread operator
+      }
+      
+      let results: SearchResult[] = [];
       const searchQuery = query.toString().toLowerCase();
       
       if (!type || type === 'flights') {
@@ -252,7 +265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           flight.departure?.icao?.toLowerCase().includes(searchQuery) ||
           flight.arrival?.icao?.toLowerCase().includes(searchQuery)
         );
-        results = [...results, ...matchedFlights.map(f => ({ ...f, type: 'flight' }))];
+        results = [...results, ...matchedFlights.map(f => ({ ...f, type: 'flight' as const }))];
       }
       
       if (!type || type === 'airports') {
@@ -262,7 +275,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           airport.name.toLowerCase().includes(searchQuery) ||
           airport.city.toLowerCase().includes(searchQuery)
         );
-        results = [...results, ...matchedAirports.map(a => ({ ...a, type: 'airport' }))];
+        results = [...results, ...matchedAirports.map(a => ({ ...a, type: 'airport' as const }))];
       }
       
       if (!type || type === 'aircraft') {
@@ -272,7 +285,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ac.type.toLowerCase().includes(searchQuery) ||
           (ac.airline && ac.airline.toLowerCase().includes(searchQuery))
         );
-        results = [...results, ...matchedAircraft.map(a => ({ ...a, type: 'aircraft' }))];
+        results = [...results, ...matchedAircraft.map(a => ({ ...a, type: 'aircraft' as const }))];
       }
       
       res.json(results);
@@ -310,6 +323,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching alerts:", error);
       res.status(500).json({ message: "Failed to fetch alerts" });
+    }
+  });
+
+  // ANALYTICS ENDPOINTS
+  
+  // Get flight performance metrics
+  app.get("/api/analytics/flight/:flightId", async (req, res) => {
+    try {
+      const { flightId } = req.params;
+      
+      const metrics = await getFlightPerformanceMetrics(flightId);
+      
+      if (!metrics) {
+        return res.status(404).json({ message: "Flight not found or no metrics available" });
+      }
+      
+      res.json(metrics);
+    } catch (error) {
+      console.error("Error fetching flight performance metrics:", error);
+      res.status(500).json({ message: "Failed to fetch flight performance metrics" });
+    }
+  });
+  
+  // Get airline performance metrics
+  app.get("/api/analytics/airline", async (req, res) => {
+    try {
+      const airlineIcao = req.query.icao as string;
+      
+      const metrics = await getAirlinePerformanceMetrics(airlineIcao);
+      
+      if (metrics.length === 0) {
+        return res.status(404).json({ message: "No airline metrics available" });
+      }
+      
+      res.json(metrics);
+    } catch (error) {
+      console.error("Error fetching airline performance metrics:", error);
+      res.status(500).json({ message: "Failed to fetch airline performance metrics" });
+    }
+  });
+  
+  // Get airport performance metrics
+  app.get("/api/analytics/airport", async (req, res) => {
+    try {
+      const airportCode = req.query.code as string;
+      
+      const metrics = await getAirportPerformanceMetrics(airportCode);
+      
+      if (metrics.length === 0) {
+        return res.status(404).json({ message: "No airport metrics available" });
+      }
+      
+      res.json(metrics);
+    } catch (error) {
+      console.error("Error fetching airport performance metrics:", error);
+      res.status(500).json({ message: "Failed to fetch airport performance metrics" });
     }
   });
 

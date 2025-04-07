@@ -1,4 +1,11 @@
-import { LiveFlight, Aircraft, WeatherData } from '@/types';
+import { 
+  LiveFlight, 
+  Aircraft, 
+  WeatherData,
+  FlightPerformanceMetrics,
+  AirlinePerformanceMetrics,
+  AirportPerformanceMetrics
+} from '@/types';
 
 // Fetch flight data
 export async function fetchFlights(filterType = 'all'): Promise<LiveFlight[]> {
@@ -86,5 +93,49 @@ export async function createAlert(userId: number, flightId: number, type: string
   } catch (error) {
     console.error('Error creating alert:', error);
     return null;
+  }
+}
+
+// Fetch flight performance metrics
+export async function fetchFlightPerformanceMetrics(flightId: string): Promise<FlightPerformanceMetrics | null> {
+  try {
+    const response = await fetch(`/api/analytics/flight/${flightId}`);
+    if (!response.ok) throw new Error('Failed to fetch flight performance metrics');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching flight performance metrics:', error);
+    return null;
+  }
+}
+
+// Fetch airline performance metrics
+export async function fetchAirlinePerformanceMetrics(airlineIcao?: string): Promise<AirlinePerformanceMetrics[]> {
+  try {
+    const url = airlineIcao 
+      ? `/api/analytics/airline?icao=${airlineIcao}`
+      : '/api/analytics/airline';
+      
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to fetch airline performance metrics');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching airline performance metrics:', error);
+    return [];
+  }
+}
+
+// Fetch airport performance metrics
+export async function fetchAirportPerformanceMetrics(airportCode?: string): Promise<AirportPerformanceMetrics[]> {
+  try {
+    const url = airportCode 
+      ? `/api/analytics/airport?code=${airportCode}`
+      : '/api/analytics/airport';
+      
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to fetch airport performance metrics');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching airport performance metrics:', error);
+    return [];
   }
 }
