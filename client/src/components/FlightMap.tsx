@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import React, { useEffect, useRef, useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline, Tooltip } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import MapControls from './MapControls';
@@ -8,7 +8,9 @@ import AirportMarker from './AirportMarker';
 import { LiveFlight, MapFilter, Airport } from '@/types';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { AlertTriangle, Info, Zap, Wind, Eye, Layers, Maximize, Minimize, FullscreenIcon } from 'lucide-react';
 import axios from 'axios';
 
 // Fix the default icon issue with Leaflet
@@ -41,6 +43,7 @@ interface FlightMapProps {
   filters: MapFilter;
   onFilterChange: (filters: Partial<MapFilter>) => void;
   isConnected: boolean;
+  isDarkMode?: boolean;
 }
 
 // Component to update the map view if selectedFlight changes
@@ -61,7 +64,19 @@ function MapUpdater({ flight }: { flight: LiveFlight | null }) {
 }
 
 // Component to handle direct map control
-function MapControlButtons() {
+function MapControlButtons({ 
+  isDarkMode, 
+  toggleFullscreen, 
+  isFullscreen,
+  showFlightTrails,
+  toggleFlightTrails
+}: { 
+  isDarkMode: boolean,
+  toggleFullscreen: () => void,
+  isFullscreen: boolean,
+  showFlightTrails: boolean,
+  toggleFlightTrails: () => void
+}) {
   const map = useMap();
   
   const handleZoomIn = () => {
@@ -84,42 +99,107 @@ function MapControlButtons() {
     });
   };
   
+  const buttonClass = isDarkMode 
+    ? "bg-neutral-800 rounded-full shadow-md hover:bg-neutral-700 h-9 w-9 border-neutral-700" 
+    : "bg-white rounded-full shadow-md hover:bg-neutral-100 h-9 w-9";
+    
+  const iconClass = isDarkMode ? "text-neutral-200" : "text-neutral-800";
+  
   return (
     <div className="absolute top-4 right-4 flex flex-col space-y-2 z-[900]">
-      <Button 
-        variant="outline" 
-        size="icon" 
-        className="bg-white rounded-full shadow-md hover:bg-neutral-100 h-9 w-9"
-        onClick={handleZoomIn}
-      >
-        <span className="material-icons text-neutral-800">add</span>
-      </Button>
+      <TooltipProvider>
+        <UITooltip>
+          <TooltipTrigger asChild>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className={buttonClass}
+              onClick={handleZoomIn}
+            >
+              <span className={`material-icons ${iconClass}`}>add</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <p className="text-xs">Zoom in</p>
+          </TooltipContent>
+        </UITooltip>
+      </TooltipProvider>
       
-      <Button 
-        variant="outline" 
-        size="icon" 
-        className="bg-white rounded-full shadow-md hover:bg-neutral-100 h-9 w-9"
-        onClick={handleZoomOut}
-      >
-        <span className="material-icons text-neutral-800">remove</span>
-      </Button>
+      <TooltipProvider>
+        <UITooltip>
+          <TooltipTrigger asChild>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className={buttonClass}
+              onClick={handleZoomOut}
+            >
+              <span className={`material-icons ${iconClass}`}>remove</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <p className="text-xs">Zoom out</p>
+          </TooltipContent>
+        </UITooltip>
+      </TooltipProvider>
       
-      <Button 
-        variant="outline" 
-        size="icon" 
-        className="bg-white rounded-full shadow-md hover:bg-neutral-100 h-9 w-9"
-      >
-        <span className="material-icons text-neutral-800">layers</span>
-      </Button>
+      <TooltipProvider>
+        <UITooltip>
+          <TooltipTrigger asChild>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className={buttonClass}
+              onClick={toggleFlightTrails}
+            >
+              <span className={`material-icons ${iconClass} ${showFlightTrails ? 'text-primary' : ''}`}>
+                timeline
+              </span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <p className="text-xs">{showFlightTrails ? 'Hide' : 'Show'} flight trails</p>
+          </TooltipContent>
+        </UITooltip>
+      </TooltipProvider>
       
-      <Button 
-        variant="outline" 
-        size="icon" 
-        className="bg-white rounded-full shadow-md hover:bg-neutral-100 h-9 w-9"
-        onClick={handleMyLocation}
-      >
-        <span className="material-icons text-neutral-800">my_location</span>
-      </Button>
+      <TooltipProvider>
+        <UITooltip>
+          <TooltipTrigger asChild>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className={buttonClass}
+              onClick={handleMyLocation}
+            >
+              <span className={`material-icons ${iconClass}`}>my_location</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <p className="text-xs">Go to my location</p>
+          </TooltipContent>
+        </UITooltip>
+      </TooltipProvider>
+      
+      <TooltipProvider>
+        <UITooltip>
+          <TooltipTrigger asChild>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className={buttonClass}
+              onClick={toggleFullscreen}
+            >
+              <span className={`material-icons ${iconClass}`}>
+                {isFullscreen ? 'fullscreen_exit' : 'fullscreen'}
+              </span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <p className="text-xs">{isFullscreen ? 'Exit' : 'Enter'} fullscreen</p>
+          </TooltipContent>
+        </UITooltip>
+      </TooltipProvider>
     </div>
   );
 }
@@ -130,7 +210,8 @@ export default function FlightMap({
   onFlightSelect,
   filters,
   onFilterChange,
-  isConnected
+  isConnected,
+  isDarkMode = false
 }: FlightMapProps) {
   const mapRef = useRef<L.Map>(null);
   const [airports, setAirports] = useState<Airport[]>([]);
@@ -178,9 +259,66 @@ export default function FlightMap({
     });
   };
 
+  // State for fullscreen mode
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showFlightTrails, setShowFlightTrails] = useState(filters.showFlightPaths);
+  
+  // Toggle fullscreen mode
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().then(() => {
+        setIsFullscreen(true);
+      }).catch(err => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().then(() => {
+          setIsFullscreen(false);
+        }).catch(err => {
+          console.error(`Error attempting to exit fullscreen: ${err.message}`);
+        });
+      }
+    }
+  };
+  
+  // Generate flight path for a selected flight
+  const generateFlightPath = (flight: LiveFlight): [number, number][] => {
+    // For demonstration only - in a real app, this would use actual flight path data
+    // For now, we'll create a simple path based on current position and planned departure/arrival
+    const path: [number, number][] = [];
+    
+    if (flight.departure?.icao && flight.position) {
+      // Simulate a departure location (for demo purposes)
+      const departureLocation: [number, number] = [
+        flight.position.latitude - 2,
+        flight.position.longitude - 2
+      ];
+      
+      path.push(departureLocation);
+    }
+    
+    // Add current position
+    path.push([flight.position.latitude, flight.position.longitude]);
+    
+    if (flight.arrival?.icao) {
+      // Simulate an arrival location (for demo purposes)
+      const arrivalLocation: [number, number] = [
+        flight.position.latitude + 2,
+        flight.position.longitude + 2
+      ];
+      
+      path.push(arrivalLocation);
+    }
+    
+    return path;
+  };
+
   return (
-    <div className="w-full md:w-2/3 lg:w-3/4 relative h-[50vh] md:h-[calc(100vh-4rem)] p-2 bg-white">
-      <div className="w-full h-full bg-white rounded-sm overflow-hidden">
+    <div className={`w-full md:w-2/3 lg:w-3/4 relative h-[50vh] md:h-[calc(100vh-4rem)] p-2 ${
+      isDarkMode ? 'bg-neutral-900' : 'bg-white'
+    } ${isFullscreen ? 'fixed inset-0 z-50 h-screen w-screen p-0' : ''}`}>
+      <div className={`w-full h-full ${isDarkMode ? 'bg-neutral-900' : 'bg-white'} rounded-sm overflow-hidden`}>
         {!isConnected && (
           <Alert variant="destructive" className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 w-auto">
             <AlertTriangle className="h-4 w-4" />
@@ -199,23 +337,52 @@ export default function FlightMap({
           />
           
           {flights.map((flight) => (
-            <Marker
-              key={flight.id}
-              position={[flight.position.latitude, flight.position.longitude]}
-              icon={createAirplaneIcon(flight.position.heading)}
-              eventHandlers={{
-                click: () => onFlightSelect(flight)
-              }}
-            >
-              <Popup>
-                <div className="text-sm">
-                  <div className="font-bold">{flight.callsign || flight.flightNumber}</div>
-                  <div>{flight.departure?.icao} → {flight.arrival?.icao}</div>
-                  <div>Alt: {flight.position.altitude} ft</div>
-                  <div>Speed: {flight.position.groundSpeed} mph</div>
-                </div>
-              </Popup>
-            </Marker>
+            <React.Fragment key={flight.id}>
+              <Marker
+                position={[flight.position.latitude, flight.position.longitude]}
+                icon={createAirplaneIcon(flight.position.heading)}
+                eventHandlers={{
+                  click: () => onFlightSelect(flight)
+                }}
+              >
+                <Tooltip direction="top" offset={[0, -20]} permanent={selectedFlight?.id === flight.id}>
+                  <div className="text-xs font-medium">
+                    {flight.callsign || flight.flightNumber}
+                  </div>
+                </Tooltip>
+                
+                <Popup>
+                  <div className="text-sm">
+                    <div className="font-bold">{flight.callsign || flight.flightNumber}</div>
+                    <div>{flight.departure?.icao} → {flight.arrival?.icao}</div>
+                    <div>Alt: {flight.position.altitude.toLocaleString()} ft</div>
+                    <div>Speed: {flight.position.groundSpeed} mph</div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => onFlightSelect(flight)}
+                      className="mt-2 w-full"
+                    >
+                      <span className="material-icons mr-1 text-sm">info</span>
+                      Details
+                    </Button>
+                  </div>
+                </Popup>
+              </Marker>
+              
+              {/* Add flight path if enabled and flight has a route */}
+              {showFlightTrails && (
+                <Polyline 
+                  positions={generateFlightPath(flight)}
+                  pathOptions={{ 
+                    color: selectedFlight?.id === flight.id ? '#3b82f6' : '#94a3b8',
+                    weight: selectedFlight?.id === flight.id ? 3 : 2,
+                    dashArray: selectedFlight?.id === flight.id ? '' : '5, 5',
+                    opacity: selectedFlight?.id === flight.id ? 0.8 : 0.5
+                  }}
+                />
+              )}
+            </React.Fragment>
           ))}
           
           {/* Display airports if enabled */}
@@ -240,7 +407,16 @@ export default function FlightMap({
           )}
           
           <MapUpdater flight={selectedFlight} />
-          <MapControlButtons />
+          <MapControlButtons 
+            isDarkMode={isDarkMode}
+            isFullscreen={isFullscreen}
+            toggleFullscreen={toggleFullscreen}
+            showFlightTrails={showFlightTrails}
+            toggleFlightTrails={() => {
+              setShowFlightTrails(!showFlightTrails);
+              onFilterChange({ showFlightPaths: !showFlightTrails });
+            }}
+          />
         </MapContainer>
         
         <MapFilters 
