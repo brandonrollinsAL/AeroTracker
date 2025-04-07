@@ -68,11 +68,11 @@ export default function FlightDetailPanel({
 
   // Status color map
   const statusColorMap = {
-    scheduled: 'bg-[#5fd]/20 text-[#0a4995]',
-    active: 'bg-green-100 text-green-800',
-    landed: 'bg-gray-100 text-gray-800',
-    cancelled: 'bg-red-100 text-red-800',
-    diverted: 'bg-orange-100 text-orange-800',
+    scheduled: 'aviation-status aviation-status-scheduled',
+    active: 'aviation-status aviation-status-active',
+    landed: 'aviation-status aviation-status-landed',
+    cancelled: 'aviation-status aviation-status-cancelled',
+    diverted: 'aviation-status aviation-status-delayed',
     delayed: 'bg-amber-100 text-amber-800'
   };
 
@@ -127,11 +127,12 @@ export default function FlightDetailPanel({
               variant="ghost" 
               size="icon" 
               onClick={onTogglePin}
-              className="rounded-full hover:bg-[#5fd]/10"
+              className="aviation-icon-btn ml-2"
+              style={{ width: "32px", height: "32px" }}
             >
               {isPinned ? 
-                <ChevronDown className="h-4 w-4 text-[#0a4995]" /> : 
-                <ChevronUp className="h-4 w-4 text-[#0a4995]" />
+                <ChevronDown className="h-4 w-4" /> : 
+                <ChevronUp className="h-4 w-4" />
               }
             </Button>
           )}
@@ -139,9 +140,10 @@ export default function FlightDetailPanel({
             variant="ghost" 
             size="icon" 
             onClick={onClose}
-            className="rounded-full hover:bg-[#5fd]/10"
+            className="aviation-icon-btn ml-2"
+            style={{ width: "32px", height: "32px" }}
           >
-            <X className="h-4 w-4 text-[#0a4995]" />
+            <X className="h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -150,29 +152,30 @@ export default function FlightDetailPanel({
         <Tabs defaultValue="overview" className="w-full">
           <div className="px-4 pt-3 sticky top-0 bg-white z-10">
             <TabsList 
-              className="grid w-full grid-cols-3 p-1"
+              className="grid w-full grid-cols-3 p-1 aviation-tabs"
               style={{ 
                 background: 'rgba(10, 73, 149, 0.05)',
-                borderRadius: '8px'
+                borderRadius: '10px',
+                border: '1px solid rgba(85, 255, 221, 0.15)'
               }}
             >
               <TabsTrigger 
                 value="overview"
-                className="data-[state=active]:bg-white data-[state=active]:text-[#0a4995] data-[state=active]:shadow-sm rounded-md"
+                className="data-[state=active]:aviation-tab-active aviation-tab"
               >
                 <Info className="h-4 w-4 mr-2" />
                 Overview
               </TabsTrigger>
               <TabsTrigger 
                 value="route"
-                className="data-[state=active]:bg-white data-[state=active]:text-[#0a4995] data-[state=active]:shadow-sm rounded-md"
+                className="data-[state=active]:aviation-tab-active aviation-tab"
               >
                 <Map className="h-4 w-4 mr-2" />
                 Route
               </TabsTrigger>
               <TabsTrigger 
                 value="aircraft"
-                className="data-[state=active]:bg-white data-[state=active]:text-[#0a4995] data-[state=active]:shadow-sm rounded-md"
+                className="data-[state=active]:aviation-tab-active aviation-tab"
               >
                 <Plane className="h-4 w-4 mr-2" />
                 Aircraft
