@@ -10,13 +10,13 @@ import { LiveFlight, MapFilter, Airport } from '@/types';
 import { ToastProvider } from '@/components/ui/toast';
 import { useToast } from '@/hooks/use-toast';
 import { useHotkeys, useMultiHotkeys } from '@/hooks/use-hotkeys';
-import { useTheme } from '@/hooks/use-theme';
+import { useTheme } from '@/hooks/use-theme.tsx';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Home() {
   // Theme state
-  const { isDarkMode, theme, setTheme } = useTheme();
+  const { isDark: isDarkMode, theme, setTheme } = useTheme();
   
   // State for flights and flight selection
   const [flights, setFlights] = useState<LiveFlight[]>([]);

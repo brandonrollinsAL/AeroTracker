@@ -1,6 +1,6 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 
-type Theme = 'light' | 'dark' | 'system';
+export type Theme = 'light' | 'dark' | 'system';
 
 // AeroLink standardized aviation color palette
 export const AERO_COLORS = {
@@ -50,14 +50,17 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-// Define ThemeProvider component
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
+interface ThemeProviderProps {
+  children: ReactNode;
+}
+
+export function ThemeProvider({ children }: ThemeProviderProps) {
   // Initialize theme from localStorage or default to system theme
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('aero-theme');
       if (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system') {
-        return savedTheme;
+        return savedTheme as Theme;
       }
     }
     return 'system';
@@ -130,7 +133,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Prepare context value
-  const value = {
+  const value: ThemeContextType = {
     theme,
     setTheme,
     isDark,
@@ -146,7 +149,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useTheme() {
+export function useTheme(): ThemeContextType {
   const context = useContext(ThemeContext);
   
   if (context === undefined) {

@@ -382,7 +382,7 @@ export class DatabaseStorage implements IStorage {
     };
     
     const [alert] = await db.insert(alerts).values([alertValues]).returning();
-    return alert;
+    return alert as Alert;
   }
 
   async updateAlert(id: number, alertData: Partial<InsertAlert>): Promise<Alert | undefined> {
@@ -427,7 +427,7 @@ export class DatabaseStorage implements IStorage {
     };
     
     const [airport] = await db.insert(airports).values([airportValues]).returning();
-    return airport;
+    return airport as Airport;
   }
 
   // Aircraft operations
@@ -457,7 +457,7 @@ export class DatabaseStorage implements IStorage {
     };
     
     const [aircraftItem] = await db.insert(aircraft).values([aircraftValues]).returning();
-    return aircraftItem;
+    return aircraftItem as Aircraft;
   }
 
   // Cache operations for external API data - still uses in-memory storage
