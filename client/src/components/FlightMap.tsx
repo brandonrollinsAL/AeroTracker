@@ -145,7 +145,7 @@ function MapControlButtons({
                 <Layers className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="left" className="aviation-tooltip">
+            <TooltipContent side="right" className="aviation-tooltip">
               <p className="text-xs font-medium">Zoom in</p>
             </TooltipContent>
           </UITooltip>
@@ -161,7 +161,7 @@ function MapControlButtons({
                 <Minimize className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="left" className="aviation-tooltip">
+            <TooltipContent side="right" className="aviation-tooltip">
               <p className="text-xs font-medium">Zoom out</p>
             </TooltipContent>
           </UITooltip>
@@ -184,7 +184,7 @@ function MapControlButtons({
                 </svg>
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="left" className="aviation-tooltip">
+            <TooltipContent side="right" className="aviation-tooltip">
               <p className="text-xs font-medium">{showFlightTrails ? 'Hide' : 'Show'} flight trails</p>
             </TooltipContent>
           </UITooltip>
@@ -209,7 +209,7 @@ function MapControlButtons({
                 </svg>
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="left" className="aviation-tooltip">
+            <TooltipContent side="right" className="aviation-tooltip">
               <p className="text-xs font-medium">Go to my location</p>
             </TooltipContent>
           </UITooltip>
@@ -231,7 +231,7 @@ function MapControlButtons({
                 )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="left" className="aviation-tooltip">
+            <TooltipContent side="right" className="aviation-tooltip">
               <p className="text-xs font-medium">{isFullscreen ? 'Exit' : 'Enter'} fullscreen</p>
             </TooltipContent>
           </UITooltip>
@@ -264,7 +264,7 @@ function ZoomMonitor() {
     <>
       <NexradRadarOverlay enabled={showRadar} opacity={0.7} zoom={currentZoom} />
       
-      <div className="aviation-glass absolute bottom-4 left-4 z-[900] p-1.5 rounded-xl backdrop-blur-md flex space-x-2 border border-[#4995fd]/30">
+      <div className="aviation-glass absolute bottom-4 right-4 z-[900] p-1.5 rounded-xl backdrop-blur-md flex space-x-2 border border-[#4995fd]/30">
         <TooltipProvider>
           <UITooltip>
             <TooltipTrigger asChild>
@@ -275,7 +275,7 @@ function ZoomMonitor() {
                 <CloudRain className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right" className="aviation-tooltip">
+            <TooltipContent side="left" className="aviation-tooltip">
               <p className="text-xs font-medium">{showRadar ? 'Hide' : 'Show'} NEXRAD radar</p>
             </TooltipContent>
           </UITooltip>
@@ -402,6 +402,7 @@ export default function FlightMap({
         <MapContainer
           center={defaultCenter}
           zoom={defaultZoom}
+          zoomControl={false}
           style={{ height: '100%', width: '100%' }}
         >
           <TileLayer

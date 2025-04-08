@@ -1266,8 +1266,8 @@
 /* Map controls with enhanced #4995fd accents and adjusted positioning */
 .map-controls {
   position: absolute;
-  top: 80px; /* Moved down to avoid logo overlap */
-  right: 20px;
+  top: 20px; /* Positioned at the top left */
+  left: 20px;
   z-index: 900; /* Ensure it's below the header but above map elements */
   display: flex;
   flex-direction: column;
