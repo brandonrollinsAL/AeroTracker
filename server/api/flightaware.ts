@@ -61,27 +61,51 @@ export function initializeFlightAwareConnection() {
     return;
   }
   
+  // Verify FlightAware credentials
   if (!FLIGHTAWARE_USERNAME || !FLIGHTAWARE_PASSWORD) {
-    console.error('FlightAware credentials not found in environment variables');
+    console.error('⚠️ FlightAware credentials not found in environment variables');
+    
+    // Send a clear error message to clients
+    broadcastMessage('error', {
+      message: 'FlightAware credentials are missing. Please provide valid API credentials in your environment variables.',
+      code: 'FLIGHTAWARE_MISSING_CREDENTIALS'
+    });
+    
+    // Don't attempt to connect without credentials
     return;
+  }
+  
+  // Validate that credentials appear to be in the correct format (basic check)
+  if (FLIGHTAWARE_USERNAME.length < 3 || FLIGHTAWARE_PASSWORD.length < 4) {
+    console.error('⚠️ FlightAware credentials appear to be invalid (too short)');
+    
+    broadcastMessage('error', {
+      message: 'FlightAware credentials appear to be invalid. Please check your API credentials.',
+      code: 'FLIGHTAWARE_INVALID_CREDENTIALS'
+    });
+    
+    // Still attempt to connect, but warn about potential issues
   }
 
   console.log('Initializing FlightAware Firehose connection...');
   
   try {
-    // Create TLS socket connection with enhanced options for better reliability
-    // Fix the TLS connection by using a simpler configuration that's more compatible
-    // with the FlightAware Firehose service
-    socket = tls.connect(FIREHOSE_PORT, FIREHOSE_HOST, {
-      rejectUnauthorized: false,  // Allow self-signed certificates (FlightAware may use these)
-      servername: FIREHOSE_HOST,  // Set Server Name Indication (SNI)
-      minVersion: 'TLSv1.2'       // Only use TLS 1.2+
+    // Create TLS socket connection with options optimized for FlightAware Firehose
+    console.log('Creating TLS socket to FlightAware Firehose...');
+    socket = tls.connect({
+      host: FIREHOSE_HOST,
+      port: FIREHOSE_PORT,
+      rejectUnauthorized: false,      // Allow self-signed certificates
+      servername: FIREHOSE_HOST,      // Set Server Name Indication (SNI)
+      minVersion: 'TLSv1.2',          // Only use TLS 1.2+
+      enableTrace: true,              // Enable tracking of TLS negotiation
+      requestCert: true               // Request a certificate from server
     });
     
-    // Set socket options after connection
-    socket.setTimeout(60000);           // 60 seconds timeout (increased for reliability)
-    socket.setKeepAlive(true, 20000);   // Enable TCP keep-alive with 20 seconds delay
-    socket.setNoDelay(true);            // Disable Nagle's algorithm for smaller packets
+    // Set socket options after connection for reliability
+    socket.setTimeout(120000);           // 120 seconds timeout (increased for greater reliability)
+    socket.setKeepAlive(true, 15000);    // Enable TCP keep-alive with 15 seconds delay
+    socket.setNoDelay(true);             // Disable Nagle's algorithm for smaller packets
 
     // Handle socket events
     socket.on('secureConnect', () => {
@@ -132,25 +156,58 @@ export function initializeFlightAwareConnection() {
     socket.on('data', (data) => {
       try {
         const chunk = data.toString();
-        console.log('Received data from FlightAware:', chunk); // Log raw data for debugging
         
-        // CRITICAL DEBUG INFO
-        console.log('==========================================');
-        console.log('FlightAware DATA RECEIVED ✓');
-        console.log('Data chunk length:', chunk.length);
-        console.log('Data chunk preview:', chunk.substring(0, 100));
-        console.log('==========================================');
+        // Log raw data in a more readable format
+        if (chunk.trim()) {
+          console.log('🔶 Received data from FlightAware:');
+          console.log('==========================================');
+          console.log(chunk);
+          console.log('==========================================');
+          console.log('Data chunk length:', chunk.length);
+          
+          // Immediately check for authentication response to handle auth issues quickly
+          if (chunk.includes('auth ')) {
+            const authLine = chunk.split('\n').find(line => line.startsWith('auth '));
+            if (authLine) {
+              const authResult = authLine.split(' ')[1];
+              console.log(`🔑 FlightAware auth response: "${authLine}"`);
+              
+              if (authResult === 'failed') {
+                console.error('❌ FlightAware authentication failed. Please check your credentials.');
+                broadcastMessage('error', {
+                  message: 'FlightAware authentication failed. Please update your API credentials.',
+                  code: 'FLIGHTAWARE_AUTH_FAILED'
+                });
+                
+                // Properly close the connection on auth failure to trigger reconnect
+                socket?.end();
+                return;
+              } else if (authResult === 'ok') {
+                console.log('✅ FlightAware authentication successful!');
+                // Send an additional heartbeat command to keep connection alive
+                if (socket && socket.writable) {
+                  socket.write('live keepalive 30\n');
+                }
+              }
+            }
+          }
+        }
         
+        // Add data to buffer and process
         dataBuffer += chunk;
         
         // Process complete lines
         const lines = dataBuffer.split('\n');
         dataBuffer = lines.pop() || ''; // Keep the last incomplete line in the buffer
         
-        console.log(`Processing ${lines.length} lines from FlightAware`);
-        for (const line of lines) {
-          if (line.trim() === '') continue;
-          processFlightData(line);
+        if (lines.length > 0) {
+          console.log(`Processing ${lines.length} lines from FlightAware`);
+          
+          // Process each line individually
+          for (const line of lines) {
+            if (line.trim() === '') continue;
+            processFlightData(line);
+          }
         }
       } catch (error) {
         console.error('Error processing FlightAware data:', error);
