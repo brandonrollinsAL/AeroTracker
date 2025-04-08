@@ -4,15 +4,9 @@ import { Button } from '@/components/ui/button';
 import { 
   MoonIcon, 
   SunIcon, 
-  SearchIcon, 
-  BellIcon, 
   UserIcon, 
   PlaneTakeoffIcon,
-  Settings, 
   ClockIcon,
-  GlobeIcon,
-  RadarIcon,
-  LayoutDashboardIcon,
   LogOut,
   User
 } from 'lucide-react';
@@ -83,12 +77,6 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
     return () => clearInterval(interval);
   }, []);
   
-  const menuItems = [
-    { icon: <GlobeIcon size={16} />, label: "Map View", active: true },
-    { icon: <RadarIcon size={16} />, label: "Live Tracking" },
-    { icon: <LayoutDashboardIcon size={16} />, label: "Dashboard" }
-  ];
-  
   return (
     <header 
       className={`h-16 py-2 px-6 flex items-center justify-between sticky top-0 z-50 ${
@@ -102,7 +90,7 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
           : 'linear-gradient(to right, rgba(255,255,255,0.97), rgba(240,248,255,0.97))'
       }}
     >
-      {/* Left side - Logo and navigation */}
+      {/* Left side - Logo and app name only */}
       <div className="flex items-center">
         <div className="mr-3 relative group">
           {/* Logo */}
@@ -122,29 +110,6 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
           <span className={`text-xs ${isDarkMode ? 'text-[#a0d0ec]/80' : 'text-[#003a65]/70'}`}>
             Advanced Flight Tracking
           </span>
-        </div>
-        
-        {/* Navigation buttons */}
-        <div className="hidden lg:flex ml-8 space-x-2">
-          {menuItems.map((item, index) => (
-            <Button
-              key={index}
-              variant="ghost"
-              size="sm"
-              className={`rounded text-xs font-medium ${
-                item.active
-                  ? isDarkMode
-                    ? 'bg-[#003a65]/70 text-white'
-                    : 'bg-[#4995fd]/10 text-[#003a65]'
-                  : isDarkMode
-                    ? 'text-[#a0d0ec]/80 hover:text-white'
-                    : 'text-[#003a65]/70 hover:text-[#003a65]'
-              }`}
-            >
-              <span className="mr-1.5">{item.icon}</span>
-              <span>{item.label}</span>
-            </Button>
-          ))}
         </div>
       </div>
       
@@ -179,48 +144,9 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
           </div>
         </div>
         
-        {/* Action buttons */}
+        {/* Action buttons - Simplified */}
         <div className="flex items-center space-x-1.5">
-          {/* Search button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className={`h-9 w-9 rounded-full relative ${
-              isDarkMode 
-                ? 'text-[#a0d0ec] hover:text-white border border-[#003a65]/30' 
-                : 'text-[#003a65] hover:bg-[#4995fd]/10 border border-[#4995fd]/10'
-            }`}
-          >
-            <SearchIcon className="h-4 w-4" />
-          </Button>
-          
-          {/* Notification button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className={`h-9 w-9 rounded-full relative ${
-              isDarkMode 
-                ? 'text-[#a0d0ec] hover:text-white border border-[#003a65]/30' 
-                : 'text-[#003a65] hover:bg-[#4995fd]/10 border border-[#4995fd]/10'
-            }`}
-          >
-            <BellIcon className="h-4 w-4" />
-          </Button>
-          
-          {/* Settings button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className={`h-9 w-9 rounded-full relative ${
-              isDarkMode 
-                ? 'text-[#a0d0ec] hover:text-white border border-[#003a65]/30' 
-                : 'text-[#003a65] hover:bg-[#4995fd]/10 border border-[#4995fd]/10'
-            }`}
-          >
-            <Settings className="h-4 w-4" />
-          </Button>
-          
-          {/* Theme toggle button */}
+          {/* Theme toggle button - Kept this as it's essential for user experience */}
           <Button
             variant="ghost"
             size="icon"
