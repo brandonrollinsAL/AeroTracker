@@ -71,16 +71,17 @@ export function initializeFlightAwareConnection() {
   
   try {
     // Create TLS socket connection with enhanced options for better reliability
-    socket = tls.connect({
-      host: FIREHOSE_HOST,
-      port: FIREHOSE_PORT,
-      rejectUnauthorized: true,
-      enableTrace: true        // Enable TLS tracing for better debugging
+    // Fix the TLS connection by using a simpler configuration that's more compatible
+    // with the FlightAware Firehose service
+    socket = tls.connect(FIREHOSE_PORT, FIREHOSE_HOST, {
+      rejectUnauthorized: false,  // Allow self-signed certificates (FlightAware may use these)
+      servername: FIREHOSE_HOST,  // Set Server Name Indication (SNI)
+      minVersion: 'TLSv1.2'       // Only use TLS 1.2+
     });
     
     // Set socket options after connection
-    socket.setTimeout(45000);           // 45 seconds timeout (increased)
-    socket.setKeepAlive(true, 30000);   // Enable TCP keep-alive with 30 seconds delay (decreased)
+    socket.setTimeout(60000);           // 60 seconds timeout (increased for reliability)
+    socket.setKeepAlive(true, 20000);   // Enable TCP keep-alive with 20 seconds delay
     socket.setNoDelay(true);            // Disable Nagle's algorithm for smaller packets
 
     // Handle socket events

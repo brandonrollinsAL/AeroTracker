@@ -7,7 +7,13 @@ import { storage } from './storage';
 let wss: WebSocketServer;
 let clients: Map<WebSocket, { filters?: { type: string } }> = new Map();
 let flightUpdateInterval: NodeJS.Timeout | null = null;
+let heartbeatInterval: NodeJS.Timeout | null = null;
 let cachedFlights: LiveFlight[] = [];
+
+// Constants for intervals
+const HEARTBEAT_INTERVAL = 30000; // 30 seconds
+const FLIGHT_UPDATE_INTERVAL = 1000; // 1 second
+const ANIMATION_INTERVAL = 250; // 250ms for smooth animation
 
 export function setupWebSocketServer(server: Server) {
   wss = new WebSocketServer({ server, path: '/ws' });
@@ -24,6 +30,18 @@ export function setupWebSocketServer(server: Server) {
     ws.on('message', async (message) => {
       try {
         const data = JSON.parse(message.toString());
+        
+        // Handle ping/pong for keeping connection alive
+        if (data.type === 'ping') {
+          // Respond with pong to keep connection alive
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'pong',
+              timestamp: new Date().toISOString()
+            }));
+          }
+          return;
+        }
         
         // Handle filter updates - support both 'setFilter' and 'filter' message types
         if (data.type === 'setFilter' || data.type === 'filter') {
@@ -61,6 +79,28 @@ export function setupWebSocketServer(server: Server) {
     startFlightUpdates();
   }
   
+  // Set up a heartbeat to check for stale connections
+  heartbeatInterval = setInterval(() => {
+    wss.clients.forEach(client => {
+      // Check if client is still connected
+      if (client.readyState === WebSocket.OPEN) {
+        // Send a ping heartbeat
+        try {
+          client.ping();
+        } catch (error) {
+          console.error('Error sending ping heartbeat:', error);
+          // If ping fails and client is still in OPEN state, terminate the connection
+          if (client.readyState === WebSocket.OPEN) {
+            client.terminate();
+          }
+        }
+      } else if (client.readyState !== WebSocket.CONNECTING) {
+        // For any non-connecting non-open clients, terminate to clean up
+        client.terminate();
+      }
+    });
+  }, HEARTBEAT_INTERVAL);
+  
   // Attempt to send initial data if we have none - this helps ensure clients always get data
   setTimeout(async () => {
     try {
@@ -84,7 +124,7 @@ export function setupWebSocketServer(server: Server) {
 }
 
 function startFlightUpdates() {
-  // Update flights every 1 second for high-frequency real-time live data
+  // Update flights at defined interval for high-frequency real-time live data
   flightUpdateInterval = setInterval(async () => {
     try {
       // Fetch new flight data
@@ -98,6 +138,17 @@ function startFlightUpdates() {
           broadcastCachedFlights();
         }
         return;
+      }
+      
+      // Check if we have real flight data (not mock)
+      const hasMockData = flights.some(f => f.id.startsWith('MOCK') || f.id.startsWith('CARGO'));
+      const hasRealData = flights.some(f => !f.id.startsWith('MOCK') && !f.id.startsWith('CARGO'));
+      
+      // Log the data source for transparency
+      if (hasRealData) {
+        console.log(`Broadcasting ${flights.length} live flights from FlightAware`);
+      } else if (hasMockData) {
+        console.log(`Broadcasting ${flights.length} simulated flights (no live connection)`);
       }
       
       // Update flight positions to simulate smooth movement
@@ -126,31 +177,42 @@ function startFlightUpdates() {
         broadcastCachedFlights();
       }
     }
-  }, 1000); // 1 second - continuous real-time updates as requested by user
+  }, FLIGHT_UPDATE_INTERVAL); // Continuous real-time updates as requested by user
   
   // Additional high-frequency update for smooth animations
   // This sends small position interpolations between main updates
   setInterval(() => {
     if (cachedFlights.length > 0) {
-      // Create a subtle movement update to all flights for smooth animation
-      const interpolatedFlights = cachedFlights.map(flight => ({
-        ...flight,
-        position: {
-          ...flight.position,
-          // Simulate movement in the direction of heading
-          latitude: flight.position.latitude + (Math.sin(flight.position.heading * Math.PI/180) * 0.0003),
-          longitude: flight.position.longitude + (Math.cos(flight.position.heading * Math.PI/180) * 0.0003),
-          timestamp: new Date().toISOString()
-        }
-      }));
-      
-      // Update the cache with interpolated positions
-      cachedFlights = interpolatedFlights;
-      
-      // Broadcast the interpolated positions
-      broadcastCachedFlights();
+      try {
+        // Create a subtle movement update to all flights for smooth animation
+        const interpolatedFlights = cachedFlights.map(flight => {
+          if (!flight || !flight.position || typeof flight.position.heading !== 'number') {
+            console.warn(`Invalid flight data found: ${JSON.stringify(flight)}`);
+            return flight; // Return unmodified if data is invalid
+          }
+          
+          return {
+            ...flight,
+            position: {
+              ...flight.position,
+              // Simulate movement in the direction of heading
+              latitude: flight.position.latitude + (Math.sin(flight.position.heading * Math.PI/180) * 0.0003),
+              longitude: flight.position.longitude + (Math.cos(flight.position.heading * Math.PI/180) * 0.0003),
+              timestamp: new Date().toISOString()
+            }
+          };
+        });
+        
+        // Update the cache with interpolated positions
+        cachedFlights = interpolatedFlights;
+        
+        // Broadcast the interpolated positions
+        broadcastCachedFlights();
+      } catch (error) {
+        console.error('Error interpolating flight positions:', error);
+      }
     }
-  }, 250); // Update 4 times per second for smoother animation
+  }, ANIMATION_INTERVAL); // Update frequently for smoother animation
 }
 
 // Helper function to broadcast cached flights to all clients
@@ -229,6 +291,11 @@ export function cleanupWebSocketServer() {
   if (flightUpdateInterval) {
     clearInterval(flightUpdateInterval);
     flightUpdateInterval = null;
+  }
+  
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval);
+    heartbeatInterval = null;
   }
   
   // Close FlightAware connection
