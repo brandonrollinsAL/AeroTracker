@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { useTheme } from '../hooks/use-theme';
 
 const loginSchema = z.object({
-  username: z.string().min(3, 'Username must be at least 3 characters'),
+  email: z.string().email('Please enter a valid email'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
@@ -38,7 +38,7 @@ export default function AuthPage() {
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: '',
+      email: '',
       password: '',
     },
   });
@@ -53,26 +53,6 @@ export default function AuthPage() {
     },
   });
 
-  const onLoginSubmit = (values: LoginFormValues) => {
-    loginMutation.mutate({
-      username: values.username,
-      password: values.password,
-    });
-  };
-
-  const onRegisterSubmit = (values: RegisterFormValues) => {
-    registerMutation.mutate({
-      username: values.username,
-      email: values.email,
-      password: values.password,
-    });
-  };
-
-  // Redirect if user is already logged in
-  if (user) {
-    return <Redirect to="/" />;
-  }
-
   const handleLoginError = (error: any) => {
     loginForm.setError("root", {
       type: "manual",
@@ -85,6 +65,30 @@ export default function AuthPage() {
       type: "manual",
       message: error.message || "Registration failed"
     });
+  };
+
+  const onLoginSubmit = (values: LoginFormValues) => {
+    loginMutation.mutate({
+      email: values.email,
+      password: values.password,
+    }, {
+      onError: handleLoginError,
+    });
+  };
+
+  const onRegisterSubmit = (values: RegisterFormValues) => {
+    registerMutation.mutate({
+      username: values.username,
+      email: values.email,
+      password: values.password,
+    }, {
+      onError: handleRegisterError,
+    });
+  };
+
+  // Redirect if user is already logged in
+  if (user) {
+    return <Redirect to="/" />;
   };
 
   return (
@@ -136,12 +140,12 @@ export default function AuthPage() {
                         <div className="space-y-4">
                           <FormField
                             control={loginForm.control}
-                            name="username"
+                            name="email"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Username</FormLabel>
+                                <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="Username" {...field} />
+                                  <Input type="email" placeholder="user@example.com" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
