@@ -395,8 +395,8 @@ export default function Home() {
           isDarkMode={isDarkMode}
         />
         
-        {/* Main content with increased map height */}
-        <main className="flex flex-col md:flex-row h-[calc(100vh-104px)]">
+        {/* Main content filling 97% of available space */}
+        <main className="flex flex-col md:flex-row h-[calc(97vh-70px)]">
           <div className="flex-grow h-full w-full">
             <FlightMap 
               flights={flights}
