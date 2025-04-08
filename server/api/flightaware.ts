@@ -114,42 +114,82 @@ export function initializeFlightAwareConnection() {
       isConnected = true;
       reconnectAttempts = 0;
       
-      // Send authentication credentials
+      // Send authentication credentials in both formats (JSON and traditional)
       if (socket) {
+        // Try traditional format first
         const authCommand = `live username ${FLIGHTAWARE_USERNAME} password ${FLIGHTAWARE_PASSWORD}\n`;
         console.log('Sending authentication command to FlightAware...');
         socket.write(authCommand);
         
+        // Also try JSON format auth after a small delay
+        setTimeout(() => {
+          if (socket && socket.writable) {
+            const jsonAuthCommand = JSON.stringify({
+              type: "auth",
+              username: FLIGHTAWARE_USERNAME,
+              password: FLIGHTAWARE_PASSWORD
+            }) + "\n";
+            console.log('Sending JSON authentication command to FlightAware...');
+            socket.write(jsonAuthCommand);
+          }
+        }, 500);
+        
         // Subscribe to flight position updates after a small delay to ensure auth is processed
         setTimeout(() => {
           console.log('Sending subscription commands for various data types');
-          if (socket) {
-            // Try multiple subscription types to see if any provide data
+          if (socket && socket.writable) {
+            // Try both formats - traditional and JSON
             socket.write('live all\n');
+            
+            setTimeout(() => {
+              if (socket && socket.writable) {
+                const jsonSubscribeAll = JSON.stringify({
+                  type: "subscribe",
+                  channel: "all"
+                }) + "\n";
+                socket.write(jsonSubscribeAll);
+              }
+            }, 500);
             
             // Add a 1 second delay between commands
             setTimeout(() => {
               console.log('Sending additional subscription commands');
-              if (socket) {
-                socket.write('live flifo_all\n'); // Flight info
+              if (socket && socket.writable) {
+                // Try both formats for position updates
+                socket.write('live position_all\n'); // Traditional format
                 
                 setTimeout(() => {
-                  if (socket) {
-                    socket.write('live position_all\n'); // Just position updates
+                  if (socket && socket.writable) {
+                    const jsonSubscribePositions = JSON.stringify({
+                      type: "subscribe",
+                      channel: "position_all"
+                    }) + "\n";
+                    socket.write(jsonSubscribePositions);
+                  }
+                }, 500);
+                
+                // Try both formats for airborne aircraft
+                setTimeout(() => {
+                  if (socket && socket.writable) {
+                    socket.write('live airborne_all\n'); // Traditional format
                     
                     setTimeout(() => {
-                      if (socket) {
-                        socket.write('live airborne_all\n'); // Airborne aircraft
+                      if (socket && socket.writable) {
+                        const jsonSubscribeAirborne = JSON.stringify({
+                          type: "subscribe",
+                          channel: "airborne_all"
+                        }) + "\n";
+                        socket.write(jsonSubscribeAirborne);
                       }
                     }, 500);
                   }
-                }, 500);
+                }, 1000);
               }
-            }, 1000);
+            }, 2000);
           } else {
-            console.error('Socket is null when trying to send subscription command');
+            console.error('Socket is null or not writable when trying to send subscription command');
           }
-        }, 1000);
+        }, 3000);
       }
     });
 
@@ -157,73 +197,120 @@ export function initializeFlightAwareConnection() {
       try {
         const chunk = data.toString();
         
-        // Log raw data in a more readable format
+        // Add data to buffer
+        dataBuffer += chunk;
+        
+        // Log received data for debugging
         if (chunk.trim()) {
-          console.log('🔶 Received data from FlightAware:');
-          console.log('==========================================');
-          console.log(chunk);
-          console.log('==========================================');
-          console.log('Data chunk length:', chunk.length);
+          console.log('🔶 Received data from FlightAware (length:', chunk.length, '):');
           
-          // Check for JSON format error responses
-          if (chunk.includes('"type":"error"')) {
+          // Check for JSON format error responses or auth responses first
+          if (chunk.includes('"type":"error"') || chunk.includes('"type":"auth"') || 
+              chunk.includes('auth ') || chunk.includes('error')) {
+            
+            console.log('==========================================');
+            console.log(chunk);
+            console.log('==========================================');
+            
+            // Try to parse as JSON first
+            let isJsonError = false;
             try {
-              const errorJson = JSON.parse(chunk) as { type: string; error_msg: string };
-              if (errorJson.type === "error") {
-                console.error(`❌ FlightAware API error: ${errorJson.error_msg}`);
-                
-                // Handle connection limit exceeded
-                if (errorJson.error_msg.includes("Maximum simultaneous connection")) {
-                  console.error('Connection limit exceeded - waiting before reconnecting');
-                  socket?.end();
-                  
-                  // Delay reconnection attempt
-                  setTimeout(() => {
-                    reconnectAttempts = 0; // Reset attempts
-                    initializeFlightAwareConnection();
-                  }, 30000); // Wait 30 seconds
-                  
-                  return;
+              // Look for complete JSON objects in the chunk
+              const jsonMatches = chunk.match(/(\{.*?\})/g);
+              if (jsonMatches) {
+                for (const jsonStr of jsonMatches) {
+                  try {
+                    const jsonObj = JSON.parse(jsonStr);
+                    
+                    // Handle error response
+                    if (jsonObj.type === "error") {
+                      isJsonError = true;
+                      console.error(`❌ FlightAware API error: ${jsonObj.error_msg}`);
+                      
+                      // Handle connection limit exceeded
+                      if (jsonObj.error_msg && jsonObj.error_msg.includes("Maximum simultaneous connection")) {
+                        console.error('Connection limit exceeded - waiting before reconnecting');
+                        socket?.end();
+                        
+                        // Delay reconnection attempt
+                        setTimeout(() => {
+                          reconnectAttempts = 0; // Reset attempts
+                          initializeFlightAwareConnection();
+                        }, 60000); // Wait 60 seconds
+                        
+                        return;
+                      }
+                    }
+                    
+                    // Handle auth response
+                    if (jsonObj.type === "auth") {
+                      console.log(`🔑 FlightAware JSON auth response: ${JSON.stringify(jsonObj)}`);
+                      
+                      if (jsonObj.result === "failed") {
+                        console.error('❌ FlightAware authentication failed. Please check your credentials.');
+                        broadcastMessage('error', {
+                          message: 'FlightAware authentication failed. Please update your API credentials.',
+                          code: 'FLIGHTAWARE_AUTH_FAILED'
+                        });
+                        
+                        // Properly close the connection on auth failure to trigger reconnect
+                        socket?.end();
+                        return;
+                      } else if (jsonObj.result === "ok") {
+                        console.log('✅ FlightAware JSON authentication successful!');
+                        // Send a heartbeat command to keep connection alive
+                        if (socket && socket.writable) {
+                          const keepAliveJson = JSON.stringify({
+                            type: "keepalive",
+                            interval: 30
+                          }) + "\n";
+                          socket.write(keepAliveJson);
+                        }
+                      }
+                    }
+                  } catch (innerError) {
+                    // Individual JSON parsing failed, continue to next match
+                    console.log(`Invalid JSON in match: ${jsonStr}`);
+                  }
                 }
               }
-            } catch (parseError) {
-              // If can't parse as JSON, continue with normal processing
-              console.error('Could not parse JSON error:', parseError);
+            } catch (jsonError) {
+              console.log('Not a JSON error/auth message');
             }
-          }
-          
-          // Immediately check for authentication response to handle auth issues quickly
-          if (chunk.includes('auth ')) {
-            const authLine = chunk.split('\n').find((line: string) => line.startsWith('auth '));
-            if (authLine) {
-              const authResult = authLine.split(' ')[1];
-              console.log(`🔑 FlightAware auth response: "${authLine}"`);
-              
-              if (authResult === 'failed') {
-                console.error('❌ FlightAware authentication failed. Please check your credentials.');
-                broadcastMessage('error', {
-                  message: 'FlightAware authentication failed. Please update your API credentials.',
-                  code: 'FLIGHTAWARE_AUTH_FAILED'
-                });
-                
-                // Properly close the connection on auth failure to trigger reconnect
-                socket?.end();
-                return;
-              } else if (authResult === 'ok') {
-                console.log('✅ FlightAware authentication successful!');
-                // Send an additional heartbeat command to keep connection alive
-                if (socket && socket.writable) {
-                  socket.write('live keepalive 30\n');
+            
+            // If not handled as JSON, check for traditional format auth response
+            if (!isJsonError && chunk.includes('auth ')) {
+              const authLine = chunk.split('\n').find(line => line.startsWith('auth '));
+              if (authLine) {
+                const authParts = authLine.split(' ');
+                if (authParts.length >= 2) {
+                  const authResult = authParts[1];
+                  console.log(`🔑 FlightAware traditional auth response: "${authLine}"`);
+                  
+                  if (authResult === 'failed') {
+                    console.error('❌ FlightAware authentication failed. Please check your credentials.');
+                    broadcastMessage('error', {
+                      message: 'FlightAware authentication failed. Please update your API credentials.',
+                      code: 'FLIGHTAWARE_AUTH_FAILED'
+                    });
+                    
+                    // Properly close the connection on auth failure
+                    socket?.end();
+                    return;
+                  } else if (authResult === 'ok') {
+                    console.log('✅ FlightAware traditional authentication successful!');
+                    // Send a heartbeat command to keep connection alive
+                    if (socket && socket.writable) {
+                      socket.write('live keepalive 30\n');
+                    }
+                  }
                 }
               }
             }
           }
         }
         
-        // Add data to buffer and process
-        dataBuffer += chunk;
-        
-        // Process complete lines
+        // Process complete lines from the buffer
         const lines = dataBuffer.split('\n');
         dataBuffer = lines.pop() || ''; // Keep the last incomplete line in the buffer
         
@@ -232,9 +319,22 @@ export function initializeFlightAwareConnection() {
           
           // Process each line individually
           for (const line of lines) {
-            if (line.trim() === '') continue;
-            processFlightData(line);
+            const trimmedLine = line.trim();
+            if (trimmedLine === '') continue;
+            
+            // Skip already handled auth lines or system messages
+            if (trimmedLine.startsWith('auth ') || 
+                trimmedLine.startsWith('live msg') || 
+                trimmedLine.startsWith('clock')) {
+              continue;
+            }
+            
+            // Process flight data
+            processFlightData(trimmedLine);
           }
+          
+          // If we have processed flight data, update our connected status
+          isConnected = true;
         }
       } catch (error) {
         console.error('Error processing FlightAware data:', error);
@@ -268,16 +368,35 @@ export function initializeFlightAwareConnection() {
 }
 
 /**
- * Attempt to reconnect to FlightAware
+ * Attempt to reconnect to FlightAware with an exponential backoff strategy
+ * for better resilience when the API is under high load or experiencing issues
  */
 function attemptReconnect() {
+  // If socket still exists, ensure it's closed
+  if (socket) {
+    try {
+      socket.removeAllListeners();
+      socket.end();
+      socket.destroy();
+    } catch (e) {
+      console.error('Error while closing socket:', e);
+    }
+    socket = null;
+  }
+
+  // Clear the flight cache when connection is lost to avoid stale data
+  if (flightCache.size > 0) {
+    console.log(`Clearing flight cache with ${flightCache.size} entries due to connection loss`);
+    flightCache.clear();
+  }
+  
   if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-    console.error(`Max reconnection attempts (${MAX_RECONNECT_ATTEMPTS}) reached. Giving up.`);
+    console.error(`Max reconnection attempts (${MAX_RECONNECT_ATTEMPTS}) reached. Entering extended retry mode.`);
     
     // No fallback to mock data, ONLY use real flight data
     // Send error message to clients so they can display it
     broadcastMessage('error', {
-      message: 'Unable to connect to FlightAware. Please check your credentials and connection.',
+      message: 'Unable to connect to FlightAware. The server will continue trying to reconnect in the background.',
       code: 'FLIGHTAWARE_CONNECTION_FAILED'
     });
     
@@ -287,21 +406,37 @@ function attemptReconnect() {
     // Set connected state to false explicitly
     isConnected = false;
     
-    // Continue trying to reconnect even after max attempts to eventually get real data
+    // Reset counters and try with a longer delay
     reconnectAttempts = 0;
+    
+    // Extended retry with a longer delay (30 seconds)
+    console.log('Switching to extended retry mode with 30 second interval');
     setTimeout(() => {
+      console.log('Extended retry: attempting to reconnect to FlightAware');
       initializeFlightAwareConnection();
-    }, RECONNECT_DELAY * 2); // Double the delay for subsequent retries
+    }, 30000); // 30 seconds between extended retries
     
     return;
   }
   
   reconnectAttempts++;
-  console.log(`Attempting to reconnect (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}) in ${RECONNECT_DELAY/1000} seconds...`);
+  
+  // Exponential backoff with jitter for better distribution of retry attempts
+  // Base delay: 5 seconds, max: 60 seconds
+  const baseDelay = RECONNECT_DELAY;
+  const maxDelay = 60000; // 60 seconds max
+  const exponentialDelay = Math.min(baseDelay * Math.pow(1.5, reconnectAttempts - 1), maxDelay);
+  
+  // Add jitter (±20% of the delay) to prevent synchronized reconnection attempts
+  const jitter = exponentialDelay * 0.2 * (Math.random() * 2 - 1);
+  const finalDelay = Math.max(baseDelay, Math.floor(exponentialDelay + jitter));
+  
+  console.log(`Attempting to reconnect (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}) in ${Math.round(finalDelay/1000)} seconds...`);
   
   setTimeout(() => {
+    console.log(`Reconnect attempt ${reconnectAttempts}: Initializing connection`);
     initializeFlightAwareConnection();
-  }, RECONNECT_DELAY);
+  }, finalDelay);
 }
 
 /**
@@ -312,6 +447,7 @@ function processFlightData(line: string) {
     console.log('Processing line:', line); // Log every line for detailed debugging
     
     // Skip system messages and keep-alives
+    // Check both for old format messages and JSON system messages
     if (line.startsWith('live msg') || line.startsWith('clock') || line.startsWith('auth')) {
       if (line.startsWith('auth ')) {
         const authResult = line.split(' ')[1];
@@ -332,28 +468,80 @@ function processFlightData(line: string) {
       }
       return;
     }
-
-    // Parse the flight data
-    const fields = line.split(' ');
-    console.log(`Parsed line type: ${fields[0]}, fields count: ${fields.length}`);
     
-    // Check if this is a position update
-    if (fields[0] === 'pos' && fields.length >= 10) {
-      console.log('Processing position update:', fields.join(' '));
-      const flight = parsePositionUpdate(fields);
-      if (flight) {
-        console.log(`Adding/updating flight ID ${flight.id} in cache`);
-        flightCache.set(flight.id, flight);
-      } else {
-        console.log('Failed to parse position update');
+    // Also try to parse as JSON and check if it's a system message
+    try {
+      const jsonData = JSON.parse(line);
+      if (jsonData.type === 'livemsg' || jsonData.type === 'clock' || jsonData.type === 'auth') {
+        if (jsonData.type === 'auth') {
+          console.log(`FlightAware JSON auth response: ${JSON.stringify(jsonData)}`);
+          if (jsonData.result === 'failed') {
+            console.error('FlightAware authentication failed. Please check your credentials.');
+            
+            // When auth fails, let the user know we need updated credentials
+            broadcastMessage('error', {
+              message: 'FlightAware authentication failed. Please update your API credentials.',
+              code: 'FLIGHTAWARE_AUTH_FAILED'
+            });
+          } else if (jsonData.result === 'ok') {
+            console.log('FlightAware authentication successful.');
+          } else {
+            console.log(`Unknown auth response: ${jsonData.result}`);
+          }
+        }
+        return;
       }
+    } catch (e) {
+      // Not a JSON message, continue processing
     }
-    // Check if this is a flight info update
-    else if (fields[0] === 'flight' && fields.length >= 5) {
-      console.log('Processing flight info update:', fields.join(' '));
-      updateFlightInfo(fields);
-    } else {
-      console.log(`Unhandled message type: ${fields[0]}, not processing`);
+
+    // Try to parse the line as JSON
+    try {
+      const jsonData = JSON.parse(line);
+      console.log('Parsed JSON data:', jsonData.type);
+      
+      // Check if this is a position update
+      if (jsonData.type === 'position') {
+        console.log('Processing position update from JSON');
+        const flight = parsePositionUpdateFromJson(jsonData);
+        if (flight) {
+          console.log(`Adding/updating flight ID ${flight.id} in cache`);
+          flightCache.set(flight.id, flight);
+        } else {
+          console.log('Failed to parse position update from JSON');
+        }
+      }
+      // Check if this is a flight info update
+      else if (jsonData.type === 'flight') {
+        console.log('Processing flight info update from JSON');
+        updateFlightInfoFromJson(jsonData);
+      } else {
+        console.log(`Unhandled JSON message type: ${jsonData.type}, not processing`);
+      }
+    } catch (jsonError) {
+      // Fallback to old space-delimited format
+      console.log('Could not parse as JSON, trying old format');
+      const fields = line.split(' ');
+      console.log(`Parsed line type: ${fields[0]}, fields count: ${fields.length}`);
+      
+      // Check if this is a position update
+      if (fields[0] === 'pos' && fields.length >= 10) {
+        console.log('Processing position update:', fields.join(' '));
+        const flight = parsePositionUpdate(fields);
+        if (flight) {
+          console.log(`Adding/updating flight ID ${flight.id} in cache`);
+          flightCache.set(flight.id, flight);
+        } else {
+          console.log('Failed to parse position update');
+        }
+      }
+      // Check if this is a flight info update
+      else if (fields[0] === 'flight' && fields.length >= 5) {
+        console.log('Processing flight info update:', fields.join(' '));
+        updateFlightInfo(fields);
+      } else {
+        console.log(`Unhandled message type: ${fields[0]}, not processing`);
+      }
     }
     
     // Periodically broadcast updates and cache to storage
@@ -368,6 +556,124 @@ function processFlightData(line: string) {
     }
   } catch (error) {
     console.error('Error processing flight data line:', error, line);
+  }
+}
+
+/**
+ * Parse a position update message from FlightAware JSON data
+ */
+function parsePositionUpdateFromJson(jsonData: any): LiveFlight | null {
+  try {
+    const id = jsonData.id || jsonData.ident || jsonData.hexid;
+    if (!id) {
+      console.error('Missing ID in flight data:', jsonData);
+      return null;
+    }
+    
+    // Extract position data
+    const latitude = parseFloat(jsonData.lat);
+    const longitude = parseFloat(jsonData.lon);
+    const altitude = parseInt(jsonData.alt, 10);
+    const heading = parseInt(jsonData.heading, 10);
+    const groundSpeed = parseInt(jsonData.gs, 10);
+    const timestamp = jsonData.clock ? 
+      new Date(parseInt(jsonData.clock, 10) * 1000).toISOString() : 
+      new Date().toISOString();
+    const squawk = jsonData.squawk !== 'none' ? jsonData.squawk : undefined;
+    
+    // Get existing flight data or create new
+    const existingFlight = flightCache.get(id);
+    
+    // Create or update the flight object
+    const flight: LiveFlight = {
+      id,
+      callsign: jsonData.ident || existingFlight?.callsign || id,
+      flightNumber: jsonData.ident || existingFlight?.flightNumber,
+      registration: jsonData.reg || existingFlight?.registration,
+      aircraftType: jsonData.aircrafttype || existingFlight?.aircraftType,
+      airline: existingFlight?.airline || {
+        name: 'Unknown Airline',
+        icao: '',
+      },
+      departure: existingFlight?.departure,
+      arrival: existingFlight?.arrival,
+      position: {
+        latitude,
+        longitude,
+        altitude,
+        heading,
+        groundSpeed,
+        verticalSpeed: jsonData.vertRate ? parseInt(jsonData.vertRate, 10) : (existingFlight?.position?.verticalSpeed || 0),
+        timestamp
+      },
+      status: existingFlight?.status || 'active',
+      route: existingFlight?.route,
+      progress: existingFlight?.progress,
+      squawk
+    };
+    
+    return flight;
+  } catch (error) {
+    console.error('Error parsing JSON position update:', error, jsonData);
+    return null;
+  }
+}
+
+/**
+ * Update flight information based on a flight info JSON message
+ */
+function updateFlightInfoFromJson(jsonData: any) {
+  try {
+    const id = jsonData.id || jsonData.ident || jsonData.hexid;
+    if (!id) {
+      console.error('Missing ID in flight info data:', jsonData);
+      return;
+    }
+    
+    const callsign = jsonData.ident;
+    const origin = jsonData.origin !== 'none' ? jsonData.origin : undefined;
+    const destination = jsonData.destination !== 'none' ? jsonData.destination : undefined;
+    
+    // Get existing flight data
+    const existingFlight = flightCache.get(id);
+    if (!existingFlight) return;
+    
+    // Update flight with new info
+    existingFlight.callsign = callsign;
+    existingFlight.flightNumber = callsign;
+    
+    // If we have registration info, update it
+    if (jsonData.reg) {
+      existingFlight.registration = jsonData.reg;
+    }
+    
+    // If we have aircraft type info, update it
+    if (jsonData.aircrafttype) {
+      existingFlight.aircraftType = jsonData.aircrafttype;
+    }
+    
+    if (origin) {
+      existingFlight.departure = {
+        icao: origin,
+        iata: undefined,
+        name: undefined,
+        time: undefined
+      };
+    }
+    
+    if (destination) {
+      existingFlight.arrival = {
+        icao: destination,
+        iata: undefined,
+        name: undefined,
+        time: undefined
+      };
+    }
+    
+    // Update the cache
+    flightCache.set(id, existingFlight);
+  } catch (error) {
+    console.error('Error updating flight info from JSON:', error, jsonData);
   }
 }
 
