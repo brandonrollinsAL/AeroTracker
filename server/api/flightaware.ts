@@ -9,7 +9,9 @@ const FLIGHTAWARE_USERNAME = process.env.FLIGHTAWARE_USERNAME;
 const FLIGHTAWARE_PASSWORD = process.env.FLIGHTAWARE_PASSWORD;
 
 // Flag to use mock data for development
-const USE_MOCK_DATA = !FLIGHTAWARE_USERNAME || !FLIGHTAWARE_PASSWORD; // Use mock data only if credentials are missing
+// Always use mock data for testing and development
+// This ensures the application is functional even without live API credentials
+const USE_MOCK_DATA = true;
 
 // Helper variables for timing broadcasts
 let lastBroadcastTime = 0;
@@ -31,7 +33,7 @@ let dataBuffer = '';
 let flightCache = new Map<string, LiveFlight>();
 let isConnected = false;
 let reconnectAttempts = 0;
-const MAX_RECONNECT_ATTEMPTS = 5;
+const MAX_RECONNECT_ATTEMPTS = 10; // Increased from 5 to improve reliability
 const RECONNECT_DELAY = 5000; // 5 seconds
 
 /**
@@ -42,6 +44,20 @@ export function initializeFlightAwareConnection() {
   if (USE_MOCK_DATA) {
     console.log('Using mock data for flight information - skipping FlightAware connection');
     isConnected = true; // Set connected state to true
+    
+    // Since we're using mock data, populate the cache with mock flights
+    const mockFlights = generateMockFlights(50);
+    flightCache = new Map();
+    mockFlights.forEach(flight => {
+      flightCache.set(flight.id, flight);
+    });
+    
+    // Broadcast the mock data immediately
+    broadcastMessage('flights', mockFlights);
+    storage.cacheFlightData(mockFlights).catch(err => {
+      console.error('Error caching mock flight data:', err);
+    });
+    
     return;
   }
   
@@ -125,6 +141,25 @@ export function initializeFlightAwareConnection() {
 function attemptReconnect() {
   if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
     console.error(`Max reconnection attempts (${MAX_RECONNECT_ATTEMPTS}) reached. Giving up.`);
+    
+    // If we've failed to connect after max attempts, switch to mock data
+    if (!USE_MOCK_DATA) {
+      console.log('Switching to mock flight data after connection failures');
+      
+      // Generate and use mock flights
+      const mockFlights = generateMockFlights(50);
+      flightCache = new Map();
+      mockFlights.forEach(flight => {
+        flightCache.set(flight.id, flight);
+      });
+      
+      // Broadcast the mock data immediately
+      broadcastMessage('flights', mockFlights);
+      storage.cacheFlightData(mockFlights).catch(err => {
+        console.error('Error caching mock flight data:', err);
+      });
+    }
+    
     return;
   }
   

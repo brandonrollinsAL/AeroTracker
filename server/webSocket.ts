@@ -25,17 +25,20 @@ export function setupWebSocketServer(server: Server) {
       try {
         const data = JSON.parse(message.toString());
         
-        // Handle filter updates
-        if (data.type === 'setFilter') {
+        // Handle filter updates - support both 'setFilter' and 'filter' message types
+        if (data.type === 'setFilter' || data.type === 'filter') {
+          const filterType = data.filter || data.filterType || 'all';
           const clientData = clients.get(ws) || {};
           clients.set(ws, { 
             ...clientData,
-            filters: { type: data.filter }
+            filters: { type: filterType }
           });
+          
+          console.log(`Client set filter to: ${filterType}`);
           
           // Send filtered flights
           if (cachedFlights.length > 0) {
-            const filteredFlights = filterFlights(cachedFlights, data.filter);
+            const filteredFlights = filterFlights(cachedFlights, filterType);
             sendFlightData(ws, filteredFlights);
           }
         }
@@ -57,6 +60,25 @@ export function setupWebSocketServer(server: Server) {
   if (!flightUpdateInterval) {
     startFlightUpdates();
   }
+  
+  // Attempt to send initial data if we have none - this helps ensure clients always get data
+  setTimeout(async () => {
+    try {
+      if (cachedFlights.length === 0) {
+        const flights = await fetchFlights('all');
+        if (flights && flights.length > 0) {
+          cachedFlights = flights;
+          wss.clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+              sendFlightData(client, flights);
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching initial flight data:', error);
+    }
+  }, 3000);
 
   return wss;
 }
@@ -118,7 +140,7 @@ function filterFlights(flights: LiveFlight[], filterType: string): LiveFlight[] 
 function sendFlightData(client: WebSocket, flights: LiveFlight[]) {
   if (client.readyState === WebSocket.OPEN) {
     client.send(JSON.stringify({
-      type: 'flightUpdate',
+      type: 'flights', // Using 'flights' to match the expected type in the client
       flights,
       timestamp: new Date().toISOString()
     }));

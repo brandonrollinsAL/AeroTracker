@@ -47,73 +47,130 @@ export default function Home() {
 
   // WebSocket connection for real-time flight data
   useEffect(() => {
-    // Create WebSocket connection
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
-    const socket = new WebSocket(wsUrl);
+    let socket: WebSocket | null = null;
+    let reconnectTimeout: NodeJS.Timeout | null = null;
+    let reconnectAttempts = 0;
+    const MAX_RECONNECT_ATTEMPTS = 10;
+    const RECONNECT_DELAY = 3000; // 3 seconds
 
-    // Connection opened
-    socket.addEventListener('open', () => {
-      console.log('Connected to WebSocket server');
-      setIsConnected(true);
-      toast({
-        title: 'Connected',
-        description: 'Live flight data stream connected',
-      });
-    });
-
-    // Listen for messages
-    socket.addEventListener('message', (event) => {
+    // Function to connect to WebSocket
+    const connectWebSocket = () => {
+      // Create WebSocket connection
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const wsUrl = `${protocol}//${window.location.host}/ws`;
+      
       try {
-        const data = JSON.parse(event.data);
-        if (data.type === 'flights') {
-          // Ensure data.flights is an array
-          const flightData = Array.isArray(data.flights) ? data.flights : [];
-          setFlights(flightData);
-          
-          // Update selected flight if it exists in the new data
-          if (selectedFlight && flightData.length > 0) {
-            const updatedFlight = flightData.find((f: LiveFlight) => f.id === selectedFlight.id);
-            if (updatedFlight) {
-              setSelectedFlight(updatedFlight);
+        socket = new WebSocket(wsUrl);
+
+        // Connection opened
+        socket.addEventListener('open', () => {
+          console.log('Connected to WebSocket server');
+          setIsConnected(true);
+          reconnectAttempts = 0; // Reset reconnect attempts on successful connection
+          toast({
+            title: 'Connected',
+            description: 'Live flight data stream connected',
+          });
+        });
+
+        // Listen for messages
+        socket.addEventListener('message', (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            if (data.type === 'flights') {
+              // Ensure data.flights is an array
+              const flightData = Array.isArray(data.flights) ? data.flights : [];
+              setFlights(flightData);
+              
+              // Update selected flight if it exists in the new data
+              if (selectedFlight && flightData.length > 0) {
+                const updatedFlight = flightData.find((f: LiveFlight) => f.id === selectedFlight.id);
+                if (updatedFlight) {
+                  setSelectedFlight(updatedFlight);
+                }
+              }
+              
+              // Update favorite flights with latest data
+              setFavoriteFlights(prevFavorites => {
+                return prevFavorites.map(favorite => {
+                  const updated = flightData.find((f: LiveFlight) => f.id === favorite.id);
+                  return updated || favorite;
+                });
+              });
             }
+          } catch (error) {
+            console.error('Error parsing WebSocket message:', error);
+          }
+        });
+
+        // Connection closed
+        socket.addEventListener('close', () => {
+          console.log('Disconnected from WebSocket server');
+          setIsConnected(false);
+          
+          // Only show toast on first disconnect to avoid spamming
+          if (reconnectAttempts === 0) {
+            toast({
+              title: 'Disconnected',
+              description: 'Lost connection to flight data server, attempting to reconnect...',
+              variant: 'destructive',
+            });
           }
           
-          // Update favorite flights with latest data
-          setFavoriteFlights(prevFavorites => {
-            return prevFavorites.map(favorite => {
-              const updated = flightData.find((f: LiveFlight) => f.id === favorite.id);
-              return updated || favorite;
-            });
-          });
-        }
+          // Attempt to reconnect
+          attemptReconnect();
+        });
+
+        // Connection error
+        socket.addEventListener('error', (error) => {
+          console.error('WebSocket error:', error);
+          setIsConnected(false);
+        });
       } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
+        console.error('WebSocket connection creation error:', error);
+        attemptReconnect();
       }
-    });
+    };
 
-    // Connection closed
-    socket.addEventListener('close', () => {
-      console.log('Disconnected from WebSocket server');
-      setIsConnected(false);
-      toast({
-        title: 'Disconnected',
-        description: 'Lost connection to flight data server',
-        variant: 'destructive',
-      });
-    });
+    // Function to attempt reconnection
+    const attemptReconnect = () => {
+      if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+        console.log(`Max reconnect attempts (${MAX_RECONNECT_ATTEMPTS}) reached.`);
+        toast({
+          title: 'Connection Failed',
+          description: 'Could not reconnect to the flight data server. Please refresh the page to try again.',
+          variant: 'destructive',
+          duration: 6000,
+        });
+        return;
+      }
+      
+      reconnectAttempts++;
+      console.log(`Attempting to reconnect to WebSocket (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}) in ${RECONNECT_DELAY/1000} seconds...`);
+      
+      if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout);
+      }
+      
+      reconnectTimeout = setTimeout(() => {
+        connectWebSocket();
+      }, RECONNECT_DELAY);
+    };
 
-    // Connection error
-    socket.addEventListener('error', (error) => {
-      console.error('WebSocket error:', error);
-      setIsConnected(false);
-    });
+    // Initial connection
+    connectWebSocket();
 
     // Clean up on unmount
     return () => {
-      socket.close();
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.close();
+      }
+      
+      if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout);
+      }
     };
-  }, []);
+  }, [selectedFlight, toast]);
 
   // Load favorites from localStorage
   useEffect(() => {
