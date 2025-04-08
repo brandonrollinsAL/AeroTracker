@@ -69,8 +69,8 @@ export default function MapFilters({ filters, onFilterChange, isDarkMode = false
     onFilterChange({
       type: 'all',
       showWeather: false,
-      showFlightPaths: false,
-      showAirports: false,
+      showFlightPaths: true, // Keep flight paths enabled as per requirement
+      showAirports: true,    // Keep airports shown as per requirement
       airline: undefined,
       aircraft: undefined,
       tailNumber: undefined,

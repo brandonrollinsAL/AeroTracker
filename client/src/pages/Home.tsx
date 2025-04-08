@@ -26,12 +26,12 @@ export default function Home() {
   const [isConnected, setIsConnected] = useState(false);
   const [isPanelPinned, setIsPanelPinned] = useState(false);
   
-  // State for map filters
+  // State for map filters - live tracking is auto-displayed by default
   const [mapFilters, setMapFilters] = useState<MapFilter>({
     type: 'all',
     showWeather: false,
-    showFlightPaths: true,
-    showAirports: true
+    showFlightPaths: true, // Flight paths enabled by default
+    showAirports: true     // Airports shown by default
   });
   
   // State for airports (for route optimizer)
