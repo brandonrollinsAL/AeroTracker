@@ -137,9 +137,11 @@ export function NexradRadarOverlay({ enabled, opacity = 0.65, zoom }: NexradRada
       fetchRadarData(station);
     });
     
-    // Set up an interval to refresh the radar data every second
+    // Set up an interval to refresh the radar data every 5 minutes (300,000ms)
+    // NEXRAD data typically updates every 5-10 minutes, so this is a reasonable interval
     const refreshInterval = setInterval(() => {
       if (enabled && visibleStations.length > 0) {
+        console.log('Refreshing NEXRAD radar data...');
         // Remove old layers before fetching new data
         radarLayers.forEach(layer => {
           if (map.hasLayer(layer)) {
@@ -153,7 +155,7 @@ export function NexradRadarOverlay({ enabled, opacity = 0.65, zoom }: NexradRada
           fetchRadarData(station);
         });
       }
-    }, 1000); // Update every second for real-time radar
+    }, 300000); // Update every 5 minutes instead of every second
     
     // Cleanup function to remove radar layers and clear interval when component unmounts
     return () => {

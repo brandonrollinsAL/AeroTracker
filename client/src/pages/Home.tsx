@@ -93,12 +93,15 @@ export default function Home() {
                 
                 // Update existing flights or add new ones
                 const updatedFlights = prevFlights.map(flight => {
-                  return updatedFlightsMap.get(flight.id) || flight;
+                  // Explicitly handle the flight with proper type
+                  const flightWithId = flight as LiveFlight;
+                  return updatedFlightsMap.get(flightWithId.id) || flight;
                 });
                 
                 // Add any new flights that weren't in the previous data
                 flightData.forEach((flight: LiveFlight) => {
-                  if (!updatedFlights.some(f => f.id === flight.id)) {
+                  // Explicit type check
+                  if (!updatedFlights.some((f: any) => f.id === flight.id)) {
                     updatedFlights.push(flight);
                   }
                 });

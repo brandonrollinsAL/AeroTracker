@@ -165,9 +165,36 @@ export function initializeFlightAwareConnection() {
           console.log('==========================================');
           console.log('Data chunk length:', chunk.length);
           
+          // Check for JSON format error responses
+          if (chunk.includes('"type":"error"')) {
+            try {
+              const errorJson = JSON.parse(chunk) as { type: string; error_msg: string };
+              if (errorJson.type === "error") {
+                console.error(`❌ FlightAware API error: ${errorJson.error_msg}`);
+                
+                // Handle connection limit exceeded
+                if (errorJson.error_msg.includes("Maximum simultaneous connection")) {
+                  console.error('Connection limit exceeded - waiting before reconnecting');
+                  socket?.end();
+                  
+                  // Delay reconnection attempt
+                  setTimeout(() => {
+                    reconnectAttempts = 0; // Reset attempts
+                    initializeFlightAwareConnection();
+                  }, 30000); // Wait 30 seconds
+                  
+                  return;
+                }
+              }
+            } catch (parseError) {
+              // If can't parse as JSON, continue with normal processing
+              console.error('Could not parse JSON error:', parseError);
+            }
+          }
+          
           // Immediately check for authentication response to handle auth issues quickly
           if (chunk.includes('auth ')) {
-            const authLine = chunk.split('\n').find(line => line.startsWith('auth '));
+            const authLine = chunk.split('\n').find((line: string) => line.startsWith('auth '));
             if (authLine) {
               const authResult = authLine.split(' ')[1];
               console.log(`🔑 FlightAware auth response: "${authLine}"`);
