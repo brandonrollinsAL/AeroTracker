@@ -7,9 +7,8 @@ import MapIconMenu from '@/components/MapIconMenu';
 import FlightDetailPanel from '@/components/FlightDetailPanel';
 import RouteOptimizer from '@/components/RouteOptimizer';
 import AuthPopup from '@/components/AuthPopup';
-import { LiveFlight, MapFilter, Airport } from '@/types';
-import { ToastProvider } from '@/components/ui/toast';
-import { useToast } from '@/hooks/use-toast';
+import { LiveFlight, MapFilter, Airport } from '@shared/schema';
+import { useToast } from '@/components/ui/use-toast';
 import { useHotkeys, useMultiHotkeys } from '@/hooks/use-hotkeys';
 import { useTheme } from '@/hooks/use-theme.tsx';
 import { useAuth } from '@/hooks/use-auth';
@@ -265,7 +264,7 @@ export default function Home() {
   ]);
 
   return (
-    <ToastProvider>
+    <div>
       <Helmet>
         <title>AeroTracker - Flight Tracking Platform</title>
       </Helmet>
@@ -480,12 +479,24 @@ export default function Home() {
         </div>
 
         {/* Auth popup for premium features */}
-        <AuthPopup 
-          isOpen={showAuthPopup}
-          onOpenChange={setShowAuthPopup}
-          featureName={authFeatureName}
-        />
+        {showAuthPopup && (
+          <AuthPopup 
+            title="Premium Feature"
+            description={`Sign in or create an account to access ${authFeatureName}.`}
+            trigger={
+              <Button 
+                className="hidden" 
+                onClick={() => setShowAuthPopup(true)}
+                ref={(ref) => ref && showAuthPopup && ref.click()}
+              >
+                Open
+              </Button>
+            }
+          >
+            <div>Premium content</div>
+          </AuthPopup>
+        )}
       </div>
-    </ToastProvider>
+    </div>
   );
 }

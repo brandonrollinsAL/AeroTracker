@@ -1,16 +1,24 @@
 import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Redirect } from "wouter";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLocation, Redirect } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 
+// Define the schemas for login and registration
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -26,21 +34,17 @@ const registerSchema = z.object({
   path: ["confirmPassword"],
 });
 
-type LoginValues = z.infer<typeof loginSchema>;
-type RegisterValues = z.infer<typeof registerSchema>;
+type LoginFormValues = z.infer<typeof loginSchema>;
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
+  const [activeTab, setActiveTab] = useState<string>("login");
   const { user, loginMutation, registerMutation } = useAuth();
-  const [activeTab, setActiveTab] = useState<"login" | "register">("login");
-  const [formError, setFormError] = useState<string | null>(null);
+  const [, navigate] = useLocation();
+  const { toast } = useToast();
 
-  // If the user is already logged in, redirect to the home page
-  if (user) {
-    return <Redirect to="/" />;
-  }
-
-  // Login form
-  const loginForm = useForm<LoginValues>({
+  // Define the form for login
+  const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       username: "",
@@ -48,8 +52,8 @@ export default function AuthPage() {
     },
   });
 
-  // Register form
-  const registerForm = useForm<RegisterValues>({
+  // Define the form for registration
+  const registerForm = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       username: "",
@@ -59,112 +63,73 @@ export default function AuthPage() {
     },
   });
 
-  // Handle login form submission
-  const onLoginSubmit = async (values: LoginValues) => {
-    setFormError(null);
-    try {
-      await loginMutation.mutateAsync(values);
-    } catch (error) {
-      setFormError("Failed to login. Please check your credentials.");
-    }
+  // If already logged in, redirect to homepage
+  if (user) {
+    return <Redirect to="/" />;
+  }
+
+  // Handle login submission
+  const onLoginSubmit = (values: LoginFormValues) => {
+    loginMutation.mutate(values, {
+      onSuccess: () => {
+        toast({
+          title: "Login successful",
+          description: "Welcome back!",
+        });
+        navigate("/");
+      },
+      onError: (error) => {
+        toast({
+          title: "Login failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
   };
 
-  // Handle register form submission
-  const onRegisterSubmit = async (values: RegisterValues) => {
-    setFormError(null);
-    try {
-      const { confirmPassword, ...userData } = values;
-      await registerMutation.mutateAsync(userData);
-    } catch (error) {
-      setFormError("Failed to register. Username might already be taken.");
-    }
+  // Handle registration submission
+  const onRegisterSubmit = (values: RegisterFormValues) => {
+    const { confirmPassword, ...registerData } = values;
+    registerMutation.mutate(registerData, {
+      onSuccess: () => {
+        toast({
+          title: "Account created",
+          description: "Your account has been successfully created!",
+        });
+        navigate("/");
+      },
+      onError: (error) => {
+        toast({
+          title: "Registration failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-[#003a65] via-[#002b4c] to-[#000c25]">
-      {/* Hero section */}
-      <div className="hidden md:flex w-1/2 flex-col justify-center items-center p-8 text-white">
-        <div className="max-w-md">
-          <div className="mb-8 flex items-center">
-            <span className="material-icons text-[#4995fd] mr-3 text-4xl">flight</span>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#4995fd] to-[#a0d0ec] bg-clip-text text-transparent">
-              AeroTracker
-            </h1>
-          </div>
-          <h2 className="text-2xl font-bold mb-6">
-            The Ultimate Aviation Experience
-          </h2>
-          <p className="text-lg mb-4 text-[#a0d0ec]">
-            Unlock premium features for advanced flight tracking and route optimization:
-          </p>
-          <ul className="space-y-3 mb-6">
-            <li className="flex items-center">
-              <span className="material-icons text-[#4995fd] mr-2">check_circle</span>
-              <span>Detailed real-time flight information</span>
-            </li>
-            <li className="flex items-center">
-              <span className="material-icons text-[#4995fd] mr-2">check_circle</span>
-              <span>Global weather overlay integration</span>
-            </li>
-            <li className="flex items-center">
-              <span className="material-icons text-[#4995fd] mr-2">check_circle</span>
-              <span>Advanced route optimization tools</span>
-            </li>
-            <li className="flex items-center">
-              <span className="material-icons text-[#4995fd] mr-2">check_circle</span>
-              <span>Save and track favorite flights</span>
-            </li>
-            <li className="flex items-center">
-              <span className="material-icons text-[#4995fd] mr-2">check_circle</span>
-              <span>Historical flight data and analytics</span>
-            </li>
-          </ul>
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[#4995fd]/40 to-transparent my-8"></div>
-          <p className="text-[#a0d0ec]/80 text-sm italic">
-            "AeroTracker provides the most comprehensive and intuitive flight tracking experience available today."
-          </p>
-        </div>
-      </div>
-
-      {/* Login/Register form */}
-      <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-black/10 backdrop-blur-sm">
+    <div className="flex min-h-screen">
+      {/* Auth form section */}
+      <div className="flex flex-col justify-center items-center w-full md:w-1/2 p-8">
         <div className="w-full max-w-md">
-          <Card className="bg-white/5 border-[#4995fd]/20 backdrop-blur-lg text-white">
-            <CardHeader className="space-y-2 pb-2">
-              <CardTitle className="text-2xl font-bold">
-                {activeTab === "login" ? "Welcome Back" : "Create an Account"}
-              </CardTitle>
-              <CardDescription className="text-white/70">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl text-center">AeroTracker</CardTitle>
+              <CardDescription className="text-center">
                 {activeTab === "login" 
-                  ? "Sign in to access premium features" 
-                  : "Join AeroTracker to unlock premium features"
-                }
+                  ? "Sign in to your account" 
+                  : "Create a new account"}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Tabs 
-                defaultValue="login" 
-                className="w-full" 
-                value={activeTab}
-                onValueChange={(value) => setActiveTab(value as "login" | "register")}
-              >
-                <TabsList className="grid w-full grid-cols-2 mb-4 bg-[#002b4c]/50">
-                  <TabsTrigger 
-                    value="login"
-                    className="data-[state=active]:bg-[#4995fd]/20 data-[state=active]:text-white"
-                  >
-                    Login
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="register"
-                    className="data-[state=active]:bg-[#4995fd]/20 data-[state=active]:text-white"
-                  >
-                    Register
-                  </TabsTrigger>
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-6">
+                  <TabsTrigger value="login">Login</TabsTrigger>
+                  <TabsTrigger value="register">Register</TabsTrigger>
                 </TabsList>
-
-                {/* Login Form */}
-                <TabsContent value="login" className="space-y-4 pt-2">
+                <TabsContent value="login">
                   <Form {...loginForm}>
                     <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
                       <FormField
@@ -174,11 +139,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel>Username</FormLabel>
                             <FormControl>
-                              <Input 
-                                placeholder="Enter your username" 
-                                className="bg-white/10 border-[#4995fd]/30 text-white placeholder:text-white/50" 
-                                {...field} 
-                              />
+                              <Input placeholder="Enter your username" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -191,38 +152,23 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel>Password</FormLabel>
                             <FormControl>
-                              <Input 
-                                type="password" 
-                                placeholder="Enter your password" 
-                                className="bg-white/10 border-[#4995fd]/30 text-white placeholder:text-white/50" 
-                                {...field} 
-                              />
+                              <Input type="password" placeholder="Enter your password" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                      {formError && <p className="text-red-500 text-sm">{formError}</p>}
                       <Button 
                         type="submit" 
-                        className="w-full bg-[#4995fd] hover:bg-[#4995fd]/80 text-white"
+                        className="w-full" 
                         disabled={loginMutation.isPending}
                       >
-                        {loginMutation.isPending ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Logging in...
-                          </>
-                        ) : (
-                          "Sign In"
-                        )}
+                        {loginMutation.isPending ? "Signing in..." : "Sign In"}
                       </Button>
                     </form>
                   </Form>
                 </TabsContent>
-
-                {/* Register Form */}
-                <TabsContent value="register" className="space-y-4 pt-2">
+                <TabsContent value="register">
                   <Form {...registerForm}>
                     <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
                       <FormField
@@ -232,11 +178,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel>Username</FormLabel>
                             <FormControl>
-                              <Input 
-                                placeholder="Create a username" 
-                                className="bg-white/10 border-[#4995fd]/30 text-white placeholder:text-white/50" 
-                                {...field} 
-                              />
+                              <Input placeholder="Create a username" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -249,12 +191,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
-                              <Input 
-                                type="email" 
-                                placeholder="Enter your email" 
-                                className="bg-white/10 border-[#4995fd]/30 text-white placeholder:text-white/50" 
-                                {...field} 
-                              />
+                              <Input type="email" placeholder="Enter your email" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -267,12 +204,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel>Password</FormLabel>
                             <FormControl>
-                              <Input 
-                                type="password" 
-                                placeholder="Create a password" 
-                                className="bg-white/10 border-[#4995fd]/30 text-white placeholder:text-white/50" 
-                                {...field} 
-                              />
+                              <Input type="password" placeholder="Create a password" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -285,31 +217,18 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel>Confirm Password</FormLabel>
                             <FormControl>
-                              <Input 
-                                type="password" 
-                                placeholder="Confirm your password" 
-                                className="bg-white/10 border-[#4995fd]/30 text-white placeholder:text-white/50" 
-                                {...field} 
-                              />
+                              <Input type="password" placeholder="Confirm your password" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                      {formError && <p className="text-red-500 text-sm">{formError}</p>}
                       <Button 
                         type="submit" 
-                        className="w-full bg-[#4995fd] hover:bg-[#4995fd]/80 text-white"
+                        className="w-full" 
                         disabled={registerMutation.isPending}
                       >
-                        {registerMutation.isPending ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Creating Account...
-                          </>
-                        ) : (
-                          "Create Account"
-                        )}
+                        {registerMutation.isPending ? "Creating Account..." : "Create Account"}
                       </Button>
                     </form>
                   </Form>
@@ -317,33 +236,50 @@ export default function AuthPage() {
               </Tabs>
             </CardContent>
             <CardFooter className="flex justify-center">
-              <p className="text-sm text-white/60">
-                {activeTab === "login" ? (
-                  <>
-                    Don't have an account?{" "}
-                    <Button 
-                      variant="link" 
-                      className="p-0 text-[#4995fd] underline hover:text-[#a0d0ec]"
-                      onClick={() => setActiveTab("register")}
-                    >
-                      Register here
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    Already have an account?{" "}
-                    <Button 
-                      variant="link" 
-                      className="p-0 text-[#4995fd] underline hover:text-[#a0d0ec]"
-                      onClick={() => setActiveTab("login")}
-                    >
-                      Login here
-                    </Button>
-                  </>
-                )}
+              <p className="text-sm text-muted-foreground">
+                {activeTab === "login"
+                  ? "Don't have an account? "
+                  : "Already have an account? "}
+                <Button
+                  variant="link"
+                  className="p-0 h-auto text-primary"
+                  onClick={() => setActiveTab(activeTab === "login" ? "register" : "login")}
+                >
+                  {activeTab === "login" ? "Sign up" : "Sign in"}
+                </Button>
               </p>
             </CardFooter>
           </Card>
+        </div>
+      </div>
+
+      {/* Hero section */}
+      <div className="hidden md:flex md:w-1/2 bg-primary/10">
+        <div className="flex flex-col justify-center p-8 lg:p-16">
+          <h1 className="text-4xl font-bold tracking-tight mb-4">
+            Welcome to <span className="text-primary">AeroTracker</span>
+          </h1>
+          <p className="text-xl mb-6">
+            The next-generation flight tracking platform for aviation professionals and enthusiasts.
+          </p>
+          <ul className="space-y-2">
+            <li className="flex items-center">
+              <div className="mr-2 h-4 w-4 rounded-full bg-primary" />
+              <span>Real-time flight tracking and alerts</span>
+            </li>
+            <li className="flex items-center">
+              <div className="mr-2 h-4 w-4 rounded-full bg-primary" />
+              <span>Comprehensive aircraft database</span>
+            </li>
+            <li className="flex items-center">
+              <div className="mr-2 h-4 w-4 rounded-full bg-primary" />
+              <span>Weather integration and route optimization</span>
+            </li>
+            <li className="flex items-center">
+              <div className="mr-2 h-4 w-4 rounded-full bg-primary" />
+              <span>Advanced filtering and search capabilities</span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

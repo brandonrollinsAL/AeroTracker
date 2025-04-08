@@ -4,40 +4,79 @@ import {
   useMutation,
   UseMutationResult,
 } from "@tanstack/react-query";
-import { User as SelectUser, InsertUser } from "@shared/schema";
-import { getQueryFn, apiRequest, queryClient } from "../lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
+import { useToast } from "@/components/ui/use-toast";
+import { getQueryFn, apiRequest, queryClient } from "@/lib/queryClient";
+
+// Type for user from server
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  password: string;
+  preferences: UserPreferences | null;
+}
+
+// Type for user preferences
+interface UserPreferences {
+  mapFilters?: {
+    showFlightPaths?: boolean;
+    showWeather?: boolean;
+    aircraftTypes?: string[];
+  };
+  alertSettings?: {
+    email?: boolean;
+    push?: boolean;
+    sms?: boolean;
+  };
+}
 
 type AuthContextType = {
-  user: SelectUser | null;
+  user: User | null;
   isLoading: boolean;
   error: Error | null;
-  loginMutation: UseMutationResult<SelectUser, Error, LoginData>;
+  loginMutation: UseMutationResult<User, Error, LoginData>;
   logoutMutation: UseMutationResult<void, Error, void>;
-  registerMutation: UseMutationResult<SelectUser, Error, InsertUser>;
+  registerMutation: UseMutationResult<User, Error, RegisterData>;
 };
 
-type LoginData = Pick<InsertUser, "username" | "password">;
+// Type for login data
+type LoginData = Pick<User, "username" | "password">;
 
-export const AuthContext = createContext<AuthContextType | null>(null);
+// Type for register data
+type RegisterData = Pick<User, "username" | "email" | "password">;
+
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
+  
   const {
     data: user,
     error,
     isLoading,
-  } = useQuery<SelectUser | undefined, Error>({
+  } = useQuery<User | null, Error>({
     queryKey: ["/api/user"],
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
-      const res = await apiRequest("POST", "/api/login", credentials);
-      return await res.json();
+      try {
+        const res = await apiRequest("POST", "/api/login", credentials);
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(errorText || "Login failed");
+        }
+        return await res.json();
+      } catch (error) {
+        if (error instanceof Error) {
+          throw error;
+        }
+        throw new Error("An unknown error occurred");
+      }
     },
-    onSuccess: (user: SelectUser) => {
+    onSuccess: (user: User) => {
       queryClient.setQueryData(["/api/user"], user);
     },
     onError: (error: Error) => {
@@ -50,11 +89,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const registerMutation = useMutation({
-    mutationFn: async (credentials: InsertUser) => {
-      const res = await apiRequest("POST", "/api/register", credentials);
-      return await res.json();
+    mutationFn: async (credentials: RegisterData) => {
+      try {
+        const res = await apiRequest("POST", "/api/register", credentials);
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(errorText || "Registration failed");
+        }
+        return await res.json();
+      } catch (error) {
+        if (error instanceof Error) {
+          throw error;
+        }
+        throw new Error("An unknown error occurred");
+      }
     },
-    onSuccess: (user: SelectUser) => {
+    onSuccess: (user: User) => {
       queryClient.setQueryData(["/api/user"], user);
     },
     onError: (error: Error) => {
@@ -68,7 +118,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      await apiRequest("POST", "/api/logout");
+      try {
+        const res = await apiRequest("POST", "/api/logout");
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(errorText || "Logout failed");
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          throw error;
+        }
+        throw new Error("An unknown error occurred");
+      }
     },
     onSuccess: () => {
       queryClient.setQueryData(["/api/user"], null);
