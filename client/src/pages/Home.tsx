@@ -10,7 +10,7 @@ import AuthPopup from '@/components/AuthPopup';
 import { LiveFlight, MapFilter, Airport } from '@shared/schema';
 import { useToast } from '@/components/ui/use-toast';
 import { useHotkeys, useMultiHotkeys } from '@/hooks/use-hotkeys';
-import { useTheme } from '@/hooks/use-theme.tsx';
+import { useTheme } from '@/components/ui/theme-provider';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
