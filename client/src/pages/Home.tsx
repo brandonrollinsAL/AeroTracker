@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import FlightMap from '@/components/FlightMap';
 import FlightPanel from '@/components/FlightPanel';
 import Header from '@/components/Header';
-import MapIconMenu from '@/components/MapIconMenu';
+import MapHorizontalControls from '@/components/MapHorizontalControls';
 import FlightDetailPanel from '@/components/FlightDetailPanel';
 import RouteOptimizer from '@/components/RouteOptimizer';
 import { AuthPopup } from '@/components/AuthPopup';
@@ -88,7 +88,7 @@ export default function Home() {
                 
                 // Create a map for faster lookup by ID
                 const updatedFlightsMap = new Map(
-                  flightData.map(flight => [flight.id, flight])
+                  flightData.map((flight: LiveFlight) => [flight.id, flight])
                 );
                 
                 // Update existing flights or add new ones
@@ -97,7 +97,7 @@ export default function Home() {
                 });
                 
                 // Add any new flights that weren't in the previous data
-                flightData.forEach(flight => {
+                flightData.forEach((flight: LiveFlight) => {
                   if (!updatedFlights.some(f => f.id === flight.id)) {
                     updatedFlights.push(flight);
                   }
@@ -304,7 +304,7 @@ export default function Home() {
 
   // State for active tab is already defined at the top of the component
   
-  // Listen for tab selection events from MapIconMenu
+  // Listen for tab selection events from UI components
   useEffect(() => {
     const handleTabSelect = (event: CustomEvent) => {
       const { tab } = event.detail;
@@ -377,7 +377,7 @@ export default function Home() {
           onThemeToggle={() => setTheme(theme === 'dark' ? 'light' : 'dark')} 
         />
         
-        <MapIconMenu
+        <MapHorizontalControls
           filters={mapFilters}
           onFilterChange={handleFilterChange}
           onZoomIn={() => {
@@ -395,8 +395,8 @@ export default function Home() {
           isDarkMode={isDarkMode}
         />
         
-        {/* No tabs buttons anymore, just render main content */}
-        <main className="flex flex-col md:flex-row h-[calc(100vh-70px)]">
+        {/* Main content with increased map height */}
+        <main className="flex flex-col md:flex-row h-[calc(100vh-104px)]">
           <div className="flex-grow h-full w-full">
             <FlightMap 
               flights={flights}
