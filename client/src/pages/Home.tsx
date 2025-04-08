@@ -384,7 +384,7 @@ export default function Home() {
           </TabsContent>
           
           <TabsContent value="tools" className="mt-0">
-            <RouteOptimizer airports={airports} />
+            <RouteOptimizer />
           </TabsContent>
         </Tabs>
 

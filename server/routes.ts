@@ -12,6 +12,7 @@ import {
   getAirportPerformanceMetrics 
 } from "./api/analytics";
 import { calculateOptimizedRoute } from "./api/routes";
+import { calculateOptimalRoute, generateAlternativeRoutes } from "./api/routeOptimization";
 import { MapFilter, insertAlertSchema, insertAirportSchema, insertAircraftSchema } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { 
@@ -458,6 +459,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching route weather impact:", error);
       res.status(500).json({ message: "Failed to fetch weather impact for route" });
+    }
+  });
+  
+  // New route optimization endpoint using the enhanced routeOptimization.ts functions
+  app.post("/api/route/optimize", async (req, res) => {
+    try {
+      const { departureCode, arrivalCode, aircraftType, flightLevel } = req.body;
+      
+      if (!departureCode || !arrivalCode) {
+        return res.status(400).json({ error: 'Departure and arrival airport codes are required' });
+      }
+      
+      // Get airport data from storage
+      const departureAirport = await storage.getAirportByCode(departureCode);
+      const arrivalAirport = await storage.getAirportByCode(arrivalCode);
+      
+      if (!departureAirport || !arrivalAirport) {
+        return res.status(404).json({ 
+          error: 'One or both airports not found',
+          departureFound: !!departureAirport,
+          arrivalFound: !!arrivalAirport
+        });
+      }
+      
+      // Calculate optimal route
+      const result = await calculateOptimalRoute(
+        departureAirport, 
+        arrivalAirport, 
+        aircraftType || 'B737', // Default to B737 if not specified
+        flightLevel || 350 // Default to FL350 if not specified
+      );
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Error calculating optimal route:', error);
+      res.status(500).json({ error: 'Failed to calculate optimal route' });
     }
   });
 

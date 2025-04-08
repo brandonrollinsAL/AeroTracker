@@ -1,470 +1,451 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
-import { Airport, OptimizedRoute } from '@/types';
-import { Plane, Wind, Calendar, Droplets, Clock, Fuel, Navigation, BarChart, Map, Waves } from 'lucide-react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
+import { apiRequest } from '@/lib/queryClient';
+import { useAuth } from '@/hooks/use-auth';
+import AuthPopup from './AuthPopup';
+import { MapPin, Plane, Wind, Clock, Droplet, AlertTriangle } from 'lucide-react';
 
-interface RouteOptimizerProps {
-  airports: Airport[];
-}
+// Common aircraft types for dropdown
+const AIRCRAFT_TYPES = [
+  { value: 'C172', label: 'Cessna 172' },
+  { value: 'PA28', label: 'Piper Cherokee' },
+  { value: 'C208', label: 'Cessna Caravan' },
+  { value: 'PC12', label: 'Pilatus PC-12' },
+  { value: 'B350', label: 'King Air 350' },
+  { value: 'B737', label: 'Boeing 737' },
+  { value: 'A320', label: 'Airbus A320' },
+  { value: 'B777', label: 'Boeing 777' },
+  { value: 'B787', label: 'Boeing 787' },
+  { value: 'A350', label: 'Airbus A350' },
+];
 
-export default function RouteOptimizer({ airports }: RouteOptimizerProps) {
+// Flight levels for dropdown
+const FLIGHT_LEVELS = [
+  { value: '100', label: 'FL100 (10,000 ft)' },
+  { value: '150', label: 'FL150 (15,000 ft)' },
+  { value: '200', label: 'FL200 (20,000 ft)' },
+  { value: '250', label: 'FL250 (25,000 ft)' },
+  { value: '300', label: 'FL300 (30,000 ft)' },
+  { value: '350', label: 'FL350 (35,000 ft)' },
+  { value: '400', label: 'FL400 (40,000 ft)' },
+  { value: '450', label: 'FL450 (45,000 ft)' },
+];
+
+export default function RouteOptimizer() {
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
+  
+  // Form state
   const [departureCode, setDepartureCode] = useState('');
   const [arrivalCode, setArrivalCode] = useState('');
-  const [aircraftType, setAircraftType] = useState('');
-  const [fuelEfficiency, setFuelEfficiency] = useState(75);
-  const [considerWeather, setConsiderWeather] = useState(true);
-  const [optimizationFactor, setOptimizationFactor] = useState('balanced');
-  const [plannedDate, setPlannedDate] = useState('');
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const [airline, setAirline] = useState('');
-  const [optimizedRoute, setOptimizedRoute] = useState<OptimizedRoute | null>(null);
+  const [aircraftType, setAircraftType] = useState('B737');
+  const [flightLevel, setFlightLevel] = useState('350');
+  const [activeTab, setActiveTab] = useState('direct');
+  
+  // Fetch airports for validation
+  const { data: airports } = useQuery({
+    queryKey: ['/api/airports'],
+    enabled: false, // We'll manually trigger this when needed
+  });
 
-  // Filter airports for dropdown
-  const filteredDepartureAirports = airports.filter(airport => 
-    airport.code.toLowerCase().includes(departureCode.toLowerCase()) ||
-    airport.name.toLowerCase().includes(departureCode.toLowerCase())
-  ).slice(0, 5);
+  // Route optimization mutation
+  const optimizeRouteMutation = useMutation({
+    mutationFn: async (data: {
+      departureCode: string;
+      arrivalCode: string;
+      aircraftType: string;
+      flightLevel: number;
+    }) => {
+      const response = await apiRequest('POST', '/api/route/optimize', data);
+      return response.json();
+    },
+    onSuccess: (data) => {
+      // Set the direct route as the active tab initially
+      setActiveTab('direct');
+      toast({
+        title: 'Route optimized',
+        description: `Successfully calculated route from ${departureCode} to ${arrivalCode}`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Optimization failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
 
-  const filteredArrivalAirports = airports.filter(airport => 
-    airport.code.toLowerCase().includes(arrivalCode.toLowerCase()) ||
-    airport.name.toLowerCase().includes(arrivalCode.toLowerCase())
-  ).slice(0, 5);
-
-  // Aircraft types
-  const aircraftTypes = [
-    'Boeing 737-800',
-    'Airbus A320',
-    'Boeing 777-300',
-    'Airbus A350-900',
-    'Cessna 172',
-    'Cirrus SR22',
-    'Bombardier Challenger 350',
-    'Gulfstream G650'
-  ];
-
-  // Handle route calculation
-  const calculateOptimizedRoute = () => {
-    // Here we would normally call the API to get the optimized route
-    // For now, let's simulate with some sample data
+  // Handle form submission
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     
-    const departureAirport = airports.find(a => a.code === departureCode);
-    const arrivalAirport = airports.find(a => a.code === arrivalCode);
-    
-    if (!departureAirport || !arrivalAirport) {
-      alert('Please select valid departure and arrival airports');
+    // Check if user is logged in for premium feature
+    if (!user) {
+      setShowAuthPopup(true);
       return;
     }
-
-    // Calculate distance based on Haversine formula
-    const R = 6371; // Earth's radius in km
-    const lat1 = departureAirport.latitude * Math.PI/180;
-    const lat2 = arrivalAirport.latitude * Math.PI/180;
-    const dLat = (arrivalAirport.latitude - departureAirport.latitude) * Math.PI/180;
-    const dLon = (arrivalAirport.longitude - departureAirport.longitude) * Math.PI/180;
     
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1) * Math.cos(lat2) *
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    const distance = R * c;
-
-    // Apply airline preference if selected
-    let routeModifier = 1.0;
-    let routeNameSuffix = "Optimized";
-    
-    if (airline) {
-      // In a real API call, this would filter routes by the specific airline
-      // For simulation, we'll adjust the parameters slightly
-      routeModifier = 0.95; // Airlines with direct routes often have more efficient paths
-      routeNameSuffix = `Optimized (${airline})`;
+    // Validate inputs
+    if (!departureCode || !arrivalCode) {
+      toast({
+        title: 'Missing information',
+        description: 'Please provide both departure and arrival airport codes',
+        variant: 'destructive',
+      });
+      return;
     }
     
-    // Simulate an optimized route
-    const newOptimizedRoute = {
-      routeName: `${departureAirport.code} to ${arrivalAirport.code} ${routeNameSuffix}`,
-      fuelBurn: distance * (1 - fuelEfficiency/100) * 0.15 * routeModifier,
-      flightTime: distance / 800 * 60 * routeModifier, // Assuming 800 km/h average speed
-      distance: distance * routeModifier,
-      waypoints: [
-        { lat: departureAirport.latitude, lon: departureAirport.longitude, name: departureAirport.code },
-        // Add midpoint as a waypoint (slightly adjusted if airline is specified)
-        { 
-          lat: (departureAirport.latitude + arrivalAirport.latitude) / 2 + (airline ? 0.01 : 0),
-          lon: (departureAirport.longitude + arrivalAirport.longitude) / 2 + (airline ? 0.01 : 0),
-          name: airline ? `${airline} Waypoint` : 'Midpoint'
-        },
-        { lat: arrivalAirport.latitude, lon: arrivalAirport.longitude, name: arrivalAirport.code }
-      ],
-      weatherImpact: Math.random() > 0.6 ? 'low' : Math.random() > 0.3 ? 'medium' : 'high' as 'low' | 'medium' | 'high',
-      altitudeProfile: [
-        { distance: 0, altitude: 0 },
-        { distance: distance * 0.1, altitude: 30000 },
-        { distance: distance * 0.9, altitude: 30000 },
-        { distance: distance, altitude: 0 }
-      ],
-      windComponent: {
-        tailwind: Math.round(Math.random() * 30),
-        headwind: Math.round(Math.random() * 20),
-        crosswind: Math.round(Math.random() * 15)
-      }
-    };
-    
-    setOptimizedRoute(newOptimizedRoute);
+    // Submit for optimization
+    optimizeRouteMutation.mutate({
+      departureCode: departureCode.toUpperCase(),
+      arrivalCode: arrivalCode.toUpperCase(),
+      aircraftType,
+      flightLevel: parseInt(flightLevel),
+    });
   };
-
+  
+  // Format flight time from minutes to hours and minutes
+  const formatFlightTime = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}m`;
+  };
+  
+  const renderWeatherSeverity = (severity: string) => {
+    switch (severity) {
+      case 'severe':
+        return <span className="flex items-center text-red-500"><AlertTriangle className="mr-1 h-4 w-4" /> Severe</span>;
+      case 'moderate':
+        return <span className="flex items-center text-amber-500"><AlertTriangle className="mr-1 h-4 w-4" /> Moderate</span>;
+      case 'light':
+        return <span className="flex items-center text-yellow-500"><AlertTriangle className="mr-1 h-4 w-4" /> Light</span>;
+      default:
+        return <span className="flex items-center text-green-500"><AlertTriangle className="mr-1 h-4 w-4" /> None</span>;
+    }
+  };
+  
   return (
-    <div className="p-4 space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-blue-600">
-            <Plane className="h-5 w-5" />
-            Route Optimization Tools
-          </CardTitle>
-          <CardDescription>
-            Plan your flight with optimized routes considering weather, fuel efficiency, and more
-          </CardDescription>
-        </CardHeader>
-        
-        <CardContent>
-          <Tabs defaultValue="route">
-            <TabsList className="mb-4">
-              <TabsTrigger value="route">
-                <Navigation className="h-4 w-4 mr-2" />
-                Route Planner
-              </TabsTrigger>
-              <TabsTrigger value="fuel">
-                <Fuel className="h-4 w-4 mr-2" />
-                Fuel Calculator
-              </TabsTrigger>
-              <TabsTrigger value="weather">
-                <Wind className="h-4 w-4 mr-2" />
-                Weather Impact
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="route" className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="departure">Departure Airport</Label>
+    <div className="container mx-auto p-4">
+      <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+        Route Optimization Tool
+      </h2>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Input Panel */}
+        <Card className="lg:col-span-1">
+          <CardHeader>
+            <CardTitle>Route Parameters</CardTitle>
+            <CardDescription>Enter flight details to optimize your route</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="departure">Departure Airport (ICAO/IATA)</Label>
+                <div className="flex items-center">
+                  <MapPin className="mr-2 h-4 w-4 text-blue-500" />
                   <Input 
                     id="departure" 
-                    placeholder="ICAO or Airport name" 
-                    value={departureCode} 
-                    onChange={(e) => setDepartureCode(e.target.value)} 
+                    placeholder="e.g. KLAX or LAX" 
+                    value={departureCode}
+                    onChange={(e) => setDepartureCode(e.target.value)}
                   />
-                  {departureCode && (
-                    <div className="mt-1 p-2 bg-gray-50 rounded-md text-sm">
-                      {filteredDepartureAirports.length > 0 ? (
-                        <div className="space-y-1">
-                          {filteredDepartureAirports.map(airport => (
-                            <div 
-                              key={airport.id} 
-                              className="cursor-pointer hover:bg-gray-100 p-1 rounded"
-                              onClick={() => setDepartureCode(airport.code)}
-                            >
-                              <span className="font-semibold">{airport.code}</span> - {airport.name}
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-gray-500">No airports found</div>
-                      )}
-                    </div>
-                  )}
                 </div>
-                
-                <div>
-                  <Label htmlFor="arrival">Arrival Airport</Label>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="arrival">Arrival Airport (ICAO/IATA)</Label>
+                <div className="flex items-center">
+                  <MapPin className="mr-2 h-4 w-4 text-blue-500" />
                   <Input 
                     id="arrival" 
-                    placeholder="ICAO or Airport name" 
-                    value={arrivalCode} 
-                    onChange={(e) => setArrivalCode(e.target.value)} 
+                    placeholder="e.g. KJFK or JFK" 
+                    value={arrivalCode}
+                    onChange={(e) => setArrivalCode(e.target.value)}
                   />
-                  {arrivalCode && (
-                    <div className="mt-1 p-2 bg-gray-50 rounded-md text-sm">
-                      {filteredArrivalAirports.length > 0 ? (
-                        <div className="space-y-1">
-                          {filteredArrivalAirports.map(airport => (
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="aircraft">Aircraft Type</Label>
+                <Select value={aircraftType} onValueChange={setAircraftType}>
+                  <SelectTrigger id="aircraft" className="w-full">
+                    <SelectValue placeholder="Select aircraft type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {AIRCRAFT_TYPES.map((aircraft) => (
+                      <SelectItem key={aircraft.value} value={aircraft.value}>
+                        {aircraft.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="flightLevel">Flight Level</Label>
+                <Select value={flightLevel} onValueChange={setFlightLevel}>
+                  <SelectTrigger id="flightLevel" className="w-full">
+                    <SelectValue placeholder="Select flight level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FLIGHT_LEVELS.map((fl) => (
+                      <SelectItem key={fl.value} value={fl.value}>
+                        {fl.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <Button 
+                type="submit" 
+                className="w-full bg-blue-600 hover:bg-blue-700"
+                disabled={optimizeRouteMutation.isPending}
+              >
+                {optimizeRouteMutation.isPending ? 'Optimizing...' : 'Optimize Route'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+        
+        {/* Results Panel */}
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Optimized Routes</CardTitle>
+            <CardDescription>
+              {optimizeRouteMutation.data 
+                ? `From ${departureCode} to ${arrivalCode} - ${optimizeRouteMutation.data.directRoute.distance} nm`
+                : 'Enter route details to view optimized paths'
+              }
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {optimizeRouteMutation.isPending ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+              </div>
+            ) : optimizeRouteMutation.data ? (
+              <div>
+                <Tabs value={activeTab} onValueChange={setActiveTab}>
+                  <TabsList className="w-full mb-4">
+                    <TabsTrigger value="direct" className="flex-1">Direct Route</TabsTrigger>
+                    {optimizeRouteMutation.data.alternativeRoutes.map((route, index) => (
+                      <TabsTrigger 
+                        key={route.routeType} 
+                        value={route.routeType}
+                        className="flex-1"
+                      >
+                        {route.routeType === 'weather_optimized' ? 'Weather Optimized' : 
+                         route.routeType === 'wind_optimized' ? 'Wind Optimized' : 
+                         route.routeType === 'fuel_optimized' ? 'Fuel Optimized' : 
+                         'Alternative ' + (index + 1)}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                  
+                  <TabsContent value="direct" className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex items-center space-x-2">
+                        <Plane className="h-5 w-5 text-blue-500" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">Distance</p>
+                          <p className="font-medium">{optimizeRouteMutation.data.directRoute.distance} nm</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Clock className="h-5 w-5 text-blue-500" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">Flight Time</p>
+                          <p className="font-medium">{formatFlightTime(optimizeRouteMutation.data.directRoute.flightTime)}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Droplet className="h-5 w-5 text-blue-500" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">Fuel Consumption</p>
+                          <p className="font-medium">{optimizeRouteMutation.data.directRoute.fuelConsumption} gal</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Wind className="h-5 w-5 text-blue-500" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">Winds</p>
+                          <p className="font-medium">
+                            {optimizeRouteMutation.data.directRoute.windComponent.headwind > 0 
+                              ? `${optimizeRouteMutation.data.directRoute.windComponent.headwind}kt headwind` 
+                              : `${Math.abs(optimizeRouteMutation.data.directRoute.windComponent.headwind)}kt tailwind`}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div>
+                      <h4 className="text-sm font-medium mb-2">Weather Impact</h4>
+                      <div className="mb-4">
+                        {renderWeatherSeverity(optimizeRouteMutation.data.directRoute.weatherSeverity)}
+                      </div>
+                      
+                      <h4 className="text-sm font-medium mb-2">Waypoints</h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        {optimizeRouteMutation.data.directRoute.waypoints.map((waypoint, index) => (
+                          <div 
+                            key={index} 
+                            className="flex items-center p-2 rounded-md bg-secondary/50"
+                          >
+                            <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center mr-2 text-xs text-blue-700">
+                              {index + 1}
+                            </div>
+                            <div>
+                              <p className="font-medium">{waypoint.code}</p>
+                              <p className="text-xs text-muted-foreground">{waypoint.name}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </TabsContent>
+                  
+                  {optimizeRouteMutation.data.alternativeRoutes.map((route) => (
+                    <TabsContent key={route.routeType} value={route.routeType} className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="flex items-center space-x-2">
+                          <Plane className="h-5 w-5 text-blue-500" />
+                          <div>
+                            <p className="text-sm text-muted-foreground">Distance</p>
+                            <p className="font-medium">{route.distance} nm</p>
+                            <p className="text-xs text-muted-foreground">
+                              {((route.distance - optimizeRouteMutation.data.directRoute.distance) / optimizeRouteMutation.data.directRoute.distance * 100).toFixed(1)}% 
+                              {route.distance > optimizeRouteMutation.data.directRoute.distance ? ' longer' : ' shorter'}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <Clock className="h-5 w-5 text-blue-500" />
+                          <div>
+                            <p className="text-sm text-muted-foreground">Flight Time</p>
+                            <p className="font-medium">{formatFlightTime(route.flightTime)}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {((route.flightTime - optimizeRouteMutation.data.directRoute.flightTime) / optimizeRouteMutation.data.directRoute.flightTime * 100).toFixed(1)}% 
+                              {route.flightTime > optimizeRouteMutation.data.directRoute.flightTime ? ' longer' : ' shorter'}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <Droplet className="h-5 w-5 text-blue-500" />
+                          <div>
+                            <p className="text-sm text-muted-foreground">Fuel Consumption</p>
+                            <p className="font-medium">{route.fuelConsumption} gal</p>
+                            <p className="text-xs text-muted-foreground">
+                              {((route.fuelConsumption - optimizeRouteMutation.data.directRoute.fuelConsumption) / optimizeRouteMutation.data.directRoute.fuelConsumption * 100).toFixed(1)}% 
+                              {route.fuelConsumption > optimizeRouteMutation.data.directRoute.fuelConsumption ? ' more' : ' less'}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <Wind className="h-5 w-5 text-blue-500" />
+                          <div>
+                            <p className="text-sm text-muted-foreground">Winds</p>
+                            <p className="font-medium">
+                              {route.windComponent.headwind > 0 
+                                ? `${route.windComponent.headwind}kt headwind` 
+                                : `${Math.abs(route.windComponent.headwind)}kt tailwind`}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <Separator />
+                      
+                      <div>
+                        <h4 className="text-sm font-medium mb-2">Weather Impact</h4>
+                        <div className="mb-4">
+                          {renderWeatherSeverity(route.weatherSeverity)}
+                        </div>
+                        
+                        <h4 className="text-sm font-medium mb-2">Waypoints</h4>
+                        <div className="grid grid-cols-1 gap-2">
+                          {route.waypoints.map((waypoint, index) => (
                             <div 
-                              key={airport.id} 
-                              className="cursor-pointer hover:bg-gray-100 p-1 rounded"
-                              onClick={() => setArrivalCode(airport.code)}
+                              key={index} 
+                              className="flex items-center p-2 rounded-md bg-secondary/50"
                             >
-                              <span className="font-semibold">{airport.code}</span> - {airport.name}
+                              <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center mr-2 text-xs text-blue-700">
+                                {index + 1}
+                              </div>
+                              <div>
+                                <p className="font-medium">{waypoint.code}</p>
+                                <p className="text-xs text-muted-foreground">{waypoint.name}</p>
+                              </div>
                             </div>
                           ))}
                         </div>
-                      ) : (
-                        <div className="text-gray-500">No airports found</div>
-                      )}
-                    </div>
-                  )}
-                </div>
-                
-                <div>
-                  <Label htmlFor="aircraft">Aircraft Type</Label>
-                  <Select value={aircraftType} onValueChange={setAircraftType}>
-                    <SelectTrigger id="aircraft">
-                      <SelectValue placeholder="Select aircraft" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {aircraftTypes.map(type => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div>
-                  <Label htmlFor="date">Planned Departure Date</Label>
-                  <Input 
-                    id="date" 
-                    type="datetime-local" 
-                    value={plannedDate} 
-                    onChange={(e) => setPlannedDate(e.target.value)} 
-                  />
-                </div>
-                
-                <div className="md:col-span-2">
-                  <Label htmlFor="fuel-efficiency" className="flex justify-between">
-                    <span>Fuel Efficiency Priority</span>
-                    <span className="text-blue-600">{fuelEfficiency}%</span>
-                  </Label>
-                  <Slider 
-                    id="fuel-efficiency"
-                    min={0} 
-                    max={100} 
-                    step={5} 
-                    value={[fuelEfficiency]} 
-                    onValueChange={(value) => setFuelEfficiency(value[0])} 
-                    className="my-2"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500">
-                    <span>Speed Priority</span>
-                    <span>Balanced</span>
-                    <span>Eco Priority</span>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Switch 
-                    id="weather" 
-                    checked={considerWeather} 
-                    onCheckedChange={setConsiderWeather} 
-                  />
-                  <Label htmlFor="weather">Consider Weather Conditions</Label>
-                </div>
-                
-                <div>
-                  <Label htmlFor="optimization">Optimization Factor</Label>
-                  <Select value={optimizationFactor} onValueChange={setOptimizationFactor}>
-                    <SelectTrigger id="optimization">
-                      <SelectValue placeholder="Select optimization" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="balanced">Balanced</SelectItem>
-                      <SelectItem value="fuel">Minimum Fuel</SelectItem>
-                      <SelectItem value="time">Minimum Time</SelectItem>
-                      <SelectItem value="altitude">Optimal Altitude</SelectItem>
-                      <SelectItem value="weather">Weather Avoidance</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                      </div>
+                    </TabsContent>
+                  ))}
+                </Tabs>
               </div>
-              
-              <div className="flex justify-end my-2">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowAdvanced(!showAdvanced)}
-                  className="text-blue-600 border-blue-200 hover:bg-blue-50"
-                >
-                  {showAdvanced ? "Hide Advanced Options" : "Show Advanced Options"}
-                </Button>
+            ) : (
+              <div className="text-center p-8 text-muted-foreground">
+                <Plane className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
+                <h3 className="text-lg font-medium mb-2">No Route Data</h3>
+                <p>Enter route details and click "Optimize Route" to calculate the most efficient flight path.</p>
               </div>
-              
-              {showAdvanced && (
-                <div className="border rounded-md p-4 mt-2 bg-blue-50/50 space-y-4">
-                  <h3 className="font-medium text-blue-800">Advanced Route Options</h3>
-                  
-                  <div>
-                    <Label htmlFor="airline">Preferred Airline</Label>
-                    <Select value={airline} onValueChange={setAirline}>
-                      <SelectTrigger id="airline">
-                        <SelectValue placeholder="Any airline" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="">Any airline</SelectItem>
-                        <SelectItem value="UAL">United Airlines</SelectItem>
-                        <SelectItem value="AAL">American Airlines</SelectItem>
-                        <SelectItem value="DAL">Delta Air Lines</SelectItem>
-                        <SelectItem value="SWA">Southwest Airlines</SelectItem>
-                        <SelectItem value="LUF">Lufthansa</SelectItem>
-                        <SelectItem value="AFR">Air France</SelectItem>
-                        <SelectItem value="BAW">British Airways</SelectItem>
-                        <SelectItem value="UAE">Emirates</SelectItem>
-                        <SelectItem value="SIA">Singapore Airlines</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-gray-500 mt-1">Filter route options by specific airline operators</p>
-                  </div>
-                </div>
-              )}
-              
-              <Button 
-                className="w-full mt-4" 
-                onClick={calculateOptimizedRoute}
-                disabled={!departureCode || !arrivalCode || !aircraftType}
-              >
-                Calculate Optimized Route
-              </Button>
-            </TabsContent>
-            
-            <TabsContent value="fuel" className="space-y-4">
-              <div className="text-center p-6 text-gray-500">
-                <Fuel className="h-12 w-12 mx-auto mb-2 text-gray-300" />
-                <h3 className="text-lg font-medium mb-1">Fuel Calculator Coming Soon</h3>
-                <p>Advanced fuel planning tools will be available in the next update</p>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="weather" className="space-y-4">
-              <div className="text-center p-6 text-gray-500">
-                <Wind className="h-12 w-12 mx-auto mb-2 text-gray-300" />
-                <h3 className="text-lg font-medium mb-1">Weather Analysis Coming Soon</h3>
-                <p>Detailed weather impact analysis will be available in the next update</p>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-      
-      {optimizedRoute && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-blue-600 flex items-center gap-2">
-              <Plane className="h-5 w-5" />
-              Optimized Route Results
-              {airline && (
-                <span className="ml-2 px-2 py-1 bg-blue-100 text-xs font-mono rounded-md">
-                  {airline}
-                </span>
-              )}
-            </CardTitle>
-            <CardDescription className="flex items-center">
-              {optimizedRoute.routeName}
-              {airline && (
-                <div className="ml-2 text-xs bg-blue-50 px-2 py-1 rounded-md text-blue-700">
-                  Airline optimized
-                </div>
-              )}
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <div className="flex items-center mb-2">
-                  <Clock className="h-5 w-5 text-blue-600 mr-2" />
-                  <h3 className="font-medium">Flight Time</h3>
-                </div>
-                <p className="text-2xl font-bold text-blue-700">
-                  {Math.floor(optimizedRoute.flightTime / 60)}h {Math.round(optimizedRoute.flightTime % 60)}m
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  Based on {aircraftType} performance
-                </p>
-              </div>
-              
-              <div className="bg-green-50 p-4 rounded-lg">
-                <div className="flex items-center mb-2">
-                  <Fuel className="h-5 w-5 text-green-600 mr-2" />
-                  <h3 className="font-medium">Estimated Fuel</h3>
-                </div>
-                <p className="text-2xl font-bold text-green-700">
-                  {Math.round(optimizedRoute.fuelBurn)} gal
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  {considerWeather ? 'Including weather factors' : 'Standard conditions'}
-                </p>
-              </div>
-              
-              <div className="bg-purple-50 p-4 rounded-lg">
-                <div className="flex items-center mb-2">
-                  <Map className="h-5 w-5 text-purple-600 mr-2" />
-                  <h3 className="font-medium">Total Distance</h3>
-                </div>
-                <p className="text-2xl font-bold text-purple-700">
-                  {Math.round(optimizedRoute.distance)} km
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  {optimizedRoute.waypoints.length} waypoints
-                </p>
-              </div>
-              
-              <div className="md:col-span-3 mt-4">
-                <h3 className="font-medium mb-2 flex items-center">
-                  <Wind className="h-5 w-5 mr-2 text-blue-600" />
-                  Wind Components
-                </h3>
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div className="border rounded-md p-2">
-                    <div className="text-sm text-gray-500">Tailwind</div>
-                    <div className="font-bold text-green-600">{optimizedRoute.windComponent.tailwind} kts</div>
-                  </div>
-                  <div className="border rounded-md p-2">
-                    <div className="text-sm text-gray-500">Headwind</div>
-                    <div className="font-bold text-red-600">{optimizedRoute.windComponent.headwind} kts</div>
-                  </div>
-                  <div className="border rounded-md p-2">
-                    <div className="text-sm text-gray-500">Crosswind</div>
-                    <div className="font-bold text-yellow-600">{optimizedRoute.windComponent.crosswind} kts</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="md:col-span-3 mt-2">
-                <h3 className="font-medium mb-2 flex items-center">
-                  <Waves className="h-5 w-5 mr-2 text-blue-600" />
-                  Weather Impact Assessment
-                </h3>
-                <div className={`p-3 rounded-md ${
-                  optimizedRoute.weatherImpact === 'low' ? 'bg-green-50 text-green-700' :
-                  optimizedRoute.weatherImpact === 'medium' ? 'bg-yellow-50 text-yellow-700' :
-                  'bg-red-50 text-red-700'
-                }`}>
-                  <div className="flex items-center">
-                    <div className={`w-3 h-3 rounded-full mr-2 ${
-                      optimizedRoute.weatherImpact === 'low' ? 'bg-green-500' :
-                      optimizedRoute.weatherImpact === 'medium' ? 'bg-yellow-500' :
-                      'bg-red-500'
-                    }`}></div>
-                    <span className="font-medium capitalize">{optimizedRoute.weatherImpact} Impact</span>
-                  </div>
-                  <p className="text-sm mt-1">
-                    {optimizedRoute.weatherImpact === 'low' ? 'Favorable conditions along the route' :
-                     optimizedRoute.weatherImpact === 'medium' ? 'Some weather considerations may affect the route' :
-                     'Significant weather patterns may require route adjustments'}
-                  </p>
-                </div>
-              </div>
-            </div>
+            )}
           </CardContent>
-          
-          <CardFooter className="flex justify-end space-x-2">
-            <Button variant="outline">Download Flight Plan</Button>
-            <Button>Send to Navigation System</Button>
+          <CardFooter className="flex justify-between">
+            <p className="text-sm text-muted-foreground">
+              {optimizeRouteMutation.data ? 'Route optimization complete.' : 'Optimizes for time, fuel, and weather conditions.'}
+            </p>
+            {optimizeRouteMutation.data && (
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  // Reset data to allow for a new calculation
+                  optimizeRouteMutation.reset();
+                }}
+              >
+                Calculate New Route
+              </Button>
+            )}
           </CardFooter>
         </Card>
+      </div>
+      
+      {/* Auth popup for premium features */}
+      {showAuthPopup && (
+        <AuthPopup 
+          title="Premium Feature: Route Optimization"
+          description="Sign in or create an account to access optimized flight routes with weather avoidance, fuel efficiency calculations, and more."
+          trigger={
+            <Button 
+              className="hidden" 
+              onClick={() => setShowAuthPopup(true)}
+              ref={(ref) => ref && showAuthPopup && ref.click()}
+            >
+              Open
+            </Button>
+          }
+        >
+          <div>Premium content</div>
+        </AuthPopup>
       )}
     </div>
   );
