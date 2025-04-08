@@ -137,8 +137,27 @@ export function NexradRadarOverlay({ enabled, opacity = 0.65, zoom }: NexradRada
       fetchRadarData(station);
     });
     
-    // Cleanup function to remove radar layers when component unmounts
+    // Set up an interval to refresh the radar data every second
+    const refreshInterval = setInterval(() => {
+      if (enabled && visibleStations.length > 0) {
+        // Remove old layers before fetching new data
+        radarLayers.forEach(layer => {
+          if (map.hasLayer(layer)) {
+            map.removeLayer(layer);
+          }
+        });
+        setRadarLayers([]);
+        
+        // Fetch fresh radar data for each visible station
+        visibleStations.forEach(station => {
+          fetchRadarData(station);
+        });
+      }
+    }, 1000); // Update every second for real-time radar
+    
+    // Cleanup function to remove radar layers and clear interval when component unmounts
     return () => {
+      clearInterval(refreshInterval);
       radarLayers.forEach(layer => {
         if (map.hasLayer(layer)) {
           map.removeLayer(layer);

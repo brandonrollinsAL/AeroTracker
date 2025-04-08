@@ -80,7 +80,31 @@ export default function Home() {
             if (data.type === 'flights') {
               // Ensure data.flights is an array
               const flightData = Array.isArray(data.flights) ? data.flights : [];
-              setFlights(flightData);
+              
+              // Use functional update to ensure we're working with latest state
+              setFlights(prevFlights => {
+                // If we have no previous flights, just use the new data
+                if (prevFlights.length === 0) return flightData;
+                
+                // Create a map for faster lookup by ID
+                const updatedFlightsMap = new Map(
+                  flightData.map(flight => [flight.id, flight])
+                );
+                
+                // Update existing flights or add new ones
+                const updatedFlights = prevFlights.map(flight => {
+                  return updatedFlightsMap.get(flight.id) || flight;
+                });
+                
+                // Add any new flights that weren't in the previous data
+                flightData.forEach(flight => {
+                  if (!updatedFlights.some(f => f.id === flight.id)) {
+                    updatedFlights.push(flight);
+                  }
+                });
+                
+                return updatedFlights;
+              });
               
               // Update selected flight if it exists in the new data
               if (selectedFlight && flightData.length > 0) {

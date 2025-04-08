@@ -84,7 +84,7 @@ export function setupWebSocketServer(server: Server) {
 }
 
 function startFlightUpdates() {
-  // Update flights every 5 seconds for more frequent live data
+  // Update flights every 1 second for real-time live data as requested by user
   flightUpdateInterval = setInterval(async () => {
     try {
       // Fetch new flight data
@@ -112,7 +112,7 @@ function startFlightUpdates() {
     } catch (error) {
       console.error('Error fetching flight updates:', error);
     }
-  }, 5000); // 5 seconds - more frequent updates for better live tracking
+  }, 1000); // 1 second - continuous real-time updates as requested
 }
 
 function filterFlights(flights: LiveFlight[], filterType: string): LiveFlight[] {
