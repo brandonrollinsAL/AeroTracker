@@ -6,6 +6,7 @@ import MapControls from './MapControls';
 import AirportMarker from './AirportMarker';
 import WeatherOverlay from './WeatherOverlay';
 import WeatherImpactPanel from './WeatherImpactPanel';
+import { NexradRadarOverlay } from './NexradRadarOverlay';
 import { LiveFlight, MapFilter, Airport } from '@/types';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -240,10 +241,11 @@ function MapControlButtons({
   );
 }
 
-// Component to monitor zoom level changes
+// Component to monitor zoom level changes and manage map overlays
 function ZoomMonitor() {
   const map = useMap();
   const [currentZoom, setCurrentZoom] = useState(map.getZoom());
+  const [showRadar, setShowRadar] = useState(false);
   
   useEffect(() => {
     const updateZoom = () => {
@@ -257,7 +259,30 @@ function ZoomMonitor() {
     };
   }, [map]);
   
-  return null;
+  // Return both the NexradRadarOverlay and a control button to toggle it
+  return (
+    <>
+      <NexradRadarOverlay enabled={showRadar} opacity={0.7} zoom={currentZoom} />
+      
+      <div className="aviation-glass absolute bottom-4 left-4 z-[900] p-1.5 rounded-xl backdrop-blur-md flex space-x-2 border border-[#4995fd]/30">
+        <TooltipProvider>
+          <UITooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                className={`map-control-button ${showRadar ? 'active' : ''}`}
+                onClick={() => setShowRadar(!showRadar)}
+              >
+                <CloudRain className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="aviation-tooltip">
+              <p className="text-xs font-medium">{showRadar ? 'Hide' : 'Show'} NEXRAD radar</p>
+            </TooltipContent>
+          </UITooltip>
+        </TooltipProvider>
+      </div>
+    </>
+  );
 }
 
 export default function FlightMap({ 

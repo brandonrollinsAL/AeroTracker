@@ -21,6 +21,7 @@ import {
   bulkFetchAirports, 
   bulkFetchAircraft 
 } from "./services/openai";
+import { handleNexradRequest } from "./api/nexrad";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -248,6 +249,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch weather information" });
     }
   });
+  
+  // Get NEXRAD radar data
+  app.get("/api/nexrad", handleNexradRequest);
 
   // Search endpoint for flights, airports, and aircraft
   app.get("/api/search", async (req, res) => {
