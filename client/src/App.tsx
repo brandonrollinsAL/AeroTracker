@@ -16,7 +16,7 @@ import { useEffect } from "react";
 function Router() {
   return (
     <Switch>
-      <ProtectedRoute path="/" component={Home} />
+      <Route path="/" component={Home} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>

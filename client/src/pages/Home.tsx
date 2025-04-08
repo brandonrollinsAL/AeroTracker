@@ -6,11 +6,13 @@ import Header from '@/components/Header';
 import MapIconMenu from '@/components/MapIconMenu';
 import FlightDetailPanel from '@/components/FlightDetailPanel';
 import RouteOptimizer from '@/components/RouteOptimizer';
+import AuthPopup from '@/components/AuthPopup';
 import { LiveFlight, MapFilter, Airport } from '@/types';
 import { ToastProvider } from '@/components/ui/toast';
 import { useToast } from '@/hooks/use-toast';
 import { useHotkeys, useMultiHotkeys } from '@/hooks/use-hotkeys';
 import { useTheme } from '@/hooks/use-theme.tsx';
+import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -145,6 +147,13 @@ export default function Home() {
 
   // Handle map filter changes
   const handleFilterChange = (newFilters: Partial<MapFilter>) => {
+    // Check if trying to enable premium weather feature
+    if (newFilters.showWeather === true && !mapFilters.showWeather) {
+      if (!handlePremiumFeature("weather overlay")) {
+        return; // Don't update filters if premium feature access is denied
+      }
+    }
+    
     setMapFilters({
       ...mapFilters,
       ...newFilters
@@ -153,6 +162,12 @@ export default function Home() {
 
   // Handle flight selection
   const handleFlightSelect = (flight: LiveFlight) => {
+    // Check if accessing detailed flight information is a premium feature
+    if (selectedFlight === null) {
+      if (!handlePremiumFeature("detailed flight information")) {
+        return;
+      }
+    }
     setSelectedFlight(flight);
   };
 
@@ -166,9 +181,24 @@ export default function Home() {
   const handleTogglePin = () => {
     setIsPanelPinned(!isPanelPinned);
   };
+  
+  // Handle access to premium features
+  const handlePremiumFeature = (featureName: string) => {
+    if (!user) {
+      setAuthFeatureName(featureName);
+      setShowAuthPopup(true);
+      return false;
+    }
+    return true;
+  };
 
   // Add flight to favorites
   const handleAddToFavorites = (flight: LiveFlight) => {
+    // Check if user is logged in before adding to favorites
+    if (!handlePremiumFeature("favorite flights")) {
+      return;
+    }
+    
     if (!favoriteFlights.some(f => f.id === flight.id)) {
       setFavoriteFlights([...favoriteFlights, flight]);
       toast({
@@ -189,6 +219,11 @@ export default function Home() {
 
   // State for active tab
   const [activeTab, setActiveTab] = useState<'map' | 'tools'>('map');
+  
+  // Auth state
+  const { user } = useAuth();
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
+  const [authFeatureName, setAuthFeatureName] = useState("premium features");
   
   // Register keyboard shortcuts
   useMultiHotkeys([
@@ -264,7 +299,15 @@ export default function Home() {
         <Tabs 
           defaultValue="map" 
           className="w-full px-2 pt-1"
-          onValueChange={(value) => setActiveTab(value as 'map' | 'tools')}
+          onValueChange={(value) => {
+            // Check for premium access if trying to access route optimization tools
+            if (value === 'tools') {
+              if (!handlePremiumFeature("route optimization tools")) {
+                return;
+              }
+            }
+            setActiveTab(value as 'map' | 'tools');
+          }}
         >
           <TabsList 
             className="grid grid-cols-2 w-[350px] mb-2 relative overflow-hidden rounded-lg p-0.5 aviation-tabs-content"
@@ -435,6 +478,13 @@ export default function Home() {
             </div>
           </Button>
         </div>
+
+        {/* Auth popup for premium features */}
+        <AuthPopup 
+          isOpen={showAuthPopup}
+          onOpenChange={setShowAuthPopup}
+          featureName={authFeatureName}
+        />
       </div>
     </ToastProvider>
   );
