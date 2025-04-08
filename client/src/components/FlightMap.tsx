@@ -86,7 +86,7 @@ function MapUpdater({ flight }: { flight: LiveFlight | null }) {
   useEffect(() => {
     if (flight) {
       map.setView(
-        [flight.position.latitude, flight.position.longitude],
+        [flight.position?.latitude || 0, flight.position?.longitude || 0],
         10,
         { animate: true }
       );
@@ -362,10 +362,12 @@ export default function FlightMap({
       path.push(departureLocation);
     }
     
-    // Add current position
-    path.push([flight.position.latitude, flight.position.longitude]);
+    // Add current position if available
+    if (flight.position?.latitude && flight.position?.longitude) {
+      path.push([flight.position.latitude, flight.position.longitude]);
+    }
     
-    if (flight.arrival?.icao) {
+    if (flight.arrival?.icao && flight.position) {
       // Simulate an arrival location (for demo purposes)
       const arrivalLocation: [number, number] = [
         flight.position.latitude + 2,
@@ -373,6 +375,12 @@ export default function FlightMap({
       ];
       
       path.push(arrivalLocation);
+    }
+    
+    // Ensure we have at least 2 points for a valid path
+    if (path.length < 2) {
+      // Default to a simple point if we don't have enough positioning data
+      path.push([0, 0], [0.1, 0.1]);
     }
     
     return path;
@@ -414,11 +422,11 @@ export default function FlightMap({
           {Array.isArray(flights) && flights.map((flight) => (
             <Marker
               key={flight.id}
-              position={[flight.position.latitude, flight.position.longitude]}
+              position={[flight.position?.latitude || 0, flight.position?.longitude || 0]}
               icon={createAirplaneIcon(
-                flight.position.heading, 
+                flight.position?.heading || 0, 
                 selectedFlight?.id === flight.id,
-                flight.position.altitude
+                flight.position?.altitude || 0
               )}
               eventHandlers={{
                 click: () => onFlightSelect(flight)
@@ -471,7 +479,7 @@ export default function FlightMap({
                       </div>
                       <div>
                         <div className="text-[10px] text-neutral-500 uppercase font-medium">Altitude</div>
-                        <div className="text-xs font-bold text-[#0a4995]">{flight.position.altitude.toLocaleString()} ft</div>
+                        <div className="text-xs font-bold text-[#0a4995]">{flight.position?.altitude ? flight.position.altitude.toLocaleString() : 'N/A'} ft</div>
                       </div>
                     </div>
                     
@@ -483,7 +491,7 @@ export default function FlightMap({
                       </div>
                       <div>
                         <div className="text-[10px] text-neutral-500 uppercase font-medium">Speed</div>
-                        <div className="text-xs font-bold text-[#0a4995]">{flight.position.groundSpeed} mph</div>
+                        <div className="text-xs font-bold text-[#0a4995]">{flight.position?.groundSpeed || 'N/A'} mph</div>
                       </div>
                     </div>
                   </div>
