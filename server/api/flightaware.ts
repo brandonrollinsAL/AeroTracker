@@ -8,11 +8,10 @@ import { broadcastMessage } from '../webSocket';
 const FLIGHTAWARE_USERNAME = process.env.FLIGHTAWARE_USERNAME;
 const FLIGHTAWARE_PASSWORD = process.env.FLIGHTAWARE_PASSWORD;
 
-// Flag to use mock data for development
-// Use REAL flight data with FlightAware credentials
-// Only use mock data if credentials are not available or after max connection failures
-const USE_MOCK_DATA = !FLIGHTAWARE_USERNAME || !FLIGHTAWARE_PASSWORD;
-let FALLBACK_TO_MOCK = USE_MOCK_DATA;
+// Always use REAL flight data with FlightAware credentials
+// Never use mock data even if credentials are not available
+const USE_MOCK_DATA = false; // Force to always use real data, never use mock
+let FALLBACK_TO_MOCK = false; // Never fall back to mock data
 
 // Helper variables for timing broadcasts
 let lastBroadcastTime = 0;
@@ -150,23 +149,24 @@ function attemptReconnect() {
   if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
     console.error(`Max reconnection attempts (${MAX_RECONNECT_ATTEMPTS}) reached. Giving up.`);
     
-    // If we've failed to connect after max attempts, switch to mock data
-    if (!USE_MOCK_DATA) {
-      console.log('Switching to mock flight data after connection failures');
-      
-      // Generate and use mock flights
-      const mockFlights = generateMockFlights(50);
-      flightCache = new Map();
-      mockFlights.forEach(flight => {
-        flightCache.set(flight.id, flight);
-      });
-      
-      // Broadcast the mock data immediately
-      broadcastMessage('flights', mockFlights);
-      storage.cacheFlightData(mockFlights).catch(err => {
-        console.error('Error caching mock flight data:', err);
-      });
-    }
+    // No fallback to mock data, ONLY use real flight data
+    // Send error message to clients so they can display it
+    broadcastMessage('error', {
+      message: 'Unable to connect to FlightAware. Please check your credentials and connection.',
+      code: 'FLIGHTAWARE_CONNECTION_FAILED'
+    });
+    
+    // Clear cache to avoid displaying stale data
+    flightCache = new Map();
+    
+    // Set connected state to false explicitly
+    isConnected = false;
+    
+    // Continue trying to reconnect even after max attempts to eventually get real data
+    reconnectAttempts = 0;
+    setTimeout(() => {
+      initializeFlightAwareConnection();
+    }, RECONNECT_DELAY * 2); // Double the delay for subsequent retries
     
     return;
   }
@@ -568,57 +568,33 @@ export async function fetchFlights(filterType: MapFilter['type']): Promise<LiveF
   try {
     console.log(`Fetching flights (${flightCache.size} in cache) with filter: ${filterType}`);
     
-    // If using mock data, generate and return mock flights
-    if (USE_MOCK_DATA) {
-      const mockFlights = generateMockFlights(40);
-      
-      // Cache the mock flights
-      mockFlights.forEach(flight => {
-        flightCache.set(flight.id, flight);
-      });
-      
-      // Cache to storage
-      await storage.cacheFlightData(mockFlights);
-      
-      // Apply filters
-      let filteredFlights = mockFlights;
-      if (filterType !== 'all') {
-        // Filter flights based on type
-        filteredFlights = filteredFlights.filter(flight => {
-          if (filterType === 'commercial') {
-            // Commercial flights usually have airline info and are operated by commercial carriers
-            return flight.airline?.name != null;
-          } else if (filterType === 'private') {
-            // Private flights often have no airline info or registration as callsign
-            return flight.airline?.name == null || flight.callsign === flight.registration;
-          } else if (filterType === 'cargo') {
-            // Cargo flights might be identified by specific airlines or callsigns
-            const cargoAirlines = ['FDX', 'UPS', 'ABX', 'GTI', 'CLX'];
-            return cargoAirlines.some(code => flight.callsign?.startsWith(code)) || 
-                   flight.airline?.name?.toLowerCase().includes('cargo');
-          }
-          return true;
-        });
-      }
-      
-      return filteredFlights;
+    // We no longer use mock data, we will only return real data from FlightAware
+    // Return empty array if not connected
+    if (!isConnected && flightCache.size === 0) {
+      console.log('Not connected to FlightAware, returning empty flight list');
+      return [];
     }
     
-    // Otherwise use real FlightAware data
+    // Get flights from cache
+    const flights = Array.from(flightCache.values());
+    
+    // Filter out any mock flights (ID starts with MOCK, CARGO, or PVT)
+    const realFlights = flights.filter(f => 
+      !f.id.startsWith('MOCK') && 
+      !f.id.startsWith('CARGO') && 
+      !f.id.startsWith('PVT')
+    );
+    
     // If not connected to FlightAware, try to connect
     if (!isConnected) {
       initializeFlightAwareConnection();
-      // Return cached flights in the meantime
-      return await storage.getCachedFlights();
     }
     
-    // Get all flights from cache
-    let flights = Array.from(flightCache.values());
-    
-    // Apply filters based on filterType
+    // Apply filters
+    let filteredFlights = realFlights;
     if (filterType !== 'all') {
       // Filter flights based on type
-      flights = flights.filter(flight => {
+      filteredFlights = filteredFlights.filter(flight => {
         if (filterType === 'commercial') {
           // Commercial flights usually have airline info and are operated by commercial carriers
           return flight.airline?.name != null;
@@ -635,7 +611,7 @@ export async function fetchFlights(filterType: MapFilter['type']): Promise<LiveF
       });
     }
     
-    return flights;
+    return filteredFlights;
   } catch (error) {
     console.error('Error fetching flights:', error);
     return [];

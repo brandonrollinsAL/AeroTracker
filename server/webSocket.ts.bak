@@ -24,16 +24,7 @@ export function setupWebSocketServer(server: Server) {
 
     // Send initial flight data
     if (cachedFlights.length > 0) {
-      // Send only real flight data, no mock data
-      const realFlights = cachedFlights.filter(f => 
-        !f.id.startsWith('MOCK') && 
-        !f.id.startsWith('CARGO') && 
-        !f.id.startsWith('PVT')
-      );
-
-      if (realFlights.length > 0) {
-        sendFlightData(ws, realFlights);
-      }
+      sendFlightData(ws, cachedFlights);
     }
 
     ws.on('message', async (message) => {
@@ -116,21 +107,12 @@ export function setupWebSocketServer(server: Server) {
       if (cachedFlights.length === 0) {
         const flights = await fetchFlights('all');
         if (flights && flights.length > 0) {
-          // Filter out mock flights
-          const realFlights = flights.filter(f => 
-            !f.id.startsWith('MOCK') && 
-            !f.id.startsWith('CARGO') && 
-            !f.id.startsWith('PVT')
-          );
-          
-          if (realFlights.length > 0) {
-            cachedFlights = realFlights;
-            wss.clients.forEach(client => {
-              if (client.readyState === WebSocket.OPEN) {
-                sendFlightData(client, realFlights);
-              }
-            });
-          }
+          cachedFlights = flights;
+          wss.clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+              sendFlightData(client, flights);
+            }
+          });
         }
       }
     } catch (error) {
@@ -153,19 +135,7 @@ function startFlightUpdates() {
         console.log('No flights returned from the API');
         // If no flights are returned but we have cached data, use that to maintain continuity
         if (cachedFlights.length > 0) {
-          // Make sure we filter out any mock flights from the cache
-          const realCachedFlights = cachedFlights.filter(f => 
-            !f.id.startsWith('MOCK') && 
-            !f.id.startsWith('CARGO') && 
-            !f.id.startsWith('PVT')
-          );
-          
-          if (realCachedFlights.length > 0) {
-            cachedFlights = realCachedFlights;
-            broadcastCachedFlights();
-          } else {
-            console.log('No real flights in cache. Waiting for connection to FlightAware...');
-          }
+          broadcastCachedFlights();
         }
         return;
       }
@@ -180,9 +150,11 @@ function startFlightUpdates() {
       // Only use real flight data, never use mock data
       if (realFlights.length > 0) {
         console.log(`Broadcasting ${realFlights.length} live flights from FlightAware`);
+        // Continue with real flights only
+        const processedFlights = realFlights;
         
         // Update flight positions to simulate smooth movement
-        const updatedFlights = realFlights.map(flight => ({
+        const updatedFlights = processedFlights.map(flight => ({
           ...flight,
           // Add a small random variation to positions for smoother animation
           position: {
@@ -201,6 +173,8 @@ function startFlightUpdates() {
         broadcastCachedFlights();
       } else {
         console.log(`No live flights available. Waiting for connection to FlightAware...`);
+        // Return early without updating if we don't have real data
+        return;
       }
     } catch (error) {
       console.error('Error fetching flight updates:', error);
@@ -228,20 +202,8 @@ function startFlightUpdates() {
   setInterval(() => {
     if (cachedFlights.length > 0) {
       try {
-        // First, filter out mock data
-        const realFlights = cachedFlights.filter(f => 
-          !f.id.startsWith('MOCK') && 
-          !f.id.startsWith('CARGO') && 
-          !f.id.startsWith('PVT')
-        );
-        
-        if (realFlights.length === 0) {
-          // Don't animate if we don't have real flights
-          return;
-        }
-        
         // Create a subtle movement update to all flights for smooth animation
-        const interpolatedFlights = realFlights.map(flight => {
+        const interpolatedFlights = cachedFlights.map(flight => {
           if (!flight || !flight.position || typeof flight.position.heading !== 'number') {
             console.warn(`Invalid flight data found: ${JSON.stringify(flight)}`);
             return flight; // Return unmodified if data is invalid
