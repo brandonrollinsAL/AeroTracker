@@ -15,7 +15,7 @@ if (USE_MOCK_WEATHER) {
   );
 }
 
-// Base URL for the weather API
+// Base URL for the weather API (weatherapi.com)
 const WEATHER_API_BASE_URL = 'https://api.weatherapi.com/v1';
 
 /**

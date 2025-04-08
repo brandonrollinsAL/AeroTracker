@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/use-auth';
-import AuthPopup from './AuthPopup';
+import { AuthPopup } from './AuthPopup';
 import { MapPin, Plane, Wind, Clock, Droplet, AlertTriangle } from 'lucide-react';
 
 // Common aircraft types for dropdown
@@ -431,21 +431,12 @@ export default function RouteOptimizer() {
       
       {/* Auth popup for premium features */}
       {showAuthPopup && (
-        <AuthPopup 
-          title="Premium Feature: Route Optimization"
+        <AuthPopup
+          isOpen={showAuthPopup}
+          onClose={() => setShowAuthPopup(false)}
+          featureName="Route Optimization"
           description="Sign in or create an account to access optimized flight routes with weather avoidance, fuel efficiency calculations, and more."
-          trigger={
-            <Button 
-              className="hidden" 
-              onClick={() => setShowAuthPopup(true)}
-              ref={(ref) => ref && showAuthPopup && ref.click()}
-            >
-              Open
-            </Button>
-          }
-        >
-          <div>Premium content</div>
-        </AuthPopup>
+        />
       )}
     </div>
   );

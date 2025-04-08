@@ -6,7 +6,7 @@ import Header from '@/components/Header';
 import MapIconMenu from '@/components/MapIconMenu';
 import FlightDetailPanel from '@/components/FlightDetailPanel';
 import RouteOptimizer from '@/components/RouteOptimizer';
-import AuthPopup from '@/components/AuthPopup';
+import { AuthPopup } from '@/components/AuthPopup';
 import { LiveFlight, Airport } from '@shared/schema';
 import { MapFilter } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -432,21 +432,12 @@ export default function Home() {
 
         {/* Auth popup for premium features */}
         {showAuthPopup && (
-          <AuthPopup 
-            title="Premium Feature"
-            description={`Sign in or create an account to access ${authFeatureName}.`}
-            trigger={
-              <Button 
-                className="hidden" 
-                onClick={() => setShowAuthPopup(true)}
-                ref={(ref) => ref && showAuthPopup && ref.click()}
-              >
-                Open
-              </Button>
-            }
-          >
-            <div>Premium content</div>
-          </AuthPopup>
+          <AuthPopup
+            isOpen={showAuthPopup}
+            onClose={() => setShowAuthPopup(false)}
+            featureName={authFeatureName}
+            description={`Sign in or create an account to access ${authFeatureName} and other premium features.`}
+          />
         )}
       </div>
     </div>
