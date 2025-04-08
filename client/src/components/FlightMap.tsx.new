@@ -2,10 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline, Tooltip } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { FlightMapProvider } from '@/hooks/use-flight-map-context';
+import { MapZoomMonitor } from './MapZoomMonitor';
 import MapControls from './MapControls';
 import AirportMarker from './AirportMarker';
 import WeatherOverlay from './WeatherOverlay';
 import WeatherImpactPanel from './WeatherImpactPanel';
+import { NexradRadarOverlay } from './NexradRadarOverlay';
 import { LiveFlight, MapFilter, Airport } from '@/types';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -85,7 +88,7 @@ function MapUpdater({ flight }: { flight: LiveFlight | null }) {
   useEffect(() => {
     if (flight) {
       map.setView(
-        [flight.position.latitude, flight.position.longitude],
+        [flight.position?.latitude || 0, flight.position?.longitude || 0],
         10,
         { animate: true }
       );
@@ -144,7 +147,7 @@ function MapControlButtons({
                 <Layers className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="left" className="aviation-tooltip">
+            <TooltipContent side="right" className="aviation-tooltip">
               <p className="text-xs font-medium">Zoom in</p>
             </TooltipContent>
           </UITooltip>
@@ -160,7 +163,7 @@ function MapControlButtons({
                 <Minimize className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="left" className="aviation-tooltip">
+            <TooltipContent side="right" className="aviation-tooltip">
               <p className="text-xs font-medium">Zoom out</p>
             </TooltipContent>
           </UITooltip>
@@ -183,7 +186,7 @@ function MapControlButtons({
                 </svg>
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="left" className="aviation-tooltip">
+            <TooltipContent side="right" className="aviation-tooltip">
               <p className="text-xs font-medium">{showFlightTrails ? 'Hide' : 'Show'} flight trails</p>
             </TooltipContent>
           </UITooltip>
@@ -208,7 +211,7 @@ function MapControlButtons({
                 </svg>
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="left" className="aviation-tooltip">
+            <TooltipContent side="right" className="aviation-tooltip">
               <p className="text-xs font-medium">Go to my location</p>
             </TooltipContent>
           </UITooltip>
@@ -230,7 +233,7 @@ function MapControlButtons({
                 )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="left" className="aviation-tooltip">
+            <TooltipContent side="right" className="aviation-tooltip">
               <p className="text-xs font-medium">{isFullscreen ? 'Exit' : 'Enter'} fullscreen</p>
             </TooltipContent>
           </UITooltip>
@@ -240,25 +243,45 @@ function MapControlButtons({
   );
 }
 
-// Component to monitor zoom level changes
-function ZoomMonitor() {
-  const map = useMap();
-  const [currentZoom, setCurrentZoom] = useState(map.getZoom());
+// Generate flight path for a selected flight
+const generateFlightPath = (flight: LiveFlight): [number, number][] => {
+  // For demonstration only - in a real app, this would use actual flight path data
+  // For now, we'll create a simple path based on current position and planned departure/arrival
+  const path: [number, number][] = [];
   
-  useEffect(() => {
-    const updateZoom = () => {
-      setCurrentZoom(map.getZoom());
-    };
+  if (flight.departure?.icao && flight.position) {
+    // Simulate a departure location (for demo purposes)
+    const departureLocation: [number, number] = [
+      flight.position.latitude - 2,
+      flight.position.longitude - 2
+    ];
     
-    map.on('zoom', updateZoom);
-    
-    return () => {
-      map.off('zoom', updateZoom);
-    };
-  }, [map]);
+    path.push(departureLocation);
+  }
   
-  return null;
-}
+  // Add current position if available
+  if (flight.position?.latitude && flight.position?.longitude) {
+    path.push([flight.position.latitude, flight.position.longitude]);
+  }
+  
+  if (flight.arrival?.icao && flight.position) {
+    // Simulate an arrival location (for demo purposes)
+    const arrivalLocation: [number, number] = [
+      flight.position.latitude + 2,
+      flight.position.longitude + 2
+    ];
+    
+    path.push(arrivalLocation);
+  }
+  
+  // Ensure we have at least 2 points for a valid path
+  if (path.length < 2) {
+    // Default to a simple point if we don't have enough positioning data
+    path.push([0, 0], [0.1, 0.1]);
+  }
+  
+  return path;
+};
 
 export default function FlightMap({ 
   flights, 
@@ -273,11 +296,13 @@ export default function FlightMap({
   const [airports, setAirports] = useState<Airport[]>([]);
   const [loadingAirports, setLoadingAirports] = useState(false);
   const [currentZoom, setCurrentZoom] = useState(5);
+  const [mapBounds, setMapBounds] = useState<L.LatLngBounds | null>(null);
+  const [visibleFlights, setVisibleFlights] = useState<LiveFlight[]>([]);
   
   // Default center if no flights are available
   const defaultCenter: [number, number] = [37.0902, -95.7129]; // US center
   const defaultZoom = 5;
-
+  
   // Fetch airports, even when showAirports is disabled (for improved UX)
   useEffect(() => {
     // Always fetch airports data to have it ready
@@ -320,44 +345,13 @@ export default function FlightMap({
       }
     }
   };
-  
-  // Generate flight path for a selected flight
-  const generateFlightPath = (flight: LiveFlight): [number, number][] => {
-    // For demonstration only - in a real app, this would use actual flight path data
-    // For now, we'll create a simple path based on current position and planned departure/arrival
-    const path: [number, number][] = [];
-    
-    if (flight.departure?.icao && flight.position) {
-      // Simulate a departure location (for demo purposes)
-      const departureLocation: [number, number] = [
-        flight.position.latitude - 2,
-        flight.position.longitude - 2
-      ];
-      
-      path.push(departureLocation);
-    }
-    
-    // Add current position
-    path.push([flight.position.latitude, flight.position.longitude]);
-    
-    if (flight.arrival?.icao) {
-      // Simulate an arrival location (for demo purposes)
-      const arrivalLocation: [number, number] = [
-        flight.position.latitude + 2,
-        flight.position.longitude + 2
-      ];
-      
-      path.push(arrivalLocation);
-    }
-    
-    return path;
-  };
 
   return (
-    <div className={`w-full relative h-[50vh] md:h-[calc(100vh-4rem)] ${
-      isDarkMode ? 'bg-neutral-900' : 'bg-white'
-    } ${isFullscreen ? 'fixed inset-0 z-50 h-screen w-screen' : ''}`}>
-      <div className={`w-[95%] mx-auto h-full ${isDarkMode ? 'bg-neutral-900' : 'bg-white'} rounded overflow-hidden pt-[40px] pb-5`}>
+    <FlightMapProvider flights={flights}>
+      <div className={`w-full relative h-[50vh] md:h-[calc(100vh-4rem)] ${
+        isDarkMode ? 'bg-neutral-900' : 'bg-white'
+      } ${isFullscreen ? 'fixed inset-0 z-50 h-screen w-screen' : ''}`}>
+        <div className={`w-[95%] mx-auto h-full ${isDarkMode ? 'bg-neutral-900' : 'bg-white'} rounded overflow-hidden pt-[40px] pb-5`}>
         {!isConnected && (
           <Alert variant="destructive" className="absolute top-[84px] left-1/2 transform -translate-x-1/2 z-50 w-auto">
             <AlertTriangle className="h-4 w-4" />
@@ -365,9 +359,19 @@ export default function FlightMap({
           </Alert>
         )}
         
+        {isConnected && flights.length === 0 && (
+          <Alert variant="destructive" className="absolute top-[84px] left-1/2 transform -translate-x-1/2 z-50 w-auto">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              No flight data available. Please check FlightAware credentials and permissions.
+            </AlertDescription>
+          </Alert>
+        )}
+        
         <MapContainer
           center={defaultCenter}
           zoom={defaultZoom}
+          zoomControl={false}
           style={{ height: '100%', width: '100%' }}
         >
           <TileLayer
@@ -379,11 +383,11 @@ export default function FlightMap({
           {Array.isArray(flights) && flights.map((flight) => (
             <Marker
               key={flight.id}
-              position={[flight.position.latitude, flight.position.longitude]}
+              position={[flight.position?.latitude || 0, flight.position?.longitude || 0]}
               icon={createAirplaneIcon(
-                flight.position.heading, 
+                flight.position?.heading || 0, 
                 selectedFlight?.id === flight.id,
-                flight.position.altitude
+                flight.position?.altitude || 0
               )}
               eventHandlers={{
                 click: () => onFlightSelect(flight)
@@ -436,7 +440,7 @@ export default function FlightMap({
                       </div>
                       <div>
                         <div className="text-[10px] text-neutral-500 uppercase font-medium">Altitude</div>
-                        <div className="text-xs font-bold text-[#0a4995]">{flight.position.altitude.toLocaleString()} ft</div>
+                        <div className="text-xs font-bold text-[#0a4995]">{flight.position?.altitude ? flight.position.altitude.toLocaleString() : 'N/A'} ft</div>
                       </div>
                     </div>
                     
@@ -448,7 +452,7 @@ export default function FlightMap({
                       </div>
                       <div>
                         <div className="text-[10px] text-neutral-500 uppercase font-medium">Speed</div>
-                        <div className="text-xs font-bold text-[#0a4995]">{flight.position.groundSpeed} mph</div>
+                        <div className="text-xs font-bold text-[#0a4995]">{flight.position?.groundSpeed || 'N/A'} mph</div>
                       </div>
                     </div>
                   </div>
@@ -508,7 +512,7 @@ export default function FlightMap({
           )}
           
           <MapUpdater flight={selectedFlight} />
-          <ZoomMonitor />
+          <MapZoomMonitor />
           <MapControlButtons 
             isDarkMode={isDarkMode}
             isFullscreen={isFullscreen}
@@ -522,5 +526,6 @@ export default function FlightMap({
         </MapContainer>
       </div>
     </div>
+    </FlightMapProvider>
   );
 }

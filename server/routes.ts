@@ -23,8 +23,21 @@ import {
 } from "./services/openai";
 import { handleNexradRequest } from "./api/nexrad";
 import { setupDashboardRoutes } from "./api/dashboard";
+import { testConnection } from "./db";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Test database connection on startup
+  try {
+    const connected = await testConnection();
+    if (connected) {
+      console.log("✅ Database connection established successfully");
+    } else {
+      console.error("❌ Database connection failed");
+    }
+  } catch (error) {
+    console.error("❌ Database connection test error:", error);
+  }
+
   const httpServer = createServer(app);
 
   // Set up authentication

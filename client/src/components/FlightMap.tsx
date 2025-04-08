@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline, Tooltip } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { FlightMapProvider } from '@/hooks/use-flight-map-context';
+import { MapZoomMonitor } from './MapZoomMonitor';
 import MapControls from './MapControls';
 import AirportMarker from './AirportMarker';
 import WeatherOverlay from './WeatherOverlay';
@@ -241,49 +243,45 @@ function MapControlButtons({
   );
 }
 
-// Component to monitor zoom level changes and manage map overlays
-function ZoomMonitor() {
-  const map = useMap();
-  const [currentZoom, setCurrentZoom] = useState(map.getZoom());
-  const [showRadar, setShowRadar] = useState(false);
+// Generate flight path for a selected flight
+const generateFlightPath = (flight: LiveFlight): [number, number][] => {
+  // For demonstration only - in a real app, this would use actual flight path data
+  // For now, we'll create a simple path based on current position and planned departure/arrival
+  const path: [number, number][] = [];
   
-  useEffect(() => {
-    const updateZoom = () => {
-      setCurrentZoom(map.getZoom());
-    };
+  if (flight.departure?.icao && flight.position) {
+    // Simulate a departure location (for demo purposes)
+    const departureLocation: [number, number] = [
+      flight.position.latitude - 2,
+      flight.position.longitude - 2
+    ];
     
-    map.on('zoom', updateZoom);
-    
-    return () => {
-      map.off('zoom', updateZoom);
-    };
-  }, [map]);
+    path.push(departureLocation);
+  }
   
-  // Return both the NexradRadarOverlay and a control button to toggle it
-  return (
-    <>
-      <NexradRadarOverlay enabled={showRadar} opacity={0.7} zoom={currentZoom} />
-      
-      <div className="aviation-glass absolute bottom-4 right-4 z-[900] p-1.5 rounded-xl backdrop-blur-md flex space-x-2 border border-[#4995fd]/30">
-        <TooltipProvider>
-          <UITooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                className={`map-control-button ${showRadar ? 'active' : ''}`}
-                onClick={() => setShowRadar(!showRadar)}
-              >
-                <CloudRain className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left" className="aviation-tooltip">
-              <p className="text-xs font-medium">{showRadar ? 'Hide' : 'Show'} NEXRAD radar</p>
-            </TooltipContent>
-          </UITooltip>
-        </TooltipProvider>
-      </div>
-    </>
-  );
-}
+  // Add current position if available
+  if (flight.position?.latitude && flight.position?.longitude) {
+    path.push([flight.position.latitude, flight.position.longitude]);
+  }
+  
+  if (flight.arrival?.icao && flight.position) {
+    // Simulate an arrival location (for demo purposes)
+    const arrivalLocation: [number, number] = [
+      flight.position.latitude + 2,
+      flight.position.longitude + 2
+    ];
+    
+    path.push(arrivalLocation);
+  }
+  
+  // Ensure we have at least 2 points for a valid path
+  if (path.length < 2) {
+    // Default to a simple point if we don't have enough positioning data
+    path.push([0, 0], [0.1, 0.1]);
+  }
+  
+  return path;
+};
 
 export default function FlightMap({ 
   flights, 
@@ -298,11 +296,13 @@ export default function FlightMap({
   const [airports, setAirports] = useState<Airport[]>([]);
   const [loadingAirports, setLoadingAirports] = useState(false);
   const [currentZoom, setCurrentZoom] = useState(5);
+  const [mapBounds, setMapBounds] = useState<L.LatLngBounds | null>(null);
+  const [visibleFlights, setVisibleFlights] = useState<LiveFlight[]>([]);
   
   // Default center if no flights are available
   const defaultCenter: [number, number] = [37.0902, -95.7129]; // US center
   const defaultZoom = 5;
-
+  
   // Fetch airports, even when showAirports is disabled (for improved UX)
   useEffect(() => {
     // Always fetch airports data to have it ready
@@ -345,52 +345,13 @@ export default function FlightMap({
       }
     }
   };
-  
-  // Generate flight path for a selected flight
-  const generateFlightPath = (flight: LiveFlight): [number, number][] => {
-    // For demonstration only - in a real app, this would use actual flight path data
-    // For now, we'll create a simple path based on current position and planned departure/arrival
-    const path: [number, number][] = [];
-    
-    if (flight.departure?.icao && flight.position) {
-      // Simulate a departure location (for demo purposes)
-      const departureLocation: [number, number] = [
-        flight.position.latitude - 2,
-        flight.position.longitude - 2
-      ];
-      
-      path.push(departureLocation);
-    }
-    
-    // Add current position if available
-    if (flight.position?.latitude && flight.position?.longitude) {
-      path.push([flight.position.latitude, flight.position.longitude]);
-    }
-    
-    if (flight.arrival?.icao && flight.position) {
-      // Simulate an arrival location (for demo purposes)
-      const arrivalLocation: [number, number] = [
-        flight.position.latitude + 2,
-        flight.position.longitude + 2
-      ];
-      
-      path.push(arrivalLocation);
-    }
-    
-    // Ensure we have at least 2 points for a valid path
-    if (path.length < 2) {
-      // Default to a simple point if we don't have enough positioning data
-      path.push([0, 0], [0.1, 0.1]);
-    }
-    
-    return path;
-  };
 
   return (
-    <div className={`w-full relative h-[50vh] md:h-[calc(100vh-4rem)] ${
-      isDarkMode ? 'bg-neutral-900' : 'bg-white'
-    } ${isFullscreen ? 'fixed inset-0 z-50 h-screen w-screen' : ''}`}>
-      <div className={`w-[95%] mx-auto h-full ${isDarkMode ? 'bg-neutral-900' : 'bg-white'} rounded overflow-hidden pt-[40px] pb-5`}>
+    <FlightMapProvider flights={flights}>
+      <div className={`w-full relative h-[50vh] md:h-[calc(100vh-4rem)] ${
+        isDarkMode ? 'bg-neutral-900' : 'bg-white'
+      } ${isFullscreen ? 'fixed inset-0 z-50 h-screen w-screen' : ''}`}>
+        <div className={`w-[95%] mx-auto h-full ${isDarkMode ? 'bg-neutral-900' : 'bg-white'} rounded overflow-hidden pt-[40px] pb-5`}>
         {!isConnected && (
           <Alert variant="destructive" className="absolute top-[84px] left-1/2 transform -translate-x-1/2 z-50 w-auto">
             <AlertTriangle className="h-4 w-4" />
@@ -551,7 +512,7 @@ export default function FlightMap({
           )}
           
           <MapUpdater flight={selectedFlight} />
-          <ZoomMonitor />
+          <MapZoomMonitor />
           <MapControlButtons 
             isDarkMode={isDarkMode}
             isFullscreen={isFullscreen}
@@ -565,5 +526,6 @@ export default function FlightMap({
         </MapContainer>
       </div>
     </div>
+    </FlightMapProvider>
   );
 }

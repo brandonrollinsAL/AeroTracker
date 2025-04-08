@@ -4,7 +4,7 @@ import { ThemeProvider } from "@/hooks/use-theme";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/hooks/use-auth";
 import { queryClient } from "@/lib/queryClient";
-import { ProtectedRoute } from "@/components/protected-route";
+import { ProtectedRoute } from "@/lib/protected-route";
 import HomePage from "@/pages/Home";
 import AuthPage from "@/pages/auth-page";
 import DashboardPage from "@/pages/dashboard-page";

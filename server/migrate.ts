@@ -1,47 +1,26 @@
-import { drizzle } from 'drizzle-orm/node-postgres';
-import pg from 'pg';
-import * as schema from '@shared/schema';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+const { Pool } = require('pg');
+const { drizzle } = require('drizzle-orm/node-postgres');
+const { migrate } = require('drizzle-orm/node-postgres/migrator');
+const schema = require('../shared/schema');
 
-const execPromise = promisify(exec);
-const { Pool } = pg;
-
-// Create a PostgreSQL connection pool
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL
-});
-
-// Create a Drizzle instance with our schema
-const db = drizzle(pool, { schema });
-
-// Push the schema to the database
 async function pushSchema() {
-  console.log('Pushing schema to database...');
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+  });
+
   try {
-    // Test the database connection first
-    const client = await pool.connect();
-    client.release();
-    console.log('Database connection successful!');
-    
-    // Use drizzle-kit push to create tables
-    const { stdout, stderr } = await execPromise('npx drizzle-kit push');
-    
-    if (stderr) {
-      console.error('drizzle-kit stderr:', stderr);
-    }
-    
-    if (stdout) {
-      console.log('drizzle-kit output:', stdout);
-    }
-    
-    console.log('Schema pushed successfully!');
+    console.log('Connecting to database...');
+    const db = drizzle(pool, { schema });
+
+    console.log('Starting migration...');
+    await migrate(db, { migrationsFolder: 'drizzle' });
+    console.log('Migration completed successfully!');
   } catch (error) {
-    console.error('Error pushing schema:', error);
+    console.error('Migration failed:', error);
   } finally {
+    console.log('Closing database connection...');
     await pool.end();
   }
 }
 
-// Run the migration
-pushSchema();
+pushSchema().catch(console.error);
