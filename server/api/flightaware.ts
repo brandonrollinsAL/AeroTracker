@@ -9,9 +9,9 @@ const FLIGHTAWARE_USERNAME = process.env.FLIGHTAWARE_USERNAME;
 const FLIGHTAWARE_PASSWORD = process.env.FLIGHTAWARE_PASSWORD;
 
 // Flag to use mock data for development
-// Always use mock data for testing and development
-// This ensures the application is functional even without live API credentials
-const USE_MOCK_DATA = true;
+// Use REAL flight data with FlightAware credentials
+// Only use mock data if credentials are not available
+const USE_MOCK_DATA = !FLIGHTAWARE_USERNAME || !FLIGHTAWARE_PASSWORD;
 
 // Helper variables for timing broadcasts
 let lastBroadcastTime = 0;
