@@ -38,12 +38,16 @@ export interface IStorage {
   getAirportByCode(code: string): Promise<Airport | undefined>;
   getAllAirports(): Promise<Airport[]>;
   createAirport(airport: InsertAirport): Promise<Airport>;
+  updateAirport(id: number, airport: Partial<InsertAirport>): Promise<Airport | undefined>;
+  deleteAirport(id: number): Promise<boolean>;
 
   // Aircraft operations
   getAircraft(id: number): Promise<Aircraft | undefined>;
   getAircraftByRegistration(registration: string): Promise<Aircraft | undefined>;
   getAllAircraft(): Promise<Aircraft[]>;
   createAircraft(aircraft: InsertAircraft): Promise<Aircraft>;
+  updateAircraft(id: number, aircraft: Partial<InsertAircraft>): Promise<Aircraft | undefined>;
+  deleteAircraft(id: number): Promise<boolean>;
 
   // Cache operations for external data
   cacheFlightData(flights: LiveFlight[]): Promise<void>;
@@ -221,6 +225,19 @@ export class MemStorage implements IStorage {
     return airport;
   }
 
+  async updateAirport(id: number, airportData: Partial<InsertAirport>): Promise<Airport | undefined> {
+    const airport = this.airports.get(id);
+    if (!airport) return undefined;
+
+    const updatedAirport = { ...airport, ...airportData };
+    this.airports.set(id, updatedAirport);
+    return updatedAirport;
+  }
+
+  async deleteAirport(id: number): Promise<boolean> {
+    return this.airports.delete(id);
+  }
+
   // Aircraft operations
   async getAircraft(id: number): Promise<Aircraft | undefined> {
     return this.aircraft.get(id);
@@ -241,6 +258,19 @@ export class MemStorage implements IStorage {
     const newAircraft: Aircraft = { ...insertAircraft, id };
     this.aircraft.set(id, newAircraft);
     return newAircraft;
+  }
+
+  async updateAircraft(id: number, aircraftData: Partial<InsertAircraft>): Promise<Aircraft | undefined> {
+    const aircraft = this.aircraft.get(id);
+    if (!aircraft) return undefined;
+
+    const updatedAircraft = { ...aircraft, ...aircraftData };
+    this.aircraft.set(id, updatedAircraft);
+    return updatedAircraft;
+  }
+
+  async deleteAircraft(id: number): Promise<boolean> {
+    return this.aircraft.delete(id);
   }
 
   // Cache operations for external API data
@@ -422,12 +452,29 @@ export class DatabaseStorage implements IStorage {
       country: insertAirport.country,
       latitude: insertAirport.latitude,
       longitude: insertAirport.longitude,
+      elevation: insertAirport.elevation ?? null,
       size: insertAirport.size ?? null,
-      type: insertAirport.type ?? null
+      type: insertAirport.type ?? null,
+      timeZone: insertAirport.timeZone ?? null,
+      details: insertAirport.details ?? null
     };
     
     const [airport] = await db.insert(airports).values([airportValues]).returning();
     return airport as Airport;
+  }
+
+  async updateAirport(id: number, airportData: Partial<InsertAirport>): Promise<Airport | undefined> {
+    const [updatedAirport] = await db
+      .update(airports)
+      .set(airportData)
+      .where(eq(airports.id, id))
+      .returning();
+    return updatedAirport;
+  }
+
+  async deleteAirport(id: number): Promise<boolean> {
+    const result = await db.delete(airports).where(eq(airports.id, id)).returning({ id: airports.id });
+    return result.length > 0;
   }
 
   // Aircraft operations
@@ -450,14 +497,32 @@ export class DatabaseStorage implements IStorage {
     const aircraftValues = {
       type: insertAircraft.type,
       registration: insertAircraft.registration,
+      manufacturer: insertAircraft.manufacturer ?? null,
+      model: insertAircraft.model ?? null,
+      variant: insertAircraft.variant ?? null,
       airline: insertAircraft.airline ?? null,
       manufacturerSerialNumber: insertAircraft.manufacturerSerialNumber ?? null,
       age: insertAircraft.age ?? null,
-      details: insertAircraft.details as AircraftDetails | null ?? null
+      category: insertAircraft.category ?? null,
+      details: insertAircraft.details ?? null
     };
     
     const [aircraftItem] = await db.insert(aircraft).values([aircraftValues]).returning();
     return aircraftItem as Aircraft;
+  }
+
+  async updateAircraft(id: number, aircraftData: Partial<InsertAircraft>): Promise<Aircraft | undefined> {
+    const [updatedAircraft] = await db
+      .update(aircraft)
+      .set(aircraftData)
+      .where(eq(aircraft.id, id))
+      .returning();
+    return updatedAircraft;
+  }
+
+  async deleteAircraft(id: number): Promise<boolean> {
+    const result = await db.delete(aircraft).where(eq(aircraft.id, id)).returning({ id: aircraft.id });
+    return result.length > 0;
   }
 
   // Cache operations for external API data - still uses in-memory storage

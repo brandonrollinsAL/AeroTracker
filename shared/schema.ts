@@ -49,17 +49,24 @@ export const airports = pgTable("airports", {
   country: text("country").notNull(),
   latitude: real("latitude").notNull(),
   longitude: real("longitude").notNull(),
+  elevation: integer("elevation"),
   size: text("size", { enum: ['large', 'medium', 'small'] }),
   type: text("type", { enum: ['international', 'domestic', 'regional'] }),
+  timeZone: text("time_zone"),
+  details: json("details").$type<AirportDetails>(),
 });
 
 export const aircraft = pgTable("aircraft", {
   id: serial("id").primaryKey(),
   registration: text("registration").notNull().unique(),
   type: text("type").notNull(),
+  manufacturer: text("manufacturer"),
+  model: text("model"),
+  variant: text("variant"),
   airline: text("airline"),
   manufacturerSerialNumber: text("manufacturer_serial_number"),
   age: real("age"),
+  category: text("category", { enum: ['commercial', 'private', 'military', 'cargo', 'special'] }),
   details: json("details").$type<AircraftDetails>(),
 });
 
@@ -80,13 +87,9 @@ export const insertAlertSchema = createInsertSchema(alerts).omit({
   createdAt: true
 });
 
-export const insertAirportSchema = createInsertSchema(airports).omit({
-  id: true
-});
+export const insertAirportSchema = createInsertSchema(airports);
 
-export const insertAircraftSchema = createInsertSchema(aircraft).omit({
-  id: true
-});
+export const insertAircraftSchema = createInsertSchema(aircraft);
 
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -109,6 +112,93 @@ export type AircraftDetails = {
   icaoClass?: string;
   range?: number;
   ceiling?: number;
+  cruiseSpeed?: number;
+  maxTakeoffWeight?: number;
+  fuelCapacity?: number;
+  fuelBurnRate?: number;
+  climbRate?: number;
+  stallSpeed?: number;
+  takeoffDistance?: number;
+  landingDistance?: number;
+  wingspan?: number;
+  length?: number;
+  height?: number;
+  passengerCapacity?: number;
+  variants?: string[];
+};
+
+export type AirportDetails = {
+  frequencies?: {
+    atis?: string;
+    tower?: string;
+    ground?: string;
+    approach?: string;
+    departure?: string;
+    clearanceDelivery?: string;
+  };
+  runways?: Array<{
+    identifier: string;
+    length: number;
+    width: number;
+    surface: string;
+    lighting?: string;
+    thresholdOffset?: number;
+    overrunLength?: number;
+    displacedThreshold?: boolean;
+  }>;
+  services?: {
+    fuel?: string[];
+    groundHandling?: boolean;
+    customs?: boolean;
+    amenities?: string[];
+    operatingHours?: string;
+  };
+  fbos?: Array<{
+    name: string;
+    services: string[];
+    contact?: {
+      phone?: string;
+      email?: string;
+    };
+    operatingHours?: string;
+  }>;
+  approaches?: Array<{
+    name: string;
+    type: string;
+    runway: string;
+    frequency?: string;
+    minimums?: {
+      decisionAltitude?: number;
+      visibility?: string;
+    };
+  }>;
+  stars?: Array<{
+    name: string;
+    waypoints: string[];
+    restrictions?: {
+      altitude?: string;
+      speed?: string;
+    };
+  }>;
+  sids?: Array<{
+    name: string;
+    waypoints: string[];
+    restrictions?: {
+      altitude?: string;
+      speed?: string;
+    };
+  }>;
+  taxiRoutes?: Array<{
+    name: string;
+    path: string;
+    restrictions?: string;
+  }>;
+  diagrams?: {
+    airport?: string;
+    approaches?: string[];
+    stars?: string[];
+    sids?: string[];
+  };
 };
 
 export type UserPreferences = {

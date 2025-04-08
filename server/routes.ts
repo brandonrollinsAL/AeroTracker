@@ -12,8 +12,14 @@ import {
   getAirportPerformanceMetrics 
 } from "./api/analytics";
 import { calculateOptimizedRoute } from "./api/routes";
-import { MapFilter, insertAlertSchema } from "@shared/schema";
+import { MapFilter, insertAlertSchema, insertAirportSchema, insertAircraftSchema } from "@shared/schema";
 import { setupAuth } from "./auth";
+import { 
+  fetchAirportDetails, 
+  fetchAircraftDetails, 
+  bulkFetchAirports, 
+  bulkFetchAircraft 
+} from "./services/openai";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -452,6 +458,217 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching route weather impact:", error);
       res.status(500).json({ message: "Failed to fetch weather impact for route" });
+    }
+  });
+
+  // ENHANCED AIRPORT AND AIRCRAFT DATA ENDPOINTS WITH OPENAI
+  
+  // Get detailed airport information using OpenAI
+  app.get("/api/airports/:code/details", async (req, res) => {
+    try {
+      const { code } = req.params;
+      
+      // First check if we already have detailed information
+      const existingAirport = await storage.getAirportByCode(code);
+      
+      if (existingAirport && existingAirport.details) {
+        return res.json(existingAirport);
+      }
+      
+      // Fetch enhanced details from OpenAI
+      const airportDetails = await fetchAirportDetails(code);
+      
+      if (!airportDetails) {
+        return res.status(404).json({ message: "Could not retrieve airport details" });
+      }
+      
+      // If we have the airport record but no details, update it
+      if (existingAirport) {
+        const updatedAirport = await storage.updateAirport(existingAirport.id, {
+          details: airportDetails
+        });
+        return res.json(updatedAirport);
+      }
+      
+      // Otherwise create a new airport record with the details
+      const newAirport = await storage.createAirport({
+        code: code.toUpperCase(),
+        name: airportDetails.name || 'Unknown',
+        city: airportDetails.city || 'Unknown',
+        country: airportDetails.country || 'Unknown',
+        latitude: airportDetails.latitude || 0,
+        longitude: airportDetails.longitude || 0,
+        elevation: airportDetails.elevation,
+        timeZone: airportDetails.timeZone,
+        details: airportDetails
+      });
+      
+      res.json(newAirport);
+    } catch (error) {
+      console.error("Error fetching enhanced airport details:", error);
+      res.status(500).json({ message: "Failed to fetch enhanced airport details" });
+    }
+  });
+  
+  // Get detailed aircraft information using OpenAI
+  app.get("/api/aircraft/:type/details", async (req, res) => {
+    try {
+      const { type } = req.params;
+      
+      // Check if we have any aircraft with this type that has details
+      const existingAircraft = await storage.getAllAircraft();
+      const matchingAircraft = existingAircraft.find(
+        a => a.type.toLowerCase() === type.toLowerCase() && a.details
+      );
+      
+      if (matchingAircraft) {
+        return res.json(matchingAircraft);
+      }
+      
+      // Fetch enhanced details from OpenAI
+      const aircraftDetails = await fetchAircraftDetails(type);
+      
+      if (!aircraftDetails) {
+        return res.status(404).json({ message: "Could not retrieve aircraft details" });
+      }
+      
+      // Create a new aircraft record with the details
+      const newAircraft = await storage.createAircraft({
+        registration: `MODEL-${type.toUpperCase()}`,
+        type: type,
+        manufacturer: aircraftDetails.manufacturer || 'Unknown',
+        model: aircraftDetails.model || type,
+        details: aircraftDetails
+      });
+      
+      res.json(newAircraft);
+    } catch (error) {
+      console.error("Error fetching enhanced aircraft details:", error);
+      res.status(500).json({ message: "Failed to fetch enhanced aircraft details" });
+    }
+  });
+  
+  // Bulk fetch and populate airport data
+  app.post("/api/airports/bulk", async (req, res) => {
+    try {
+      const { codes } = req.body;
+      
+      if (!codes || !Array.isArray(codes) || codes.length === 0) {
+        return res.status(400).json({ message: "Please provide an array of airport codes" });
+      }
+      
+      // Limit batch size
+      if (codes.length > 50) {
+        return res.status(400).json({ message: "Maximum batch size is 50 airports" });
+      }
+      
+      const airportDetailsList = await bulkFetchAirports(codes);
+      
+      if (!airportDetailsList || airportDetailsList.length === 0) {
+        return res.status(404).json({ message: "Could not retrieve airport details" });
+      }
+      
+      // Process and save each airport
+      const savedAirports = [];
+      for (const airportData of airportDetailsList) {
+        // Skip if code is missing
+        if (!airportData.code) continue;
+        
+        const existingAirport = await storage.getAirportByCode(airportData.code);
+        
+        if (existingAirport) {
+          // Update existing airport with new details
+          const updatedAirport = await storage.updateAirport(existingAirport.id, {
+            details: { ...existingAirport.details, ...airportData.details }
+          });
+          savedAirports.push(updatedAirport);
+        } else {
+          // Create new airport record
+          const newAirport = await storage.createAirport({
+            code: airportData.code.toUpperCase(),
+            name: airportData.name || 'Unknown',
+            city: airportData.city || 'Unknown',
+            country: airportData.country || 'Unknown',
+            latitude: airportData.latitude || 0,
+            longitude: airportData.longitude || 0,
+            elevation: airportData.elevation,
+            size: airportData.size || 'medium',
+            type: airportData.type || 'domestic',
+            details: airportData.details || {}
+          });
+          savedAirports.push(newAirport);
+        }
+      }
+      
+      res.json({ 
+        message: `Successfully processed ${savedAirports.length} airports`,
+        airports: savedAirports
+      });
+    } catch (error) {
+      console.error("Error bulk fetching airport details:", error);
+      res.status(500).json({ message: "Failed to bulk fetch airport details" });
+    }
+  });
+  
+  // Bulk fetch and populate aircraft data
+  app.post("/api/aircraft/bulk", async (req, res) => {
+    try {
+      const { types } = req.body;
+      
+      if (!types || !Array.isArray(types) || types.length === 0) {
+        return res.status(400).json({ message: "Please provide an array of aircraft types" });
+      }
+      
+      // Limit batch size
+      if (types.length > 25) {
+        return res.status(400).json({ message: "Maximum batch size is 25 aircraft types" });
+      }
+      
+      const aircraftDetailsList = await bulkFetchAircraft(types);
+      
+      if (!aircraftDetailsList || aircraftDetailsList.length === 0) {
+        return res.status(404).json({ message: "Could not retrieve aircraft details" });
+      }
+      
+      // Process and save each aircraft
+      const savedAircraft = [];
+      for (const aircraftData of aircraftDetailsList) {
+        // Skip if type is missing
+        if (!aircraftData.type) continue;
+        
+        // Check if we already have this aircraft type
+        const existingAircraft = await storage.getAllAircraft();
+        const matchingAircraft = existingAircraft.find(
+          a => a.type.toLowerCase() === aircraftData.type.toLowerCase()
+        );
+        
+        if (matchingAircraft) {
+          // Update existing aircraft with new details
+          const updatedAircraft = await storage.updateAircraft(matchingAircraft.id, {
+            details: { ...matchingAircraft.details, ...aircraftData.details }
+          });
+          savedAircraft.push(updatedAircraft);
+        } else {
+          // Create new aircraft record
+          const newAircraft = await storage.createAircraft({
+            registration: `MODEL-${aircraftData.type.toUpperCase()}`,
+            type: aircraftData.type,
+            manufacturer: aircraftData.manufacturer || 'Unknown',
+            model: aircraftData.model || aircraftData.type,
+            category: aircraftData.category || 'commercial',
+            details: aircraftData.details || {}
+          });
+          savedAircraft.push(newAircraft);
+        }
+      }
+      
+      res.json({ 
+        message: `Successfully processed ${savedAircraft.length} aircraft types`,
+        aircraft: savedAircraft
+      });
+    } catch (error) {
+      console.error("Error bulk fetching aircraft details:", error);
+      res.status(500).json({ message: "Failed to bulk fetch aircraft details" });
     }
   });
 
