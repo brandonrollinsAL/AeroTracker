@@ -86,27 +86,68 @@ export function initializeFlightAwareConnection() {
     // Handle socket events
     socket.on('secureConnect', () => {
       console.log('Connected to FlightAware Firehose');
+      console.log(`Using credentials - Username: ${FLIGHTAWARE_USERNAME ? FLIGHTAWARE_USERNAME.substring(0, 3) + '...' : 'undefined'}, Password: ${FLIGHTAWARE_PASSWORD ? '*****' : 'undefined'}`);
       isConnected = true;
       reconnectAttempts = 0;
       
       // Send authentication credentials
       if (socket) {
-        socket.write(`live username ${FLIGHTAWARE_USERNAME} password ${FLIGHTAWARE_PASSWORD}\n`);
+        const authCommand = `live username ${FLIGHTAWARE_USERNAME} password ${FLIGHTAWARE_PASSWORD}\n`;
+        console.log('Sending authentication command to FlightAware...');
+        socket.write(authCommand);
         
-        // Subscribe to flight position updates
-        socket.write('live all\n');
+        // Subscribe to flight position updates after a small delay to ensure auth is processed
+        setTimeout(() => {
+          console.log('Sending subscription commands for various data types');
+          if (socket) {
+            // Try multiple subscription types to see if any provide data
+            socket.write('live all\n');
+            
+            // Add a 1 second delay between commands
+            setTimeout(() => {
+              console.log('Sending additional subscription commands');
+              if (socket) {
+                socket.write('live flifo_all\n'); // Flight info
+                
+                setTimeout(() => {
+                  if (socket) {
+                    socket.write('live position_all\n'); // Just position updates
+                    
+                    setTimeout(() => {
+                      if (socket) {
+                        socket.write('live airborne_all\n'); // Airborne aircraft
+                      }
+                    }, 500);
+                  }
+                }, 500);
+              }
+            }, 1000);
+          } else {
+            console.error('Socket is null when trying to send subscription command');
+          }
+        }, 1000);
       }
     });
 
     socket.on('data', (data) => {
       try {
         const chunk = data.toString();
+        console.log('Received data from FlightAware:', chunk); // Log raw data for debugging
+        
+        // CRITICAL DEBUG INFO
+        console.log('==========================================');
+        console.log('FlightAware DATA RECEIVED ✓');
+        console.log('Data chunk length:', chunk.length);
+        console.log('Data chunk preview:', chunk.substring(0, 100));
+        console.log('==========================================');
+        
         dataBuffer += chunk;
         
         // Process complete lines
         const lines = dataBuffer.split('\n');
         dataBuffer = lines.pop() || ''; // Keep the last incomplete line in the buffer
         
+        console.log(`Processing ${lines.length} lines from FlightAware`);
         for (const line of lines) {
           if (line.trim() === '') continue;
           processFlightData(line);
@@ -184,14 +225,25 @@ function attemptReconnect() {
  */
 function processFlightData(line: string) {
   try {
+    console.log('Processing line:', line); // Log every line for detailed debugging
+    
     // Skip system messages and keep-alives
     if (line.startsWith('live msg') || line.startsWith('clock') || line.startsWith('auth')) {
       if (line.startsWith('auth ')) {
         const authResult = line.split(' ')[1];
+        console.log(`FlightAware auth response: "${line}"`);
         if (authResult === 'failed') {
           console.error('FlightAware authentication failed. Please check your credentials.');
+          
+          // When auth fails, let the user know we need updated credentials
+          broadcastMessage('error', {
+            message: 'FlightAware authentication failed. Please update your API credentials.',
+            code: 'FLIGHTAWARE_AUTH_FAILED'
+          });
         } else if (authResult === 'ok') {
           console.log('FlightAware authentication successful.');
+        } else {
+          console.log(`Unknown auth response: ${authResult}`);
         }
       }
       return;
@@ -199,17 +251,25 @@ function processFlightData(line: string) {
 
     // Parse the flight data
     const fields = line.split(' ');
+    console.log(`Parsed line type: ${fields[0]}, fields count: ${fields.length}`);
     
     // Check if this is a position update
     if (fields[0] === 'pos' && fields.length >= 10) {
+      console.log('Processing position update:', fields.join(' '));
       const flight = parsePositionUpdate(fields);
       if (flight) {
+        console.log(`Adding/updating flight ID ${flight.id} in cache`);
         flightCache.set(flight.id, flight);
+      } else {
+        console.log('Failed to parse position update');
       }
     }
     // Check if this is a flight info update
     else if (fields[0] === 'flight' && fields.length >= 5) {
+      console.log('Processing flight info update:', fields.join(' '));
       updateFlightInfo(fields);
+    } else {
+      console.log(`Unhandled message type: ${fields[0]}, not processing`);
     }
     
     // Periodically broadcast updates and cache to storage
@@ -649,9 +709,13 @@ export async function fetchAircraft(registration: string): Promise<Aircraft | nu
       id: 0,
       registration,
       type: 'Unknown',
+      manufacturer: null,
+      model: null,
+      variant: null,
       airline: null, // Using null because the schema allows it
       manufacturerSerialNumber: null,
       age: null,
+      category: null,
       details: null
     };
   } catch (error) {

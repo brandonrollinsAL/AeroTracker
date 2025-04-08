@@ -390,6 +390,15 @@ export default function FlightMap({
           </Alert>
         )}
         
+        {isConnected && flights.length === 0 && (
+          <Alert variant="destructive" className="absolute top-[84px] left-1/2 transform -translate-x-1/2 z-50 w-auto">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              No flight data available. Please check FlightAware credentials and permissions.
+            </AlertDescription>
+          </Alert>
+        )}
+        
         <MapContainer
           center={defaultCenter}
           zoom={defaultZoom}
