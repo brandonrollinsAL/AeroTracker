@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import FlightMap from '@/components/FlightMap';
 import FlightPanel from '@/components/FlightPanel';
 import Header from '@/components/Header';
-import MapHorizontalControls from '@/components/MapHorizontalControls';
+import HeaderNavigation from '@/components/HeaderNavigation';
 import FlightDetailPanel from '@/components/FlightDetailPanel';
 import RouteOptimizer from '@/components/RouteOptimizer';
 import { AuthPopup } from '@/components/AuthPopup';
@@ -380,7 +380,7 @@ export default function Home() {
           onThemeToggle={() => setTheme(theme === 'dark' ? 'light' : 'dark')} 
         />
         
-        <MapHorizontalControls
+        <HeaderNavigation
           filters={mapFilters}
           onFilterChange={handleFilterChange}
           onZoomIn={() => {
