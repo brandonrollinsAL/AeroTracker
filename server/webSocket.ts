@@ -153,11 +153,20 @@ export function broadcastMessage(type: string, data: any) {
   clients.forEach((_, client) => {
     if (client.readyState === WebSocket.OPEN) {
       try {
-        client.send(JSON.stringify({
-          type,
-          data,
-          timestamp: new Date().toISOString()
-        }));
+        // If type is 'flights', use a consistent format with sendFlightData
+        if (type === 'flights') {
+          client.send(JSON.stringify({
+            type,
+            flights: data,
+            timestamp: new Date().toISOString()
+          }));
+        } else {
+          client.send(JSON.stringify({
+            type,
+            data,
+            timestamp: new Date().toISOString()
+          }));
+        }
       } catch (error) {
         console.error('Error broadcasting message to client:', error);
       }

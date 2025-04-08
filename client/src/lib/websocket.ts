@@ -37,8 +37,9 @@ export function useWebSocket(filters: MapFilter) {
       try {
         const data = JSON.parse(event.data);
         
-        if (data.type === 'flightUpdate') {
-          setFlights(data.flights);
+        // Support both 'flights' and 'flightUpdate' message types for better compatibility
+        if (data.type === 'flights' || data.type === 'flightUpdate') {
+          setFlights(data.flights || data.data);
         }
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);

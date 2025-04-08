@@ -10,8 +10,9 @@ const FLIGHTAWARE_PASSWORD = process.env.FLIGHTAWARE_PASSWORD;
 
 // Flag to use mock data for development
 // Use REAL flight data with FlightAware credentials
-// Only use mock data if credentials are not available
+// Only use mock data if credentials are not available or after max connection failures
 const USE_MOCK_DATA = !FLIGHTAWARE_USERNAME || !FLIGHTAWARE_PASSWORD;
+let FALLBACK_TO_MOCK = USE_MOCK_DATA;
 
 // Helper variables for timing broadcasts
 let lastBroadcastTime = 0;
@@ -69,12 +70,16 @@ export function initializeFlightAwareConnection() {
   console.log('Initializing FlightAware Firehose connection...');
   
   try {
-    // Create TLS socket connection
+    // Create TLS socket connection with improved options
     socket = tls.connect({
       host: FIREHOSE_HOST,
       port: FIREHOSE_PORT,
       rejectUnauthorized: true
     });
+    
+    // Set socket options after connection
+    socket.setTimeout(30000); // 30 seconds timeout
+    socket.setKeepAlive(true, 60000); // Enable TCP keep-alive with 60 seconds delay
 
     // Handle socket events
     socket.on('secureConnect', () => {
@@ -206,7 +211,7 @@ function processFlightData(line: string) {
     
     // Periodically broadcast updates and cache to storage
     const now = Date.now();
-    if (now - getLastBroadcastTime() > 5000) { // Broadcast every 5 seconds
+    if (now - getLastBroadcastTime() > 1000) { // Broadcast every 1 second for better real-time response
       setLastBroadcastTime(now);
       const flights = Array.from(flightCache.values());
       broadcastMessage('flights', flights);
