@@ -2,7 +2,18 @@ import axios from 'axios';
 import { WeatherData, WeatherAlert, WeatherImpact } from '@shared/schema';
 
 // Get API key from environment variables
-const WEATHER_API_KEY = process.env.WEATHER_API_KEY || 'demo_key';
+const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
+
+// Flag to use mock data if API key is missing
+const USE_MOCK_WEATHER = !WEATHER_API_KEY;
+
+// Warn about missing API key on startup
+if (USE_MOCK_WEATHER) {
+  console.warn('\x1b[33m%s\x1b[0m', 
+    'WARNING: WEATHER_API_KEY environment variable is not set. Using mock weather data. ' +
+    'For real weather data, please set the WEATHER_API_KEY environment variable.'
+  );
+}
 
 // Base URL for the weather API
 const WEATHER_API_BASE_URL = 'https://api.weatherapi.com/v1';
@@ -11,6 +22,12 @@ const WEATHER_API_BASE_URL = 'https://api.weatherapi.com/v1';
  * Fetch weather information for a given location (airport code or coordinates)
  */
 export async function fetchWeather(location: string): Promise<WeatherData | undefined> {
+  // If using mock data, return a hardcoded weather response
+  if (USE_MOCK_WEATHER) {
+    console.log(`Using mock weather data for location: ${location}`);
+    return generateMockWeather(location);
+  }
+  
   try {
     // Get 3-day forecast with current conditions, alerts, and hourly data
     const response = await axios.get(`${WEATHER_API_BASE_URL}/forecast.json`, {
@@ -29,8 +46,15 @@ export async function fetchWeather(location: string): Promise<WeatherData | unde
 
     // Transform API response to our WeatherData format
     return transformWeatherData(response.data);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching weather data:', error);
+    
+    // If we got an API key error, inform about it but still provide mock data
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      console.error('Invalid Weather API key. Please check your WEATHER_API_KEY environment variable');
+      return generateMockWeather(location);
+    }
+    
     // Return undefined when there's an error
     return undefined;
   }
@@ -240,8 +264,168 @@ function determineCloudCeiling(cloudCover: number, visibility: number): string {
 }
 
 /**
- * Get weather impact for a route between two airports
+ * Generate mock weather data for development or when API key is missing
  */
+function generateMockWeather(location: string): WeatherData {
+  // Generate random coordinates near the provided location (if it's an airport code)
+  // For simplicity, we'll generate US-based coordinates
+  const latitude = 35 + (Math.random() * 10) - 5; // Roughly US centered latitude
+  const longitude = -95 + (Math.random() * 20) - 10; // Roughly US centered longitude
+  
+  // Generate random temperature 50-85°F
+  const tempF = Math.round(50 + (Math.random() * 35));
+  const tempC = Math.round((tempF - 32) * 5 / 9);
+  
+  // Random weather conditions
+  const conditions = [
+    'Sunny', 'Partly cloudy', 'Cloudy', 'Overcast', 
+    'Light rain', 'Moderate rain', 'Light snow', 'Fog', 'Clear'
+  ];
+  const condition = conditions[Math.floor(Math.random() * conditions.length)];
+  
+  // Random wind 2-20 mph
+  const windMph = Math.round(2 + (Math.random() * 18));
+  
+  // Wind directions
+  const windDirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+  const windDir = windDirs[Math.floor(Math.random() * windDirs.length)];
+  
+  // Generate random visibility 3-10 miles
+  const visibilityMiles = Math.round((3 + (Math.random() * 7)) * 10) / 10;
+  
+  // Generate random pressure 29.5-30.5 inHg
+  const pressureInHg = Math.round((29.5 + (Math.random() * 1)) * 100) / 100;
+  
+  // Generate random humidity 30-90%
+  const humidity = Math.round(30 + (Math.random() * 60));
+  
+  // Generate random dewpoint
+  const dewpointF = Math.round((tempF - 20) + (Math.random() * 15));
+  
+  // Cloud cover 0-100%
+  const cloudCover = Math.round(Math.random() * 100);
+  
+  // Generate hourly forecast data
+  const hourlyData = [];
+  const now = new Date();
+  for (let i = 0; i < 24; i += 3) {
+    const forecastHour = new Date(now);
+    forecastHour.setHours(now.getHours() + i);
+    
+    // Vary temperature slightly for each hour
+    const hourTempF = tempF + Math.round((Math.random() * 10) - 5);
+    
+    // Random conditions for each hour
+    const hourCondition = conditions[Math.floor(Math.random() * conditions.length)];
+    
+    // Varying wind
+    const hourWindMph = windMph + Math.round((Math.random() * 6) - 3);
+    
+    // Varying precipitation chance
+    const precipChance = Math.round(Math.random() * 50);
+    
+    hourlyData.push({
+      time: forecastHour.toISOString(),
+      tempF: hourTempF,
+      condition: hourCondition,
+      conditionIcon: '//cdn.weatherapi.com/weather/64x64/day/113.png', // Placeholder icon
+      windMph: hourWindMph,
+      windDir,
+      precipChance,
+      humidity,
+      cloudCover,
+      feelsLikeF: hourTempF - Math.round(Math.random() * 3),
+      windGustMph: hourWindMph + Math.round(Math.random() * 8),
+      visibilityMiles
+    });
+  }
+  
+  // Generate daily forecast data
+  const dailyData = [];
+  for (let i = 0; i < 3; i++) {
+    const forecastDate = new Date(now);
+    forecastDate.setDate(now.getDate() + i);
+    
+    // Vary max/min temps
+    const dayTempMaxF = tempF + Math.round((Math.random() * 5));
+    const dayTempMinF = tempF - Math.round((Math.random() * 8) + 5);
+    
+    // Daily condition
+    const dayCondition = conditions[Math.floor(Math.random() * conditions.length)];
+    
+    dailyData.push({
+      date: forecastDate.toISOString().split('T')[0],
+      tempMaxF: dayTempMaxF,
+      tempMinF: dayTempMinF,
+      condition: dayCondition,
+      conditionIcon: '//cdn.weatherapi.com/weather/64x64/day/113.png', // Placeholder icon
+      precipChance: Math.round(Math.random() * 50),
+      windMph: windMph + Math.round((Math.random() * 6) - 3),
+      humidity,
+      visibility: visibilityMiles,
+      uvIndex: Math.round(Math.random() * 11)
+    });
+  }
+  
+  // Create mock weather data object
+  const mockWeatherData: WeatherData = {
+    location: {
+      name: location.toUpperCase(),
+      latitude,
+      longitude
+    },
+    current: {
+      tempC,
+      tempF,
+      condition,
+      conditionIcon: '//cdn.weatherapi.com/weather/64x64/day/113.png', // Placeholder icon
+      windMph,
+      windDir,
+      pressureInHg,
+      humidity,
+      visibilityMiles,
+      dewpointF,
+      cloudCeiling: determineCloudCeiling(cloudCover, visibilityMiles),
+      isDay: true,
+      uv: Math.round(Math.random() * 11),
+      airQuality: {
+        usEpaIndex: Math.floor(Math.random() * 5) + 1,
+        pm2_5: Math.round(Math.random() * 50)
+      }
+    },
+    forecast: {
+      daily: dailyData,
+      hourly: hourlyData
+    }
+  };
+  
+  // Calculate and add flight impact data
+  const mockApiData = {
+    current: {
+      temp_c: tempC,
+      temp_f: tempF,
+      condition: { text: condition },
+      wind_mph: windMph,
+      wind_dir: windDir,
+      pressure_in: pressureInHg,
+      humidity,
+      vis_miles: visibilityMiles,
+      dewpoint_f: dewpointF,
+      cloud: cloudCover,
+      is_day: 1,
+      uv: mockWeatherData.current.uv,
+      air_quality: {
+        'us-epa-index': mockWeatherData.current.airQuality?.usEpaIndex,
+        pm2_5: mockWeatherData.current.airQuality?.pm2_5
+      }
+    }
+  };
+  
+  mockWeatherData.flightImpact = calculateFlightImpact(mockApiData);
+  
+  return mockWeatherData;
+}
+
 export async function getRouteWeatherImpact(departureAirport: string, arrivalAirport: string): Promise<{
   departure: WeatherImpact | null,
   arrival: WeatherImpact | null,

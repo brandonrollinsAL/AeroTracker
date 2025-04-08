@@ -9,7 +9,7 @@ const FLIGHTAWARE_USERNAME = process.env.FLIGHTAWARE_USERNAME;
 const FLIGHTAWARE_PASSWORD = process.env.FLIGHTAWARE_PASSWORD;
 
 // Flag to use mock data for development
-const USE_MOCK_DATA = true; // Set to false in production
+const USE_MOCK_DATA = !FLIGHTAWARE_USERNAME || !FLIGHTAWARE_PASSWORD; // Use mock data only if credentials are missing
 
 // Helper variables for timing broadcasts
 let lastBroadcastTime = 0;
