@@ -17,6 +17,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserPreferences(userId: number, preferences: UserPreferences): Promise<User | undefined>;
 
   // Flight operations
   getFlight(id: number): Promise<Flight | undefined>;
@@ -116,6 +117,23 @@ export class MemStorage implements IStorage {
     };
     this.users.set(id, user);
     return user;
+  }
+  
+  async updateUserPreferences(userId: number, preferences: UserPreferences): Promise<User | undefined> {
+    const user = this.users.get(userId);
+    if (!user) return undefined;
+    
+    // Merge existing preferences with new preferences
+    const updatedUser = { 
+      ...user, 
+      preferences: { 
+        ...user.preferences, 
+        ...preferences 
+      } 
+    };
+    
+    this.users.set(userId, updatedUser);
+    return updatedUser;
   }
 
   // Flight operations
@@ -333,6 +351,27 @@ export class DatabaseStorage implements IStorage {
     // Insert as a single value, not an array
     const [user] = await db.insert(users).values([userValues]).returning();
     return user;
+  }
+  
+  async updateUserPreferences(userId: number, preferences: UserPreferences): Promise<User | undefined> {
+    // First get current user to merge preferences
+    const user = await this.getUser(userId);
+    if (!user) return undefined;
+    
+    // Merge existing preferences with new preferences
+    const mergedPreferences = {
+      ...user.preferences,
+      ...preferences
+    };
+    
+    // Update the user with new preferences
+    const [updatedUser] = await db
+      .update(users)
+      .set({ preferences: mergedPreferences })
+      .where(eq(users.id, userId))
+      .returning();
+      
+    return updatedUser;
   }
 
   // Flight operations

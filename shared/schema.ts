@@ -201,6 +201,32 @@ export type AirportDetails = {
   };
 };
 
+export type DashboardWidget = {
+  id: string;
+  type: 'map' | 'flightList' | 'weatherInfo' | 'airportInfo' | 'flightDetails' | 'stats';
+  title: string;
+  position: { x: number; y: number; w: number; h: number };
+  settings: {
+    filters?: Partial<MapFilter>;
+    airportCode?: string;
+    flightId?: string | number;
+    refreshInterval?: number;
+    showCharts?: boolean;
+    dataPoints?: number;
+    [key: string]: any;
+  } | Record<string, any>;
+}
+
+export type Dashboard = {
+  id: string;
+  name: string;
+  isDefault: boolean;
+  layout: 'grid' | 'freeform';
+  widgets: DashboardWidget[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type UserPreferences = {
   mapFilters?: {
     showFlightPaths?: boolean;
@@ -211,6 +237,15 @@ export type UserPreferences = {
     delayThreshold?: number;
     enableEmailAlerts?: boolean;
     enablePushAlerts?: boolean;
+  };
+  dashboards?: Dashboard[];
+  activeDashboardId?: string;
+  theme?: 'light' | 'dark' | 'system';
+  uiSettings?: {
+    compactMode?: boolean;
+    showTooltips?: boolean;
+    animationsEnabled?: boolean;
+    dataRefreshRate?: number; // in seconds
   };
 };
 

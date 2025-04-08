@@ -7,6 +7,7 @@ import { queryClient } from "@/lib/queryClient";
 import { ProtectedRoute } from "@/components/protected-route";
 import HomePage from "@/pages/Home";
 import AuthPage from "@/pages/auth-page";
+import DashboardPage from "@/pages/dashboard-page";
 import NotFound from "@/pages/not-found";
 
 function App() {
@@ -18,7 +19,7 @@ function App() {
             <Switch>
               <Route path="/auth" component={AuthPage} />
               {/* Protected routes */}
-              <ProtectedRoute path="/dashboard" component={() => <div>Dashboard Page</div>} />
+              <ProtectedRoute path="/dashboard" component={DashboardPage} />
               <ProtectedRoute path="/profile" component={() => <div>Profile Page</div>} />
               {/* Public routes */}
               <Route path="/" component={HomePage} />

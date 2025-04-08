@@ -22,6 +22,7 @@ import {
   bulkFetchAircraft 
 } from "./services/openai";
 import { handleNexradRequest } from "./api/nexrad";
+import { setupDashboardRoutes } from "./api/dashboard";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -31,6 +32,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Set up WebSocket server for real-time updates
   setupWebSocketServer(httpServer);
+  
+  // Set up dashboard routes
+  setupDashboardRoutes(app);
 
   // API Routes - prefix all routes with /api
   
