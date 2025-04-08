@@ -7,7 +7,8 @@ import MapIconMenu from '@/components/MapIconMenu';
 import FlightDetailPanel from '@/components/FlightDetailPanel';
 import RouteOptimizer from '@/components/RouteOptimizer';
 import AuthPopup from '@/components/AuthPopup';
-import { LiveFlight, MapFilter, Airport } from '@shared/schema';
+import { LiveFlight, Airport } from '@shared/schema';
+import { MapFilter } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { useHotkeys, useMultiHotkeys } from '@/hooks/use-hotkeys';
 import { useTheme } from '@/hooks/use-theme';
@@ -31,7 +32,8 @@ export default function Home() {
     type: 'all',
     showWeather: false,
     showFlightPaths: true, // Flight paths enabled by default
-    showAirports: true     // Airports shown by default
+    showAirports: true,    // Airports shown by default
+    showLiveTracking: true // Live flight tracking enabled by default
   });
   
   // We don't use tabs anymore, but other code may reference this value

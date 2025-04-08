@@ -79,6 +79,7 @@ export type MapFilter = {
   showWeather: boolean;
   showFlightPaths: boolean;
   showAirports: boolean;
+  showLiveTracking: boolean; // Toggle to show/hide live flight data (aircraft icons)
   airline?: string;
   aircraft?: string;
   tailNumber?: string;

@@ -12,7 +12,8 @@ import {
   Layers,
   Navigation,
   Zap,
-  LayoutGrid
+  LayoutGrid,
+  Plane
 } from 'lucide-react';
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MapFilter } from '@/types';
@@ -45,6 +46,10 @@ export default function MapIconMenu({
 
   const handleToggleAirports = (checked: boolean) => {
     onFilterChange({ showAirports: checked });
+  };
+  
+  const handleToggleLiveTracking = (checked: boolean) => {
+    onFilterChange({ showLiveTracking: checked });
   };
 
   return (
@@ -305,6 +310,46 @@ export default function MapIconMenu({
               </TooltipTrigger>
               <TooltipContent side="bottom" className="text-xs font-medium">
                 Show Airports
+              </TooltipContent>
+            </Tooltip>
+            
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center">
+                  <Plane className={`h-3.5 w-3.5 mr-1.5 ${isDarkMode ? 'text-[#a0d0ec]' : 'text-[#4995fd]'}`} />
+                  <div 
+                    className={`
+                      w-9 h-4 rounded-full flex items-center transition-all cursor-pointer 
+                      ${filters.showLiveTracking 
+                        ? 'bg-gradient-to-r from-[#003a65] to-[#4995fd]' 
+                        : isDarkMode ? 'bg-[#003a65]/70' : 'bg-[#4995fd]/10'
+                      } 
+                      border ${filters.showLiveTracking 
+                        ? 'border-[#4995fd]/40' 
+                        : isDarkMode ? 'border-[#003a65]/80' : 'border-[#4995fd]/20'
+                      }
+                    `}
+                    onClick={() => handleToggleLiveTracking(!filters.showLiveTracking)}
+                    style={{
+                      boxShadow: filters.showLiveTracking 
+                        ? (isDarkMode ? '0 0 6px rgba(73,149,253,0.4)' : '0 0 4px rgba(73,149,253,0.3)') 
+                        : 'none'
+                    }}
+                  >
+                    <div 
+                      className={`
+                        w-3 h-3 rounded-full transition-all transform mx-0.5 
+                        ${filters.showLiveTracking 
+                          ? 'bg-white translate-x-5 shadow-md' 
+                          : isDarkMode ? 'bg-[#a0d0ec]/90 shadow-sm' : 'bg-white shadow-sm'
+                        }
+                      `}
+                    />
+                  </div>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs font-medium">
+                Live Tracking
               </TooltipContent>
             </Tooltip>
           </div>
