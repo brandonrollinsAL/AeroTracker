@@ -22,7 +22,7 @@ try {
  */
 export async function fetchAirportDetails(airportCode: string) {
   try {
-    if (!openai) {
+    if (!openaiClient) {
       console.warn("OpenAI client not initialized. Unable to fetch airport details.");
       return {
         code: airportCode,
@@ -48,7 +48,7 @@ export async function fetchAirportDetails(airportCode: string) {
       Format the response as valid JSON.
     `;
 
-    const response = await openai.chat.completions.create({
+    const response = await openaiClient.chat.completions.create({
       model: "gpt-4o",
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" }
@@ -68,7 +68,7 @@ export async function fetchAirportDetails(airportCode: string) {
  */
 export async function fetchAircraftDetails(aircraftType: string) {
   try {
-    if (!openai) {
+    if (!openaiClient) {
       console.warn("OpenAI client not initialized. Unable to fetch aircraft details.");
       return {
         type: aircraftType,
@@ -103,7 +103,7 @@ export async function fetchAircraftDetails(aircraftType: string) {
       Format the response as valid JSON.
     `;
 
-    const response = await openai.chat.completions.create({
+    const response = await openaiClient.chat.completions.create({
       model: "gpt-4o",
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" }
@@ -123,7 +123,7 @@ export async function fetchAircraftDetails(aircraftType: string) {
  */
 export async function bulkFetchAirports(airportCodes: string[]) {
   try {
-    if (!openai) {
+    if (!openaiClient) {
       console.warn("OpenAI client not initialized. Unable to fetch airport details.");
       // Return minimal mock data structure for each airport code
       return airportCodes.map(code => ({
@@ -151,7 +151,7 @@ export async function bulkFetchAirports(airportCodes: string[]) {
         Format the response as a JSON array of airport objects.
       `;
 
-      const response = await openai.chat.completions.create({
+      const response = await openaiClient.chat.completions.create({
         model: "gpt-4o",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" }
@@ -177,7 +177,7 @@ export async function bulkFetchAirports(airportCodes: string[]) {
  */
 export async function bulkFetchAircraft(aircraftTypes: string[]) {
   try {
-    if (!openai) {
+    if (!openaiClient) {
       console.warn("OpenAI client not initialized. Unable to fetch aircraft details.");
       // Return minimal mock data structure for each aircraft type
       return aircraftTypes.map(type => ({
@@ -204,7 +204,7 @@ export async function bulkFetchAircraft(aircraftTypes: string[]) {
         Format the response as a JSON array of aircraft objects.
       `;
 
-      const response = await openai.chat.completions.create({
+      const response = await openaiClient.chat.completions.create({
         model: "gpt-4o",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" }
