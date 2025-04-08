@@ -1,15 +1,18 @@
-import pg from 'pg';
+// Import pg with proper ES module compatibility
+import pkg from 'pg';
+const { Pool } = pkg;
 import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@shared/schema';
 
-const { Pool } = pg;
-
+// Create PostgreSQL connection pool
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
+// Initialize Drizzle with the correct adapter for node-postgres
 export const db = drizzle(pool, { schema });
 
+// Test database connection function
 export async function testConnection() {
   try {
     const result = await pool.query('SELECT NOW()');

@@ -6,10 +6,13 @@ import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
 import { User as SelectUser } from "@shared/schema";
-import connectPg from "connect-pg-simple";
+// Import PostgreSQL session store with dynamic import for ES Module compatibility
 import { pool } from "./db";
+import session from "express-session";
+import pgSession from "connect-pg-simple";
 
-const PostgresSessionStore = connectPg(session);
+// Create session store
+const PostgresSessionStore = pgSession(session);
 
 declare global {
   namespace Express {

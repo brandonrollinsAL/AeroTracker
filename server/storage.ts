@@ -8,7 +8,8 @@ import {
   type UserPreferences, type AircraftDetails
 } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and, desc, asc } from "drizzle-orm";
+import session from "express-session";
 
 // Interface for storage operations
 export interface IStorage {
