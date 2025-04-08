@@ -156,8 +156,8 @@ function attemptReconnect() {
       code: 'FLIGHTAWARE_CONNECTION_FAILED'
     });
     
-    // Clear cache to avoid displaying stale data
-    flightCache = new Map();
+    // DO NOT use mock data under any circumstances - keep the cache empty
+    flightCache.clear();
     
     // Set connected state to false explicitly
     isConnected = false;
