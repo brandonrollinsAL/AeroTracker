@@ -8,9 +8,9 @@ import FlightDetailPanel from '@/components/FlightDetailPanel';
 import RouteOptimizer from '@/components/RouteOptimizer';
 import AuthPopup from '@/components/AuthPopup';
 import { LiveFlight, MapFilter, Airport } from '@shared/schema';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useHotkeys, useMultiHotkeys } from '@/hooks/use-hotkeys';
-import { useTheme } from '@/components/ui/theme-provider';
+import { useTheme } from '@/hooks/use-theme';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -218,6 +218,23 @@ export default function Home() {
 
   // State for active tab
   const [activeTab, setActiveTab] = useState<'map' | 'tools'>('map');
+  
+  // Listen for tab selection events from MapIconMenu
+  useEffect(() => {
+    const handleTabSelect = (event: CustomEvent) => {
+      const { tab } = event.detail;
+      if (tab === 'tools' && !handlePremiumFeature("route optimization tools")) {
+        return;
+      }
+      setActiveTab(tab as 'map' | 'tools');
+    };
+    
+    window.addEventListener('select-tab', handleTabSelect as EventListener);
+    
+    return () => {
+      window.removeEventListener('select-tab', handleTabSelect as EventListener);
+    };
+  }, []);
   
   // Auth state
   const { user } = useAuth();

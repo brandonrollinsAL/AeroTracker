@@ -309,7 +309,84 @@ export default function MapIconMenu({
             </Tooltip>
           </div>
           
-          <div className="border-l border-[#4995fd]/10 pl-2 ml-1">
+          <div className="border-l border-[#4995fd]/10 pl-2 ml-1 flex items-center space-x-2">
+            {/* Flight Tracking Button */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`
+                    rounded h-7 text-xs px-2.5 group relative overflow-hidden
+                    ${isDarkMode 
+                      ? 'border-[#4995fd]/30 text-[#a0d0ec] hover:border-[#4995fd]/60 hover:bg-[#003a65]/80'
+                      : 'border-[#4995fd]/20 text-[#003a65] hover:border-[#4995fd]/50 hover:bg-[#4995fd]/10'
+                    }
+                    transition-all duration-200
+                  `}
+                  style={{
+                    background: isDarkMode 
+                      ? 'linear-gradient(180deg, rgba(0,58,101,0.5) 0%, rgba(0,43,76,0.5) 100%)' 
+                      : 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(240,248,255,0.95) 100%)',
+                    boxShadow: isDarkMode 
+                      ? '0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(73,149,253,0.05)' 
+                      : '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(73,149,253,0.03)'
+                  }}
+                  onClick={() => {
+                    // Trigger flight tracking tab
+                    window.dispatchEvent(new CustomEvent('select-tab', { detail: { tab: 'map' }}));
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#4995fd]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                  <span className="material-icons mr-1.5 text-xs relative z-10" style={{ fontSize: '14px', color: isDarkMode ? '#a0d0ec' : '#4995fd' }}>flight</span>
+                  <span className="relative z-10 group-hover:font-medium transition-all duration-300">Track Flights</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs font-medium">
+                Flight Tracking
+              </TooltipContent>
+            </Tooltip>
+            
+            {/* Route Optimization Button */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`
+                    rounded h-7 text-xs px-2.5 group relative overflow-hidden
+                    ${isDarkMode 
+                      ? 'border-[#4995fd]/30 text-[#a0d0ec] hover:border-[#4995fd]/60 hover:bg-[#003a65]/80'
+                      : 'border-[#4995fd]/20 text-[#003a65] hover:border-[#4995fd]/50 hover:bg-[#4995fd]/10'
+                    }
+                    transition-all duration-200
+                  `}
+                  style={{
+                    background: isDarkMode 
+                      ? 'linear-gradient(180deg, rgba(0,58,101,0.5) 0%, rgba(0,43,76,0.5) 100%)' 
+                      : 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(240,248,255,0.95) 100%)',
+                    boxShadow: isDarkMode 
+                      ? '0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(73,149,253,0.05)' 
+                      : '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(73,149,253,0.03)'
+                  }}
+                  onClick={() => {
+                    // Trigger route optimization tab
+                    window.dispatchEvent(new CustomEvent('select-tab', { detail: { tab: 'tools' }}));
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#4995fd]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                  <Route className={`h-3 w-3 mr-1.5 relative z-10 group-hover:text-[#4995fd] transition-colors duration-300 ${
+                    isDarkMode ? 'text-[#a0d0ec]' : 'text-[#003a65]'
+                  }`} />
+                  <span className="relative z-10 group-hover:font-medium transition-all duration-300">Optimize Routes</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs font-medium">
+                Route Optimization
+              </TooltipContent>
+            </Tooltip>
+            
+            {/* More Filters Button */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button

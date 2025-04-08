@@ -1,6 +1,6 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 
-type Theme = 'light' | 'dark' | 'system';
+export type Theme = 'light' | 'dark' | 'system';
 
 // AeroLink standardized aviation color palette
 export const AERO_COLORS = {
@@ -50,17 +50,27 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+interface ThemeProviderProps {
+  children: React.ReactNode;
+  defaultTheme?: Theme;
+  storageKey?: string;
+}
+
 // Define ThemeProvider component
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
+export function ThemeProvider({ 
+  children, 
+  defaultTheme = 'system',
+  storageKey = 'aero-theme'
+}: ThemeProviderProps) {
   // Initialize theme from localStorage or default to system theme
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('aero-theme');
+      const savedTheme = localStorage.getItem(storageKey);
       if (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system') {
-        return savedTheme;
+        return savedTheme as Theme;
       }
     }
-    return 'system';
+    return defaultTheme;
   });
   
   // Track the system theme preference
@@ -125,12 +135,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('aero-theme', newTheme);
+      localStorage.setItem(storageKey, newTheme);
     }
   };
 
   // Prepare context value
-  const value = {
+  const value: ThemeContextType = {
     theme,
     setTheme,
     isDark,
@@ -139,10 +149,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Provide the theme context to children
-  return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
+  return React.createElement(
+    ThemeContext.Provider,
+    { value },
+    children
   );
 }
 
