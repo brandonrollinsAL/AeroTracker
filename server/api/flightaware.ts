@@ -33,8 +33,23 @@ let dataBuffer = '';
 let flightCache = new Map<string, LiveFlight>();
 let isConnected = false;
 let reconnectAttempts = 0;
-const MAX_RECONNECT_ATTEMPTS = 10; // Increased from 5 to improve reliability
-const RECONNECT_DELAY = 5000; // 5 seconds
+const MAX_RECONNECT_ATTEMPTS = 30; // Increased for better resilience
+const RECONNECT_DELAY = 5000; // Base reconnect delay in milliseconds
+
+// Track connection phases for better debugging
+enum ConnectionPhase {
+  DISCONNECTED = 'disconnected',
+  CONNECTING = 'connecting',
+  CONNECTED = 'connected',
+  AUTHENTICATING = 'authenticating',
+  AUTHENTICATED = 'authenticated',
+  SUBSCRIBING = 'subscribing',
+  SUBSCRIBED = 'subscribed'
+}
+
+let connectionPhase: ConnectionPhase = ConnectionPhase.DISCONNECTED;
+let lastConnectionAttempt = 0;
+let connectionRetryJitter = () => Math.floor(Math.random() * 1000); // Add randomness to reconnect delay
 
 /**
  * Initialize connection to FlightAware Firehose
@@ -280,7 +295,7 @@ export function initializeFlightAwareConnection() {
             
             // If not handled as JSON, check for traditional format auth response
             if (!isJsonError && chunk.includes('auth ')) {
-              const authLine = chunk.split('\n').find(line => line.startsWith('auth '));
+              const authLine = chunk.split('\n').find((line: string) => line.startsWith('auth '));
               if (authLine) {
                 const authParts = authLine.split(' ');
                 if (authParts.length >= 2) {
@@ -1014,34 +1029,66 @@ function generateMockFlights(count: number = 30): LiveFlight[] {
 /**
  * Fetch flights based on the provided filter type (from cache or mock data)
  */
+// Import AviationStack API functions
+import { fetchFlightsFromAviationStack } from './aviationstack';
+
 export async function fetchFlights(filterType: MapFilter['type']): Promise<LiveFlight[]> {
   try {
     console.log(`Fetching flights (${flightCache.size} in cache) with filter: ${filterType}`);
     
-    // We no longer use mock data, we will only return real data from FlightAware
-    // Return empty array if not connected
-    if (!isConnected && flightCache.size === 0) {
-      console.log('Not connected to FlightAware, returning empty flight list');
+    // Get flights from FlightAware cache if available
+    let flights: LiveFlight[] = [];
+    
+    if (flightCache.size > 0) {
+      // Get flights from FlightAware cache
+      flights = Array.from(flightCache.values());
+      
+      // Filter out any mock flights (ID starts with MOCK, CARGO, or PVT)
+      flights = flights.filter(f => 
+        !f.id.startsWith('MOCK') && 
+        !f.id.startsWith('CARGO') && 
+        !f.id.startsWith('PVT')
+      );
+    } 
+    // If FlightAware has no data, try to use AviationStack as fallback
+    else if (!isConnected || flightCache.size === 0) {
+      console.log('FlightAware data unavailable, attempting to fetch from AviationStack API');
+      
+      try {
+        const aviationStackFlights = await fetchFlightsFromAviationStack();
+        if (aviationStackFlights.length > 0) {
+          console.log(`Successfully fetched ${aviationStackFlights.length} flights from AviationStack`);
+          flights = aviationStackFlights;
+          
+          // Also broadcast these flights to connected clients
+          broadcastMessage('flights', aviationStackFlights);
+          
+          // Also cache these flights in storage
+          storage.cacheFlightData(aviationStackFlights).catch(err => {
+            console.error('Error caching AviationStack flight data:', err);
+          });
+        } else {
+          console.log('No flights returned from AviationStack API');
+        }
+      } catch (aviationStackError) {
+        console.error('Error fetching from AviationStack:', aviationStackError);
+      }
+    }
+    
+    // If we still have no flights, attempt to reconnect to FlightAware
+    if (flights.length === 0) {
+      console.log('No flights returned from any API');
+      
+      // If not connected to FlightAware, try to connect
+      if (!isConnected) {
+        initializeFlightAwareConnection();
+      }
+      
       return [];
     }
     
-    // Get flights from cache
-    const flights = Array.from(flightCache.values());
-    
-    // Filter out any mock flights (ID starts with MOCK, CARGO, or PVT)
-    const realFlights = flights.filter(f => 
-      !f.id.startsWith('MOCK') && 
-      !f.id.startsWith('CARGO') && 
-      !f.id.startsWith('PVT')
-    );
-    
-    // If not connected to FlightAware, try to connect
-    if (!isConnected) {
-      initializeFlightAwareConnection();
-    }
-    
     // Apply filters
-    let filteredFlights = realFlights;
+    let filteredFlights = flights;
     if (filterType !== 'all') {
       // Filter flights based on type
       filteredFlights = filteredFlights.filter(flight => {
@@ -1068,12 +1115,30 @@ export async function fetchFlights(filterType: MapFilter['type']): Promise<LiveF
   }
 }
 
+// Import find function from aviationstack
+import { findFlightById } from './aviationstack';
+
 /**
- * Fetch details for a specific flight by ID (from cache)
+ * Fetch details for a specific flight by ID (from cache or AviationStack)
  */
 export async function fetchFlightDetails(flightId: string): Promise<LiveFlight | null> {
   try {
-    return flightCache.get(flightId) || null;
+    // First try to get flight from FlightAware cache
+    const flight = flightCache.get(flightId);
+    if (flight) {
+      return flight;
+    }
+    
+    // If not in FlightAware cache, try AviationStack
+    console.log(`Flight ${flightId} not found in FlightAware cache, trying AviationStack`);
+    const aviationStackFlight = findFlightById(flightId);
+    if (aviationStackFlight) {
+      console.log(`Found flight ${flightId} in AviationStack cache`);
+      return aviationStackFlight;
+    }
+    
+    console.log(`Flight ${flightId} not found in any cache`);
+    return null;
   } catch (error) {
     console.error('Error fetching flight details:', error);
     return null;
