@@ -70,16 +70,18 @@ export function initializeFlightAwareConnection() {
   console.log('Initializing FlightAware Firehose connection...');
   
   try {
-    // Create TLS socket connection with improved options
+    // Create TLS socket connection with enhanced options for better reliability
     socket = tls.connect({
       host: FIREHOSE_HOST,
       port: FIREHOSE_PORT,
-      rejectUnauthorized: true
+      rejectUnauthorized: true,
+      enableTrace: true        // Enable TLS tracing for better debugging
     });
     
     // Set socket options after connection
-    socket.setTimeout(30000); // 30 seconds timeout
-    socket.setKeepAlive(true, 60000); // Enable TCP keep-alive with 60 seconds delay
+    socket.setTimeout(45000);           // 45 seconds timeout (increased)
+    socket.setKeepAlive(true, 30000);   // Enable TCP keep-alive with 30 seconds delay (decreased)
+    socket.setNoDelay(true);            // Disable Nagle's algorithm for smaller packets
 
     // Handle socket events
     socket.on('secureConnect', () => {
