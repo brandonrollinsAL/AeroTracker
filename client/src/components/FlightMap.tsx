@@ -240,6 +240,26 @@ function MapControlButtons({
   );
 }
 
+// Component to monitor zoom level changes
+function ZoomMonitor() {
+  const map = useMap();
+  const [currentZoom, setCurrentZoom] = useState(map.getZoom());
+  
+  useEffect(() => {
+    const updateZoom = () => {
+      setCurrentZoom(map.getZoom());
+    };
+    
+    map.on('zoom', updateZoom);
+    
+    return () => {
+      map.off('zoom', updateZoom);
+    };
+  }, [map]);
+  
+  return null;
+}
+
 export default function FlightMap({ 
   flights, 
   selectedFlight, 
@@ -278,86 +298,6 @@ export default function FlightMap({
     }
   }, [airports.length]);
   
-  // Component to monitor zoom level changes and handle map control events
-  const ZoomMonitor = () => {
-    const map = useMap();
-    
-    useEffect(() => {
-      const updateZoom = () => {
-        setCurrentZoom(map.getZoom());
-      };
-      
-      // Set initial zoom
-      updateZoom();
-      
-      // Handle zoom in event from MapIconMenu
-      const handleZoomIn = () => {
-        const newZoom = Math.min(map.getZoom() + 1, map.getMaxZoom());
-        map.setZoom(newZoom);
-      };
-      
-      // Handle zoom out event from MapIconMenu
-      const handleZoomOut = () => {
-        const newZoom = Math.max(map.getZoom() - 1, map.getMinZoom());
-        map.setZoom(newZoom);
-      };
-      
-      // Handle my location event from MapIconMenu
-      const handleMyLocation = () => {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            map.setView(
-              [position.coords.latitude, position.coords.longitude],
-              10,
-              { animate: true }
-            );
-          },
-          (error) => {
-            console.error('Error getting location:', error);
-          }
-        );
-      };
-      
-      // Add event listener for zoom changes
-      map.on('zoom', updateZoom);
-      
-      // Add custom event listeners from MapIconMenu
-      window.addEventListener('map-zoom-in', handleZoomIn);
-      window.addEventListener('map-zoom-out', handleZoomOut);
-      window.addEventListener('map-my-location', handleMyLocation);
-      
-      return () => {
-        // Clean up all event listeners
-        map.off('zoom', updateZoom);
-        window.removeEventListener('map-zoom-in', handleZoomIn);
-        window.removeEventListener('map-zoom-out', handleZoomOut);
-        window.removeEventListener('map-my-location', handleMyLocation);
-      };
-    }, [map]);
-    
-    return null;
-  };
-
-  const handleZoomIn = () => {
-    mapRef.current?.zoomIn();
-  };
-
-  const handleZoomOut = () => {
-    mapRef.current?.zoomOut();
-  };
-
-  const handleMyLocation = () => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      mapRef.current?.setView(
-        [position.coords.latitude, position.coords.longitude],
-        10,
-        { animate: true }
-      );
-    }, (error) => {
-      console.error('Error getting location:', error);
-    });
-  };
-
   // State for fullscreen mode
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFlightTrails, setShowFlightTrails] = useState(filters.showFlightPaths);
@@ -435,107 +375,108 @@ export default function FlightMap({
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           
+          {/* Flight markers */}
           {Array.isArray(flights) && flights.map((flight) => (
-            <React.Fragment key={flight.id}>
-              <Marker
-                position={[flight.position.latitude, flight.position.longitude]}
-                icon={createAirplaneIcon(
-                  flight.position.heading, 
-                  selectedFlight?.id === flight.id,
-                  flight.position.altitude
-                )}
-                eventHandlers={{
-                  click: () => onFlightSelect(flight)
-                }}
+            <Marker
+              key={flight.id}
+              position={[flight.position.latitude, flight.position.longitude]}
+              icon={createAirplaneIcon(
+                flight.position.heading, 
+                selectedFlight?.id === flight.id,
+                flight.position.altitude
+              )}
+              eventHandlers={{
+                click: () => onFlightSelect(flight)
+              }}
+            >
+              <Tooltip 
+                direction="top" 
+                offset={[0, -15]} 
+                permanent={selectedFlight?.id === flight.id}
+                className="aviation-map-tooltip"
               >
-                <Tooltip 
-                  direction="top" 
-                  offset={[0, -15]} 
-                  permanent={selectedFlight?.id === flight.id}
-                  className="aviation-map-tooltip"
+                <div className="text-xs font-bold bg-clip-text text-transparent px-1"
+                  style={{ 
+                    backgroundImage: 'linear-gradient(90deg, var(--aviation-blue-dark), var(--aviation-blue-light))',
+                    whiteSpace: 'nowrap' 
+                  }}
                 >
-                  <div className="text-xs font-bold bg-clip-text text-transparent px-1"
-                    style={{ 
-                      backgroundImage: 'linear-gradient(90deg, var(--aviation-blue-dark), var(--aviation-blue-light))',
-                      whiteSpace: 'nowrap' 
-                    }}
-                  >
-                    {flight.callsign || flight.flightNumber}
+                  {flight.callsign || flight.flightNumber}
+                </div>
+              </Tooltip>
+              
+              <Popup className="aviation-popup">
+                <div className="popup-header bg-gradient-to-r from-[#0a4995] to-[#2460a7] text-white px-3 py-2 -mx-2 -mt-2 rounded-t-lg flex items-center mb-2">
+                  <div className="h-7 w-7 rounded-full bg-[#55ffdd]/20 flex items-center justify-center mr-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" 
+                            fill="#ffffff" />
+                    </svg>
                   </div>
-                </Tooltip>
+                  <div className="font-bold tracking-wide">{flight.callsign || flight.flightNumber}</div>
+                </div>
                 
-                <Popup className="aviation-popup">
-                  <div className="popup-header bg-gradient-to-r from-[#0a4995] to-[#2460a7] text-white px-3 py-2 -mx-2 -mt-2 rounded-t-lg flex items-center mb-2">
-                    <div className="h-7 w-7 rounded-full bg-[#55ffdd]/20 flex items-center justify-center mr-2">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" 
-                              fill="#ffffff" />
-                      </svg>
+                <div className="pb-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="aviation-data-highlight px-2 py-1 text-xs rounded-md">
+                      {flight.departure?.icao || 'N/A'} → {flight.arrival?.icao || 'N/A'}
                     </div>
-                    <div className="font-bold tracking-wide">{flight.callsign || flight.flightNumber}</div>
+                    <div className={`aviation-status aviation-status-${flight.status} text-xs py-0.5 px-1.5 rounded-full`}>
+                      {flight.status.charAt(0).toUpperCase() + flight.status.slice(1)}
+                    </div>
                   </div>
                   
-                  <div className="pb-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="aviation-data-highlight px-2 py-1 text-xs rounded-md">
-                        {flight.departure?.icao || 'N/A'} → {flight.arrival?.icao || 'N/A'}
+                  <div className="grid grid-cols-2 gap-2 mb-2">
+                    <div className="flex items-center">
+                      <div className="h-5 w-5 rounded-full bg-gradient-to-br from-[#0a4995] to-[#2460a7] flex items-center justify-center mr-1.5">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" 
+                                fill="#ffffff" />
+                        </svg>
                       </div>
-                      <div className={`aviation-status aviation-status-${flight.status} text-xs py-0.5 px-1.5 rounded-full`}>
-                        {flight.status.charAt(0).toUpperCase() + flight.status.slice(1)}
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-2 mb-2">
-                      <div className="flex items-center">
-                        <div className="h-5 w-5 rounded-full bg-gradient-to-br from-[#0a4995] to-[#2460a7] flex items-center justify-center mr-1.5">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" 
-                                  fill="#ffffff" />
-                          </svg>
-                        </div>
-                        <div>
-                          <div className="text-[10px] text-neutral-500 uppercase font-medium">Altitude</div>
-                          <div className="text-xs font-bold text-[#0a4995]">{flight.position.altitude.toLocaleString()} ft</div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center">
-                        <div className="h-5 w-5 rounded-full bg-gradient-to-br from-[#55ffdd] to-[#449999] flex items-center justify-center mr-1.5">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                          </svg>
-                        </div>
-                        <div>
-                          <div className="text-[10px] text-neutral-500 uppercase font-medium">Speed</div>
-                          <div className="text-xs font-bold text-[#0a4995]">{flight.position.groundSpeed} mph</div>
-                        </div>
+                      <div>
+                        <div className="text-[10px] text-neutral-500 uppercase font-medium">Altitude</div>
+                        <div className="text-xs font-bold text-[#0a4995]">{flight.position.altitude.toLocaleString()} ft</div>
                       </div>
                     </div>
                     
-                    <Button 
-                      onClick={() => onFlightSelect(flight)}
-                      className="w-full mt-1 aviation-btn-accent text-xs py-1 h-auto"
-                    >
-                      View Flight Details
-                    </Button>
+                    <div className="flex items-center">
+                      <div className="h-5 w-5 rounded-full bg-gradient-to-br from-[#55ffdd] to-[#449999] flex items-center justify-center mr-1.5">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-neutral-500 uppercase font-medium">Speed</div>
+                        <div className="text-xs font-bold text-[#0a4995]">{flight.position.groundSpeed} mph</div>
+                      </div>
+                    </div>
                   </div>
-                </Popup>
-              </Marker>
-              
-              {/* Add flight path if enabled and flight has a route */}
-              {showFlightTrails && (
-                <Polyline 
-                  positions={generateFlightPath(flight)}
-                  pathOptions={{ 
-                    color: selectedFlight?.id === flight.id ? '#55ffdd' : '#2460a7',
-                    weight: selectedFlight?.id === flight.id ? 3 : 2,
-                    dashArray: selectedFlight?.id === flight.id ? '' : '5, 8',
-                    opacity: selectedFlight?.id === flight.id ? 0.9 : 0.6,
-                    className: selectedFlight?.id === flight.id ? 'flight-path-active' : 'flight-path'
-                  }}
-                />
-              )}
-            </React.Fragment>
+                  
+                  <Button 
+                    onClick={() => onFlightSelect(flight)}
+                    className="w-full mt-1 aviation-btn-accent text-xs py-1 h-auto"
+                  >
+                    View Flight Details
+                  </Button>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+          
+          {/* Flight paths if enabled */}
+          {showFlightTrails && Array.isArray(flights) && flights.map((flight) => (
+            <Polyline 
+              key={`path-${flight.id}`}
+              positions={generateFlightPath(flight)}
+              pathOptions={{ 
+                color: selectedFlight?.id === flight.id ? '#55ffdd' : '#2460a7',
+                weight: selectedFlight?.id === flight.id ? 3 : 2,
+                dashArray: selectedFlight?.id === flight.id ? '' : '5, 8',
+                opacity: selectedFlight?.id === flight.id ? 0.9 : 0.6,
+                className: selectedFlight?.id === flight.id ? 'flight-path-active' : 'flight-path'
+              }}
+            />
           ))}
           
           {/* Display airports if enabled */}
