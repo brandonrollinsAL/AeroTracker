@@ -186,10 +186,14 @@ function MapControlButtons({
           <UITooltip>
             <TooltipTrigger asChild>
               <Button 
-                className={`map-control-button ${showFlightTrails ? 'active' : ''}`}
-                onClick={toggleFlightTrails}
+                className="map-control-button"
+                onClick={() => {
+                  // This button now does nothing since we only show paths for selected flights
+                  // This is just a placeholder for the button UI
+                }}
+                disabled={true}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.5">
                   <path d="M17 3l-5 5.5L8 7l-5 5"/>
                   <path d="M15 3h2v2"/>
                   <path d="M3 12h2v2"/>
@@ -200,7 +204,7 @@ function MapControlButtons({
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right" className="aviation-tooltip">
-              <p className="text-xs font-medium">{showFlightTrails ? 'Hide' : 'Show'} flight trails</p>
+              <p className="text-xs font-medium">Flight trails shown only for selected flights</p>
             </TooltipContent>
           </UITooltip>
         </TooltipProvider>
@@ -491,17 +495,17 @@ export default function FlightMap({
             </Marker>
           ))}
           
-          {/* Flight paths if enabled - SEO friendly with proper accessibility */}
-          {showFlightTrails && Array.isArray(flights) && flights.map((flight) => (
+          {/* Flight paths ONLY for selected flights - prevents visual clutter */}
+          {selectedFlight && (
             <Polyline 
-              key={`path-${flight.id}`}
-              positions={generateFlightPath(flight)}
+              key={`path-${selectedFlight.id}`}
+              positions={generateFlightPath(selectedFlight)}
               pathOptions={{ 
-                color: selectedFlight?.id === flight.id ? '#F97316' : '#3B82F6',
-                weight: selectedFlight?.id === flight.id ? 3 : 2,
-                dashArray: selectedFlight?.id === flight.id ? '' : '5, 8',
-                opacity: selectedFlight?.id === flight.id ? 0.85 : 0.6,
-                className: selectedFlight?.id === flight.id ? 'flight-path-active' : 'flight-path',
+                color: '#F97316',
+                weight: 3,
+                dashArray: '',
+                opacity: 0.85,
+                className: 'flight-path-active',
                 lineCap: 'round',
                 lineJoin: 'round'
               }}
@@ -511,14 +515,14 @@ export default function FlightMap({
                   const path = e.target;
                   if (path._path) {
                     path._path.setAttribute('aria-label', 
-                      `Flight path for ${flight.callsign || flight.flightNumber} from ${flight.departure?.icao || 'origin'} to ${flight.arrival?.icao || 'destination'}`
+                      `Flight path for ${selectedFlight.callsign || selectedFlight.flightNumber} from ${selectedFlight.departure?.icao || 'origin'} to ${selectedFlight.arrival?.icao || 'destination'}`
                     );
                     path._path.setAttribute('role', 'graphics-symbol');
                   }
                 }
               }}
             />
-          ))}
+          )}
           
           {/* Display airports if enabled */}
           {filters.showAirports && airports.map(airport => (
@@ -554,10 +558,10 @@ export default function FlightMap({
             isDarkMode={isDarkMode}
             isFullscreen={isFullscreen}
             toggleFullscreen={toggleFullscreen}
-            showFlightTrails={showFlightTrails}
+            showFlightTrails={false}
             toggleFlightTrails={() => {
-              setShowFlightTrails(!showFlightTrails);
-              onFilterChange({ showFlightPaths: !showFlightTrails });
+              // This doesn't actually toggle trails anymore since 
+              // we only show paths for selected flights
             }}
           />
         </MapContainer>
