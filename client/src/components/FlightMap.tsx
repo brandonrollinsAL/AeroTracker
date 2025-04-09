@@ -31,41 +31,54 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// Custom airplane icon with aviation blues
+// Custom airplane icon with aviation blues - following the new design system
 const createAirplaneIcon = (heading: number, isSelected: boolean = false, altitude: number = 0) => {
-  // Calculate color based on altitude (lower = more cyan, higher = more dark blue)
+  // Calculate color based on altitude following aviation standards
+  // Low altitude: use accent orange for better visibility near ground
+  // Medium altitude: use primary medium blue
+  // High altitude: use primary dark blue
   const altitudePercent = Math.min(Math.max(altitude / 40000, 0), 1); // Normalize between 0-40,000 ft
   
   let iconColor: string;
-  let iconSize: number = isSelected ? 32 : 28;
+  let iconSize: number = isSelected ? 36 : 30;
   let iconClass: string = isSelected ? 'airplane-icon selected' : 'airplane-icon';
   let glowEffect: string = '';
+  let altitudeClass: string = '';
   
   if (isSelected) {
-    // Selected flights use the accent cyan with glow
-    iconColor = '#55ffdd';
-    glowEffect = 'filter: drop-shadow(0 0 8px rgba(85, 255, 221, 0.8));';
+    // Selected flights use the orange accent with glow for better visibility
+    iconColor = '#F97316'; // Aviation accent orange
+    glowEffect = 'filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.7));';
   } else {
-    // Normal flights use a gradient between cyan and dark blue based on altitude
+    // Color scheme based on aviation altitude standards
     if (altitudePercent < 0.2) {
-      iconColor = '#55ffdd'; // Low altitude - cyan
+      iconColor = '#F97316'; // Low altitude - accent orange for visibility
+      altitudeClass = 'altitude-low';
     } else if (altitudePercent < 0.5) {
-      iconColor = '#2460a7'; // Medium altitude - medium blue
+      iconColor = '#3B82F6'; // Medium altitude - medium blue
+      altitudeClass = 'altitude-medium';
     } else {
-      iconColor = '#0a4995'; // High altitude - dark blue
+      iconColor = '#1E3A8A'; // High altitude - dark blue
+      altitudeClass = 'altitude-high';
     }
   }
   
+  // Enhanced accessible SVG with proper aria attributes for better SEO
   return L.divIcon({
     html: `
-      <div class="${iconClass}" style="transform: rotate(${heading}deg); ${glowEffect}">
-        <svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div class="${iconClass} ${altitudeClass}" style="transform: rotate(${heading}deg); ${glowEffect}" 
+           role="img" aria-label="Aircraft at ${Math.round(altitude)} feet altitude, heading ${Math.round(heading)} degrees">
+        <svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" 
+             xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <title>Aircraft</title>
+          <desc>Aircraft icon showing flight direction and altitude</desc>
           <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" 
                 fill="${iconColor}" />
         </svg>
+        ${isSelected ? '<span class="pulse-circle"></span>' : ''}
       </div>
     `,
-    className: 'custom-airplane-icon',
+    className: `custom-airplane-icon ${isSelected ? 'selected-aircraft' : ''}`,
     iconSize: [iconSize, iconSize],
     iconAnchor: [iconSize/2, iconSize/2]
   });
@@ -398,32 +411,42 @@ export default function FlightMap({
                 offset={[0, -15]} 
                 permanent={selectedFlight?.id === flight.id}
                 className="aviation-map-tooltip"
+                aria-label={`Flight ${flight.callsign || flight.flightNumber} information`}
               >
-                <div className="text-xs font-bold bg-clip-text text-transparent px-1"
+                <div className="text-xs font-bold aviation-callsign-gradient px-2 py-0.5 rounded-full"
                   style={{ 
-                    backgroundImage: 'linear-gradient(90deg, var(--aviation-blue-dark), var(--aviation-blue-light))',
-                    whiteSpace: 'nowrap' 
+                    whiteSpace: 'nowrap',
+                    color: '#F3F4F6',
+                    backgroundColor: '#1E3A8A',
+                    border: '1px solid rgba(249, 115, 22, 0.4)'
                   }}
                 >
-                  {flight.callsign || flight.flightNumber}
+                  <span className="mr-1">{flight.callsign || flight.flightNumber}</span>
+                  {flight.position?.altitude ? 
+                    <span className="text-[10px] opacity-80">{Math.round(flight.position.altitude)} ft</span> : null}
                 </div>
               </Tooltip>
               
-              <Popup className="aviation-popup">
-                <div className="popup-header bg-gradient-to-r from-[#0a4995] to-[#2460a7] text-white px-3 py-2 -mx-2 -mt-2 rounded-t-lg flex items-center mb-2">
-                  <div className="h-7 w-7 rounded-full bg-[#55ffdd]/20 flex items-center justify-center mr-2">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <Popup className="aviation-popup" maxWidth={300}>
+                <div className="popup-header bg-gradient-to-r from-[#1E3A8A] to-[#3B82F6] text-white px-3 py-2 -mx-2 -mt-2 rounded-t-lg flex items-center mb-2">
+                  <div className="h-8 w-8 rounded-full bg-[#F97316]/20 flex items-center justify-center mr-2 aviation-pulse-effect">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" 
-                            fill="#ffffff" />
+                            fill="#F97316" />
                     </svg>
                   </div>
-                  <div className="font-bold tracking-wide">{flight.callsign || flight.flightNumber}</div>
+                  <div>
+                    <div className="font-bold tracking-wide text-base">{flight.callsign || flight.flightNumber}</div>
+                    <div className="text-xs opacity-90">{flight.aircraftType || 'Aircraft'}</div>
+                  </div>
                 </div>
                 
                 <div className="pb-1">
                   <div className="flex items-center justify-between mb-2">
-                    <div className="aviation-data-highlight px-2 py-1 text-xs rounded-md">
-                      {flight.departure?.icao || 'N/A'} → {flight.arrival?.icao || 'N/A'}
+                    <div className="aviation-data-highlight px-2 py-1 text-xs rounded-md bg-gray-100 border border-gray-200">
+                      <span className="font-semibold">{flight.departure?.icao || 'N/A'}</span> 
+                      <span className="mx-1">→</span> 
+                      <span className="font-semibold">{flight.arrival?.icao || 'N/A'}</span>
                     </div>
                     <div className={`aviation-status aviation-status-${flight.status} text-xs py-0.5 px-1.5 rounded-full`}>
                       {flight.status.charAt(0).toUpperCase() + flight.status.slice(1)}
@@ -468,17 +491,31 @@ export default function FlightMap({
             </Marker>
           ))}
           
-          {/* Flight paths if enabled */}
+          {/* Flight paths if enabled - SEO friendly with proper accessibility */}
           {showFlightTrails && Array.isArray(flights) && flights.map((flight) => (
             <Polyline 
               key={`path-${flight.id}`}
               positions={generateFlightPath(flight)}
               pathOptions={{ 
-                color: selectedFlight?.id === flight.id ? '#55ffdd' : '#2460a7',
+                color: selectedFlight?.id === flight.id ? '#F97316' : '#3B82F6',
                 weight: selectedFlight?.id === flight.id ? 3 : 2,
                 dashArray: selectedFlight?.id === flight.id ? '' : '5, 8',
-                opacity: selectedFlight?.id === flight.id ? 0.9 : 0.6,
-                className: selectedFlight?.id === flight.id ? 'flight-path-active' : 'flight-path'
+                opacity: selectedFlight?.id === flight.id ? 0.85 : 0.6,
+                className: selectedFlight?.id === flight.id ? 'flight-path-active' : 'flight-path',
+                lineCap: 'round',
+                lineJoin: 'round'
+              }}
+              // ARIA attributes for accessibility - improves SEO and usability
+              eventHandlers={{
+                add: (e) => {
+                  const path = e.target;
+                  if (path._path) {
+                    path._path.setAttribute('aria-label', 
+                      `Flight path for ${flight.callsign || flight.flightNumber} from ${flight.departure?.icao || 'origin'} to ${flight.arrival?.icao || 'destination'}`
+                    );
+                    path._path.setAttribute('role', 'graphics-symbol');
+                  }
+                }
               }}
             />
           ))}
