@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,40 +14,42 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
     
-    /* Aviation blues */
-    --primary: 213 97% 63%; /* #4995fd - Aviation blue primary */
+    /* Aviation blues - updated to match new palette */
+    --primary: 220 79% 33%; /* #1E3A8A - Aviation blue primary */
     --primary-foreground: 210 40% 98%;
-    --secondary: 208 100% 20%; /* #003a65 - Aviation blue dark */
+    --secondary: 217 91% 60%; /* #3B82F6 - Aviation blue medium */
     --secondary-foreground: 210 40% 98%;
-    --accent: 213 97% 63%; /* #4995fd - Aviation accent */
+    --accent: 32 98% 53%; /* #F97316 - Aviation accent orange */
     --accent-foreground: 222.2 47.4% 11.2%;
     
     /* Additional aviation colors */
-    --aviation-sky: 199 68% 78%; /* #a0d0ec - Sky Light Blue */
+    --aviation-sky: 199 85% 76%; /* #93C5FD - Sky Light Blue */
+    --aviation-metallic: 0 0% 75%; /* #C0C0C0 - Metallic silver */
     
     /* Standard interface colors */
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84.2% 60.2%; /* #EF4444 - Red for alerts */
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 212 94% 31%;
+    --ring: 220 79% 33%;
     --radius: 0.5rem;
     
     /* Custom aviation variables */
-    --aviation-blue-dark: #003a65;
-    --aviation-blue-medium: #0a4995; 
-    --aviation-blue-light: #4995fd;
-    --aviation-cyan: #a0d0ec;
-    --aviation-teal-color: #6ec0e9;
+    --aviation-blue-dark: #1E3A8A;
+    --aviation-blue-medium: #3B82F6; 
+    --aviation-blue-light: #60A5FA;
+    --aviation-cyan: #93C5FD;
+    --aviation-teal-color: #60A5FA;
+    --aviation-orange: #F97316;
     
     /* Status colors */
     --status-active: #22c55e;
     --status-landed: #3b82f6;
-    --status-scheduled: #f59e0b;
+    --status-scheduled: #f97316;
     --status-delayed: #ef4444;
-    --status-cancelled: #f43f5e;
+    --status-cancelled: #ef4444;
     --status-diverted: #8b5cf6;
   }
 
@@ -58,15 +62,16 @@
     --popover-foreground: 210 40% 98%;
     
     /* Aviation blues - adjusted for dark mode */
-    --primary: 213 97% 63%; /* #4995fd - Aviation blue primary */
+    --primary: 220 79% 33%; /* #1E3A8A - Aviation blue primary */
     --primary-foreground: 210 40% 98%;
-    --secondary: 208 100% 30%; /* Slightly lightened dark blue */
+    --secondary: 217 91% 60%; /* #3B82F6 - Aviation blue medium */
     --secondary-foreground: 210 40% 98%;
-    --accent: 213 97% 63%; /* #4995fd - Aviation accent */
+    --accent: 32 98% 53%; /* #F97316 - Aviation accent orange */
     --accent-foreground: 222.2 47.4% 11.2%;
     
     /* Additional aviation colors - adjusted for dark mode */
-    --aviation-sky: 199 68% 78%; /* #a0d0ec - Sky Light Blue */
+    --aviation-sky: 199 85% 76%; /* #93C5FD - Sky Light Blue */
+    --aviation-metallic: 0 0% 75%; /* #C0C0C0 - Metallic silver */
     
     /* Standard interface colors */
     --muted: 217.2 32.6% 17.5%;
@@ -76,6 +81,14 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212 64% 45%;
+    
+    /* Custom aviation variables for dark mode */
+    --aviation-blue-dark: #1E3A8A;
+    --aviation-blue-medium: #3B82F6; 
+    --aviation-blue-light: #60A5FA;
+    --aviation-cyan: #93C5FD;
+    --aviation-teal-color: #60A5FA;
+    --aviation-orange: #F97316;
   }
 }
 

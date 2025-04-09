@@ -1,39 +1,39 @@
 {
   "variant": "professional",
-  "primary": "#2563EB",
+  "primary": "#1E3A8A",
   "appearance": "system", 
   "radius": 1.2,
   "colors": {
     "blue": {
-      "dark": "#1E40AF",
-      "medium": "#2563EB",
-      "light": "#3B82F6",
+      "dark": "#1E3A8A",
+      "medium": "#3B82F6",
+      "light": "#60A5FA",
       "ultraLight": "#93C5FD",
-      "accent": "#F59E0B",
+      "accent": "#F97316",
       "sky": "#93C5FD"
     },
     "text": {
-      "primary": "#1D1D1F",
+      "primary": "#1E3A8A",
       "secondary": "#6B7280",
       "light": "#FFFFFF"
     },
     "background": {
       "primary": "#FFFFFF",
       "secondary": "#F3F4F6",
-      "dark": "#1D1D1F"
+      "dark": "#1E3A8A"
     },
     "status": {
       "active": "#22C55E",
       "landed": "#3B82F6",
-      "scheduled": "#F59E0B",
+      "scheduled": "#F97316",
       "delayed": "#EF4444",
       "cancelled": "#EF4444",
       "diverted": "#8B5CF6"
     },
     "aviation": {
       "altitude": {
-        "high": "#1E40AF",
-        "medium": "#2563EB",
+        "high": "#1E3A8A",
+        "medium": "#3B82F6",
         "low": "#93C5FD"
       },
       "weather": {
@@ -45,40 +45,43 @@
         "fog": "#CBD5E1"
       },
       "airports": {
-        "international": "#2563EB",
+        "international": "#1E3A8A",
         "domestic": "#93C5FD",
         "regional": "#60A5FA"
-      }
+      },
+      "metallic": "#C0C0C0"
     },
     "gradients": {
-      "primary": "linear-gradient(135deg, #1E40AF, #2563EB)",
-      "accent": "linear-gradient(to right, #2563EB, #60A5FA)",
-      "light": "linear-gradient(135deg, #2563EB, #93C5FD)",
+      "primary": "linear-gradient(135deg, #1E3A8A, #3B82F6)",
+      "accent": "linear-gradient(to right, #1E3A8A, #60A5FA)",
+      "light": "linear-gradient(135deg, #3B82F6, #93C5FD)",
       "sky": "linear-gradient(to bottom, #93C5FD, #60A5FA)",
-      "altitude": "linear-gradient(to top, #93C5FD, #2563EB, #1E40AF)",
-      "horizon": "linear-gradient(to bottom, #1E40AF 0%, #2563EB 45%, #93C5FD 100%)",
-      "cockpit": "linear-gradient(135deg, #1E40AF 0%, #2563EB 35%, #3B82F6 100%)"
+      "altitude": "linear-gradient(to top, #93C5FD, #3B82F6, #1E3A8A)",
+      "horizon": "linear-gradient(to bottom, #1E3A8A 0%, #3B82F6 45%, #93C5FD 100%)",
+      "cockpit": "linear-gradient(135deg, #1E3A8A 0%, #3B82F6 35%, #60A5FA 100%)"
     },
     "effects": {
-      "glowSmall": "0 0 8px rgba(37, 99, 235, 0.3)",
-      "glowMedium": "0 0 15px rgba(37, 99, 235, 0.5)",
-      "glowLarge": "0 0 25px rgba(37, 99, 235, 0.7)",
-      "insetSmall": "inset 0 1px 3px rgba(30, 64, 175, 0.2)",
-      "flightPath": "0 0 0 2px rgba(37, 99, 235, 0.25), 0 0 10px rgba(37, 99, 235, 0.3)",
-      "runwayLight": "0 0 5px rgba(147, 197, 253, 0.7), 0 0 15px rgba(37, 99, 235, 0.5)",
-      "buttonHover": "0 0 8px rgba(245, 158, 11, 0.5)",
-      "cardHover": "0 0 12px rgba(37, 99, 235, 0.2)",
-      "frostedGlass": "rgba(255, 255, 255, 0.9) backdrop-filter: blur(12px)"
+      "glowSmall": "0 0 8px rgba(30, 58, 138, 0.3)",
+      "glowMedium": "0 0 15px rgba(30, 58, 138, 0.5)",
+      "glowLarge": "0 0 25px rgba(30, 58, 138, 0.7)",
+      "insetSmall": "inset 0 1px 3px rgba(30, 58, 138, 0.2)",
+      "flightPath": "0 0 0 2px rgba(30, 58, 138, 0.25), 0 0 10px rgba(30, 58, 138, 0.3)",
+      "runwayLight": "0 0 5px rgba(147, 197, 253, 0.7), 0 0 15px rgba(30, 58, 138, 0.5)",
+      "buttonHover": "0 0 8px rgba(249, 115, 22, 0.5)",
+      "cardHover": "0 0 12px rgba(30, 58, 138, 0.2)",
+      "frostedGlass": "rgba(255, 255, 255, 0.9) backdrop-filter: blur(12px)",
+      "cockpitCard": "0 4px 8px rgba(0, 0, 0, 0.1)"
     },
     "animation": {
       "bounce": "0.8s ease-in-out",
       "fade": "0.5s ease-in-out",
       "slide": "0.3s ease-in-out",
-      "scale": "0.3s ease-in-out"
+      "scale": "0.3s ease-in-out",
+      "clouds": "10s linear infinite"
     }
   },
   "typography": {
-    "fontFamily": "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+    "fontFamily": "'Montserrat', 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif",
     "sizes": {
       "heading": "48px",
       "subheading": "20px",

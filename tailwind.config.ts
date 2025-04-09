@@ -5,7 +5,9 @@ export default {
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     fontFamily: {
-      sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+      sans: ["Montserrat", "Open Sans", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+      heading: ["Montserrat", "sans-serif"],
+      body: ["Open Sans", "sans-serif"],
     },
     extend: {
       fontSize: {
@@ -43,9 +45,9 @@ export default {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
           blue: {
-            DEFAULT: "#2563EB",
-            dark: "#1E40AF",
-            light: "#3B82F6",
+            DEFAULT: "#1E3A8A",
+            dark: "#1E3A8A",
+            light: "#3B82F6", 
             ultraLight: "#93C5FD",
           }
         },
@@ -60,7 +62,7 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
-          orange: "#F59E0B",
+          orange: "#F97316",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -68,18 +70,19 @@ export default {
           red: "#EF4444",
         },
         text: {
-          primary: "#1D1D1F",
+          primary: "#1E3A8A",
           secondary: "#6B7280",
           light: "#FFFFFF",
         },
         bg: {
           primary: "#FFFFFF",
           secondary: "#F3F4F6",
-          dark: "#1D1D1F",
+          dark: "#1E3A8A",
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        metallic: "#C0C0C0",
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
@@ -90,7 +93,7 @@ export default {
         status: {
           active: "#22C55E",
           landed: "#3B82F6",
-          scheduled: "#F59E0B",
+          scheduled: "#F97316",
           delayed: "#EF4444",
           cancelled: "#EF4444",
           diverted: "#8B5CF6",
@@ -105,15 +108,36 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        aviation: {
+          altitude: {
+            high: "#1E3A8A",
+            medium: "#3B82F6",
+            low: "#93C5FD"
+          },
+          weather: {
+            clear: "#22C55E",
+            clouds: "#94A3B8",
+            rain: "#60A5FA",
+            storm: "#8B5CF6",
+            snow: "#E2E8F0",
+            fog: "#CBD5E1"
+          },
+          airports: {
+            international: "#1E3A8A",
+            domestic: "#93C5FD",
+            regional: "#60A5FA"
+          }
+        }
       },
       boxShadow: {
-        'glowSmall': '0 0 8px rgba(37, 99, 235, 0.3)',
-        'glowMedium': '0 0 15px rgba(37, 99, 235, 0.5)',
-        'glowLarge': '0 0 25px rgba(37, 99, 235, 0.7)',
-        'buttonHover': '0 0 8px rgba(245, 158, 11, 0.5)',
-        'cardHover': '0 0 12px rgba(37, 99, 235, 0.2)',
-        'flightPath': '0 0 0 2px rgba(37, 99, 235, 0.25), 0 0 10px rgba(37, 99, 235, 0.3)',
-        'runwayLight': '0 0 5px rgba(147, 197, 253, 0.7), 0 0 15px rgba(37, 99, 235, 0.5)',
+        'glowSmall': '0 0 8px rgba(30, 58, 138, 0.3)',
+        'glowMedium': '0 0 15px rgba(30, 58, 138, 0.5)',
+        'glowLarge': '0 0 25px rgba(30, 58, 138, 0.7)',
+        'buttonHover': '0 0 8px rgba(249, 115, 22, 0.5)',
+        'cardHover': '0 0 12px rgba(30, 58, 138, 0.2)',
+        'flightPath': '0 0 0 2px rgba(30, 58, 138, 0.25), 0 0 10px rgba(30, 58, 138, 0.3)',
+        'runwayLight': '0 0 5px rgba(147, 197, 253, 0.7), 0 0 15px rgba(30, 58, 138, 0.5)',
+        'cockpitCard': '0 4px 8px rgba(0, 0, 0, 0.1)'
       },
       backdropBlur: {
         'frosted': '12px',
@@ -151,6 +175,15 @@ export default {
           from: { transform: "scale(0.9)" },
           to: { transform: "scale(1)" },
         },
+        "clouds-floating": {
+          "0%": { transform: "translateX(0) translateY(0)" },
+          "50%": { transform: "translateX(5px) translateY(-5px)" },
+          "100%": { transform: "translateX(0) translateY(0)" }
+        },
+        "ripple": {
+          "0%": { transform: "scale(0)", opacity: "1" },
+          "100%": { transform: "scale(4)", opacity: "0" }
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -159,12 +192,16 @@ export default {
         "fade-in": "fade-in 0.5s ease-in-out",
         "slide-in": "slide-in 0.3s ease-in-out",
         "scale": "scale 0.3s ease-in-out",
+        "clouds": "clouds-floating 10s linear infinite",
+        "ripple": "ripple 1s ease-out"
       },
       backgroundImage: {
-        'gradient-primary': 'linear-gradient(135deg, #1E40AF, #2563EB)',
-        'gradient-accent': 'linear-gradient(to right, #2563EB, #60A5FA)',
-        'gradient-light': 'linear-gradient(135deg, #2563EB, #93C5FD)',
-        'gradient-horizon': 'linear-gradient(to bottom, #1E40AF 0%, #2563EB 45%, #93C5FD 100%)',
+        'gradient-primary': 'linear-gradient(135deg, #1E3A8A, #3B82F6)',
+        'gradient-accent': 'linear-gradient(to right, #1E3A8A, #60A5FA)',
+        'gradient-light': 'linear-gradient(135deg, #3B82F6, #93C5FD)',
+        'gradient-horizon': 'linear-gradient(to bottom, #1E3A8A 0%, #3B82F6 45%, #93C5FD 100%)',
+        'gradient-sky': 'linear-gradient(to bottom, #93C5FD, #60A5FA)',
+        'gradient-cockpit': 'linear-gradient(135deg, #1E3A8A 0%, #3B82F6 35%, #60A5FA 100%)',
       },
     },
   },
