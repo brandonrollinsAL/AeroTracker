@@ -41,6 +41,44 @@
   }
 }
 
+/* Flight path endpoint markers */
+.departure-marker, 
+.arrival-marker {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.departure-marker {
+  background-color: rgba(30, 58, 138, 0.3);
+  border: 1px solid rgba(30, 58, 138, 0.9);
+  box-shadow: 0 0 8px rgba(30, 58, 138, 0.6);
+}
+
+.arrival-marker {
+  background-color: rgba(249, 115, 22, 0.3);
+  border: 1px solid rgba(249, 115, 22, 0.9);
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.6);
+}
+
+.departure-marker-inner,
+.arrival-marker-inner {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.departure-marker-inner {
+  background-color: rgba(30, 58, 138, 1);
+}
+
+.arrival-marker-inner {
+  background-color: rgba(249, 115, 22, 1);
+}
+
 /* Aircraft marker styles */
 .airplane-icon {
   transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;

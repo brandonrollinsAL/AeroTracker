@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Marker, Polyline, Tooltip, useMap } from 'react-leaflet';
+import { Marker, Polyline, Tooltip, useMap, CircleMarker } from 'react-leaflet';
 import L from 'leaflet';
 import { LiveFlight } from '@/types';
 import { useFlightMapContext } from '@/hooks/use-flight-map-context';
@@ -143,22 +143,76 @@ const ClusteredFlightLayer: React.FC<ClusteredFlightLayerProps> = ({
     }
   };
   
-  // Selected flight path
+  // Selected flight path with enhanced styling for better visibility
   const selectedFlightPath = useMemo(() => {
     if (!selectedFlight) return null;
     
+    // Create path positions for the selected flight
+    const positions = generateFlightPath(selectedFlight);
+    
+    // Return enhanced flight path with two layers - outer glow and inner path
     return (
-      <Polyline
-        positions={generateFlightPath(selectedFlight)}
-        pathOptions={{
-          color: '#F97316',
-          weight: 3,
-          opacity: 0.7,
-          dashArray: '5, 5',
-          lineCap: 'round',
-          lineJoin: 'round'
-        }}
-      />
+      <>
+        {/* Outer glow path for better visibility */}
+        <Polyline
+          positions={positions}
+          pathOptions={{
+            color: '#F97316',
+            weight: 6,
+            opacity: 0.3,
+            lineCap: 'round',
+            lineJoin: 'round'
+          }}
+        />
+        
+        {/* Main flight path - dashed line */}
+        <Polyline
+          positions={positions}
+          pathOptions={{
+            color: '#F97316',
+            weight: 3,
+            opacity: 0.9,
+            dashArray: '5, 5',
+            lineCap: 'round',
+            lineJoin: 'round'
+          }}
+        />
+        
+        {/* Add endpoint markers for departure and arrival using Markers */}
+        {positions.length > 1 && (
+          <>
+            {/* Departure point */}
+            <Marker
+              position={positions[0]}
+              icon={L.divIcon({
+                html: `
+                  <div class="departure-marker" aria-label="Departure point">
+                    <div class="departure-marker-inner"></div>
+                  </div>
+                `,
+                className: 'departure-point-marker',
+                iconSize: [12, 12],
+                iconAnchor: [6, 6]
+              })}
+            />
+            
+            {/* Arrival point */}
+            <Marker
+              position={positions[positions.length - 1]}
+              icon={L.divIcon({
+                html: `
+                  <div class="arrival-marker" aria-label="Arrival point">
+                    <div class="arrival-marker-inner"></div>
+                  </div>
+                `,
+                className: 'arrival-point-marker',
+                iconSize: [12, 12],
+                iconAnchor: [6, 6]
+              })}
+            />
+          </>
+        )}
+      </>
     );
   }, [selectedFlight]);
   
@@ -204,20 +258,24 @@ const ClusteredFlightLayer: React.FC<ClusteredFlightLayerProps> = ({
             className="aviation-map-tooltip"
             aria-label={`Flight ${flight.callsign || flight.flightNumber} information`}
           >
-            <div className="text-xs font-bold aviation-callsign-gradient px-2 py-0.5 rounded-full"
+            <div className="aviation-callsign-tooltip px-2 py-0.5 rounded-full shadow-md"
               style={{ 
                 whiteSpace: 'nowrap',
                 color: '#F3F4F6',
-                backgroundColor: '#1E3A8A',
-                border: '1px solid rgba(249, 115, 22, 0.4)'
+                backgroundColor: selectedFlight?.id === flight.id ? '#F97316' : '#1E3A8A',
+                borderWidth: '1px',
+                borderStyle: 'solid',
+                borderColor: selectedFlight?.id === flight.id ? 'rgba(249, 115, 22, 0.9)' : 'rgba(59, 130, 246, 0.5)',
+                boxShadow: selectedFlight?.id === flight.id ? '0 0 8px rgba(249, 115, 22, 0.6)' : 'none',
+                transition: 'all 0.3s ease'
               }}
             >
-              <span className="mr-1">{flight.callsign || flight.flightNumber}</span>
-              <span className="text-[10px] opacity-80">
-                {flight.position?.altitude 
-                  ? `${Math.round(flight.position.altitude / 100) * 100}ft` 
-                  : ''}
-              </span>
+              <span className="font-bold text-xs mr-1">{flight.callsign || flight.flightNumber}</span>
+              {flight.position?.altitude && (
+                <span className="text-[10px] font-medium" style={{ opacity: 0.95 }}>
+                  {Math.round(flight.position.altitude / 100) * 100}ft
+                </span>
+              )}
             </div>
           </Tooltip>
         </Marker>
