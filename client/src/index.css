@@ -4,6 +4,93 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Flight clustering styles */
+.flight-cluster {
+  background-color: rgba(30, 58, 138, 0.7);
+  border: 2px solid rgba(30, 58, 138, 1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 0 12px rgba(30, 58, 138, 0.7);
+  animation: pulse-cluster 2s infinite;
+}
+
+.flight-cluster-inner {
+  background-color: rgba(30, 58, 138, 0.9);
+  border-radius: 50%;
+  width: 70%;
+  height: 70%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+}
+
+@keyframes pulse-cluster {
+  0% {
+    box-shadow: 0 0 0 0 rgba(30, 58, 138, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(30, 58, 138, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(30, 58, 138, 0);
+  }
+}
+
+/* Aircraft marker styles */
+.airplane-icon {
+  transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+.airplane-icon.selected {
+  z-index: 1000;
+  transform: scale(1.2);
+}
+
+.altitude-low {
+  opacity: 0.9;
+}
+
+.altitude-medium {
+  opacity: 0.85;
+}
+
+.altitude-high {
+  opacity: 0.8;
+}
+
+.pulse-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(249, 115, 22, 0.2);
+  animation: pulse 1.5s infinite;
+  z-index: -1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.8;
+  }
+  70% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+}
+
 @layer base {
   :root {
     /* Standard ShadCN colors */

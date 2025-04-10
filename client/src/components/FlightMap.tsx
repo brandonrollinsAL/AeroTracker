@@ -4,7 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { FlightMapProvider } from '@/hooks/use-flight-map-context';
 import { MapZoomMonitor } from './MapZoomMonitor';
-import MapZoomBoundsMonitor from './MapZoomBoundsMonitor';
+import { MapZoomBoundsMonitor } from './MapZoomBoundsMonitor';
 import MapControls from './MapControls';
 import AirportMarker from './AirportMarker';
 import WeatherOverlay from './WeatherOverlay';
