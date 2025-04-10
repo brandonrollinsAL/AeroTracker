@@ -4,11 +4,13 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { FlightMapProvider } from '@/hooks/use-flight-map-context';
 import { MapZoomMonitor } from './MapZoomMonitor';
+import MapZoomBoundsMonitor from './MapZoomBoundsMonitor';
 import MapControls from './MapControls';
 import AirportMarker from './AirportMarker';
 import WeatherOverlay from './WeatherOverlay';
 import WeatherImpactPanel from './WeatherImpactPanel';
 import { NexradRadarOverlay } from './NexradRadarOverlay';
+import ClusteredFlightLayer from './ClusteredFlightLayer';
 import { LiveFlight, MapFilter, Airport } from '@/types';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -313,12 +315,15 @@ export default function FlightMap({
   const [airports, setAirports] = useState<Airport[]>([]);
   const [loadingAirports, setLoadingAirports] = useState(false);
   const [currentZoom, setCurrentZoom] = useState(5);
-  const [mapBounds, setMapBounds] = useState<L.LatLngBounds | null>(null);
-  const [visibleFlights, setVisibleFlights] = useState<LiveFlight[]>([]);
   
   // Default center if no flights are available
   const defaultCenter: [number, number] = [37.0902, -95.7129]; // US center
   const defaultZoom = 5;
+  
+  // Handle zoom changes for optimized rendering
+  const handleZoomChange = (zoom: number) => {
+    setCurrentZoom(zoom);
+  };
   
   // Fetch airports, even when showAirports is disabled (for improved UX)
   useEffect(() => {
@@ -396,133 +401,15 @@ export default function FlightMap({
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           
-          {/* Flight markers */}
-          {Array.isArray(flights) && flights.map((flight) => (
-            <Marker
-              key={flight.id}
-              position={[flight.position?.latitude || 0, flight.position?.longitude || 0]}
-              icon={createAirplaneIcon(
-                flight.position?.heading || 0, 
-                selectedFlight?.id === flight.id,
-                flight.position?.altitude || 0
-              )}
-              eventHandlers={{
-                click: () => onFlightSelect(flight)
-              }}
-            >
-              <Tooltip 
-                direction="top" 
-                offset={[0, -15]} 
-                permanent={selectedFlight?.id === flight.id}
-                className="aviation-map-tooltip"
-                aria-label={`Flight ${flight.callsign || flight.flightNumber} information`}
-              >
-                <div className="text-xs font-bold aviation-callsign-gradient px-2 py-0.5 rounded-full"
-                  style={{ 
-                    whiteSpace: 'nowrap',
-                    color: '#F3F4F6',
-                    backgroundColor: '#1E3A8A',
-                    border: '1px solid rgba(249, 115, 22, 0.4)'
-                  }}
-                >
-                  <span className="mr-1">{flight.callsign || flight.flightNumber}</span>
-                  {flight.position?.altitude ? 
-                    <span className="text-[10px] opacity-80">{Math.round(flight.position.altitude)} ft</span> : null}
-                </div>
-              </Tooltip>
-              
-              <Popup className="aviation-popup" maxWidth={300}>
-                <div className="popup-header bg-gradient-to-r from-[#1E3A8A] to-[#3B82F6] text-white px-3 py-2 -mx-2 -mt-2 rounded-t-lg flex items-center mb-2">
-                  <div className="h-8 w-8 rounded-full bg-[#F97316]/20 flex items-center justify-center mr-2 aviation-pulse-effect">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" 
-                            fill="#F97316" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="font-bold tracking-wide text-base">{flight.callsign || flight.flightNumber}</div>
-                    <div className="text-xs opacity-90">{flight.aircraftType || 'Aircraft'}</div>
-                  </div>
-                </div>
-                
-                <div className="pb-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="aviation-data-highlight px-2 py-1 text-xs rounded-md bg-gray-100 border border-gray-200">
-                      <span className="font-semibold">{flight.departure?.icao || 'N/A'}</span> 
-                      <span className="mx-1">→</span> 
-                      <span className="font-semibold">{flight.arrival?.icao || 'N/A'}</span>
-                    </div>
-                    <div className={`aviation-status aviation-status-${flight.status} text-xs py-0.5 px-1.5 rounded-full`}>
-                      {flight.status.charAt(0).toUpperCase() + flight.status.slice(1)}
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-2 mb-2">
-                    <div className="flex items-center">
-                      <div className="h-5 w-5 rounded-full bg-gradient-to-br from-[#0a4995] to-[#2460a7] flex items-center justify-center mr-1.5">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" 
-                                fill="#ffffff" />
-                        </svg>
-                      </div>
-                      <div>
-                        <div className="text-[10px] text-neutral-500 uppercase font-medium">Altitude</div>
-                        <div className="text-xs font-bold text-[#0a4995]">{flight.position?.altitude ? flight.position.altitude.toLocaleString() : 'N/A'} ft</div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center">
-                      <div className="h-5 w-5 rounded-full bg-gradient-to-br from-[#55ffdd] to-[#449999] flex items-center justify-center mr-1.5">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                        </svg>
-                      </div>
-                      <div>
-                        <div className="text-[10px] text-neutral-500 uppercase font-medium">Speed</div>
-                        <div className="text-xs font-bold text-[#0a4995]">{flight.position?.groundSpeed || 'N/A'} mph</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    onClick={() => onFlightSelect(flight)}
-                    className="w-full mt-1 aviation-btn-accent text-xs py-1 h-auto"
-                  >
-                    View Flight Details
-                  </Button>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+          {/* Optimized flight layer using clustering */}
+          <ClusteredFlightLayer
+            selectedFlight={selectedFlight}
+            onFlightSelect={onFlightSelect}
+            filters={filters}
+          />
           
-          {/* Flight paths ONLY for selected flights - prevents visual clutter */}
-          {selectedFlight && (
-            <Polyline 
-              key={`path-${selectedFlight.id}`}
-              positions={generateFlightPath(selectedFlight)}
-              pathOptions={{ 
-                color: '#F97316',
-                weight: 3,
-                dashArray: '',
-                opacity: 0.85,
-                className: 'flight-path-active',
-                lineCap: 'round',
-                lineJoin: 'round'
-              }}
-              // ARIA attributes for accessibility - improves SEO and usability
-              eventHandlers={{
-                add: (e) => {
-                  const path = e.target;
-                  if (path._path) {
-                    path._path.setAttribute('aria-label', 
-                      `Flight path for ${selectedFlight.callsign || selectedFlight.flightNumber} from ${selectedFlight.departure?.icao || 'origin'} to ${selectedFlight.arrival?.icao || 'destination'}`
-                    );
-                    path._path.setAttribute('role', 'graphics-symbol');
-                  }
-                }
-              }}
-            />
-          )}
+          {/* Performance monitoring component */}
+          <MapZoomBoundsMonitor onZoomChange={handleZoomChange} />
           
           {/* Display airports if enabled */}
           {filters.showAirports && airports.map(airport => (
