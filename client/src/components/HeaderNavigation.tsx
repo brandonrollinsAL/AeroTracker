@@ -38,10 +38,10 @@ export default function HeaderNavigation({
     ? 'relative border border-[#D4AF37]/20 bg-[#1C2526]/80 hover:bg-[#1C2526]/90 text-[#F5F5F5] transition-all duration-300 shadow-[0_2px_6px_rgba(28,37,38,0.3)] hover:shadow-[0_4px_12px_rgba(28,37,38,0.4)] hover:translate-y-[-2px]'
     : 'relative border border-[#A61C28]/20 bg-white hover:bg-[#F9F5EB] text-[#1C2526] transition-all duration-300 shadow-[0_2px_6px_rgba(28,37,38,0.15)] hover:shadow-[0_4px_12px_rgba(28,37,38,0.25)] hover:translate-y-[-2px]';
   
-  // Frosted glass effect with luxury colors
+  // Luxury frosted glass effect with enhanced styling
   const headerBgClass = isDarkMode 
-    ? 'bg-gradient-to-r from-[#1C2526]/95 to-[#2D3A3C]/95 backdrop-blur-[12px] shadow-md border-b border-[#D4AF37]/20' 
-    : 'bg-gradient-to-r from-[#F5F5F5]/95 to-[#F9F5EB]/95 backdrop-blur-[12px] shadow-sm border-b border-[#A61C28]/10';
+    ? 'bg-gradient-to-r from-[#1C2526]/90 to-[#2D3A3C]/95 backdrop-blur-[12px] shadow-lg border-b border-[#D4AF37]/30 relative after:absolute after:inset-0 after:bg-gradient-to-b after:from-[#D4AF37]/5 after:to-transparent after:pointer-events-none' 
+    : 'bg-gradient-to-r from-[#F9F5EB]/95 to-[#F5F5F5]/95 backdrop-blur-[12px] shadow-md border-b border-[#A61C28]/20 relative after:absolute after:inset-0 after:bg-gradient-to-b after:from-[#D4AF37]/5 after:to-transparent after:pointer-events-none';
     
   // Get the correct button styling based on filter status and type
   const getButtonStyle = (isActive: boolean, isLiveTracking: boolean = false) => {
@@ -52,7 +52,7 @@ export default function HeaderNavigation({
 
   return (
     <div className={`w-full flex items-center justify-center ${headerBgClass} sticky top-0 z-50`}>
-      <div className="flex items-center justify-center gap-3 py-3 animate-fade-in max-w-7xl mx-auto px-4">
+      <div className="flex items-center justify-center gap-3 py-3 animate-fade-in max-w-7xl mx-auto px-4 relative z-10">
         <TooltipProvider>
           {/* Weather button */}
           <Tooltip>
@@ -142,8 +142,8 @@ export default function HeaderNavigation({
             </TooltipContent>
           </Tooltip>
           
-          {/* Divider */}
-          <div className="h-8 w-px bg-metallic/30 mx-1"></div>
+          {/* Luxury divider */}
+          <div className="h-8 w-px mx-2 bg-gradient-to-b from-[#A61C28]/10 via-[#D4AF37]/40 to-[#A61C28]/10 shadow-sm"></div>
           
           {/* Zoom controls with cockpit-inspired styling */}
           <div className="flex gap-2">
@@ -152,11 +152,11 @@ export default function HeaderNavigation({
                 <Button
                   variant="outline"
                   size="icon"
-                  className={`h-10 w-10 rounded-md ${inactiveButtonClass} relative overflow-hidden`}
+                  className={`h-10 w-10 rounded-md border border-[#D4AF37]/30 bg-white/90 hover:bg-[#F9F5EB] text-[#1C2526] transition-all duration-300 shadow-md hover:shadow-lg hover:translate-y-[-2px] relative overflow-hidden`}
                   onClick={onZoomIn}
                 >
-                  <Plus className="h-5 w-5" />
-                  <span className="absolute inset-0 bg-aviation-blue-light/10 opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
+                  <Plus className="h-5 w-5 text-[#A61C28]" />
+                  <span className="absolute inset-0 bg-[#D4AF37]/5 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-md"></span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
@@ -169,11 +169,11 @@ export default function HeaderNavigation({
                 <Button
                   variant="outline"
                   size="icon"
-                  className={`h-10 w-10 rounded-md ${inactiveButtonClass} relative overflow-hidden`}
+                  className={`h-10 w-10 rounded-md border border-[#D4AF37]/30 bg-white/90 hover:bg-[#F9F5EB] text-[#1C2526] transition-all duration-300 shadow-md hover:shadow-lg hover:translate-y-[-2px] relative overflow-hidden`}
                   onClick={onZoomOut}
                 >
-                  <Minus className="h-5 w-5" />
-                  <span className="absolute inset-0 bg-aviation-blue-light/10 opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
+                  <Minus className="h-5 w-5 text-[#A61C28]" />
+                  <span className="absolute inset-0 bg-[#D4AF37]/5 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-md"></span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
@@ -186,11 +186,11 @@ export default function HeaderNavigation({
                 <Button
                   variant="outline"
                   size="icon"
-                  className={`h-10 w-10 rounded-md ${inactiveButtonClass} relative overflow-hidden`}
+                  className={`h-10 w-10 rounded-md border border-[#D4AF37]/30 bg-white/90 hover:bg-[#F9F5EB] text-[#1C2526] transition-all duration-300 shadow-md hover:shadow-lg hover:translate-y-[-2px] relative overflow-hidden`}
                   onClick={onMyLocation}
                 >
-                  <Navigation className="h-5 w-5" />
-                  <span className="absolute inset-0 bg-aviation-blue-light/10 opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
+                  <Navigation className="h-5 w-5 text-[#A61C28]" />
+                  <span className="absolute inset-0 bg-[#D4AF37]/5 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-md"></span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
