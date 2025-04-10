@@ -1,0 +1,25 @@
+Prompt 1: Ensure Perfect Core Functionality
+Focus: Verify and enhance all core features (e.g., pages, forms, APIs) to ensure they work flawlessly.
+Character Count: ~5,900
+text
+CollapseWrapCopy
+I am tasking Replit AI with ensuring perfect core functionality for my full-stack web platform, built with a React frontend, Node.js/Express backend, and a database (e.g., MongoDB/PostgreSQL). The app includes various pages, features, and integrations (e.g., payment systems, email services, live chat). Make no assumptions about the correctness of any feature—examine every page, form, API, and integration, verifying they work flawlessly. Add error handling, logging, and testing to ensure stability. Provide explicit, step-by-step instructions for a beginner to debug, fix, and test the app, ensuring it deploys on Replit Autoscale and Render without errors.
+
+#### Step-by-Step Instructions
+1. **Examine Pages**: Open `client/src/App.tsx`, verify all routes (e.g., `/`, `/contact`) render correct components (e.g., `LandingPage.tsx`, `Contact.tsx`). Fix missing routes or components.
+2. **Debug Forms**: In `client/src/pages/Contact.tsx`, ensure form submissions (e.g., name, email, message) send data to the backend, use `fetch` to POST to `/api/contact`, and display success/error messages.
+3. **Verify APIs**: In `server/routes/index.ts`, test all API endpoints (e.g., Stripe, SendGrid, Open AI) with `fetch`, log responses, and add error handling: `try { await fetch(...) } catch (err) { console.error(err) }`.
+4. **Add Error Handling**: In `server/index.ts`, add global error middleware: `app.use((err, req, res, next) => res.status(500).json({ message: err.message }))`.
+5. **Test Locally**: Run `npm install`, `cd client && npm install && npm run build`, `npm start`. Test all pages, forms, and APIs, log errors, and fix them.
+6. **Deploy**: Configure Replit Autoscale (build: `npm install && cd client && npm run build`, start: `npm start`, env vars: `MONGODB_URI`, `STRIPE_KEY`, `SENDGRID_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_ANALYTICS_ID`, `PORT`). Deploy on Render: `git add .`, `git commit -m "Fixed core functionality"`, `git push origin main`, click "Clear build cache & deploy".
+
+#### Deliverables
+- **Codebase**: Debugged React frontend, Node.js backend.
+- **Docs**: README with debugging report, setup, changelog.
+- **Testing**: Report confirming all features work, deployment success.
+#### Success Criteria
+- All pages, forms, and APIs work flawlessly.
+- Deployment succeeds on Replit and Render with no errors.
+#### Steps
+1. Debug pages, forms, APIs, and add error handling.
+2. Test locally, deploy, document changes.
