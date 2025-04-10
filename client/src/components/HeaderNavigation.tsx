@@ -29,19 +29,19 @@ export default function HeaderNavigation({
   onMyLocation,
   isDarkMode 
 }: HeaderNavigationProps) {
-  // Animation classes for button hover and active states
+  // Luxury-themed button classes
   const activeButtonClass = filters.showLiveTracking 
-    ? 'bg-accent-orange hover:bg-accent-orange/90 text-text-light transition-all duration-300 hover:shadow-buttonHover transform hover:scale-105'
-    : 'bg-primary-blue hover:bg-primary-blue/90 text-text-light transition-all duration-300 hover:shadow-buttonHover transform hover:scale-105';
+    ? 'bg-gradient-to-r from-[#D4AF37] to-[#A61C28] text-[#F5F5F5] transition-all duration-300 shadow-[0_3px_10px_rgba(212,175,55,0.4)] transform hover:scale-105 hover:shadow-[0_6px_15px_rgba(212,175,55,0.5)]'
+    : 'bg-gradient-to-r from-[#A61C28] to-[#1C2526] text-[#F5F5F5] transition-all duration-300 shadow-[0_3px_10px_rgba(166,28,40,0.4)] transform hover:scale-105 hover:shadow-[0_6px_15px_rgba(166,28,40,0.5)]';
     
   const inactiveButtonClass = isDarkMode
-    ? 'border-primary-blue-dark/30 hover:bg-primary-blue-dark/20 text-primary-blue-ultraLight transition-all duration-300 hover:shadow-glowSmall transform hover:scale-105'
-    : 'border-primary-blue/20 hover:bg-primary-blue/10 text-primary-blue-dark transition-all duration-300 hover:shadow-glowSmall transform hover:scale-105';
+    ? 'border-[#4A4A4A] hover:bg-[#1C2526]/20 text-[#F5F5F5] transition-all duration-300 shadow-[0_2px_6px_rgba(28,37,38,0.3)] transform hover:scale-105 hover:shadow-[0_4px_12px_rgba(28,37,38,0.4)]'
+    : 'border-[#4A4A4A]/30 hover:bg-[#F5F5F5]/80 text-[#1C2526] transition-all duration-300 shadow-[0_2px_6px_rgba(28,37,38,0.15)] transform hover:scale-105 hover:shadow-[0_4px_12px_rgba(28,37,38,0.25)]';
   
-  // Cockpit-inspired frosted glass effect
+  // Frosted glass effect with luxury colors
   const headerBgClass = isDarkMode 
-    ? 'bg-primary-blue-dark/95 backdrop-blur-frosted shadow-md border-b border-primary-blue/20' 
-    : 'bg-bg-primary/95 backdrop-blur-frosted shadow-sm border-b border-metallic/30';
+    ? 'bg-[#1C2526]/95 backdrop-blur-[12px] shadow-md border-b border-[#D4AF37]/20' 
+    : 'bg-[#F5F5F5]/95 backdrop-blur-[12px] shadow-sm border-b border-[#D4AF37]/30';
 
   return (
     <div className={`w-full flex items-center justify-center ${headerBgClass} sticky top-0 z-50`}>
