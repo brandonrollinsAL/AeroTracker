@@ -132,134 +132,430 @@
 
 @layer base {
   :root {
-    /* Standard ShadCN colors */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    /* Luxury Theme Colors - Based on burgundy, gold, and dark slate */
+    --background: 0 0% 96.1%; /* #F5F5F5 */
+    --foreground: 200 14% 14%; /* #1C2526 */
+    --card: 0 0% 100%; /* #FFFFFF */
+    --card-foreground: 200 14% 14%; /* #1C2526 */
+    --popover: 0 0% 100%; /* #FFFFFF */
+    --popover-foreground: 200 14% 14%; /* #1C2526 */
     
-    /* Aviation blues - updated to match new palette */
-    --primary: 220 79% 33%; /* #1E3A8A - Aviation blue primary */
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217 91% 60%; /* #3B82F6 - Aviation blue medium */
-    --secondary-foreground: 210 40% 98%;
-    --accent: 32 98% 53%; /* #F97316 - Aviation accent orange */
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Primary: Burgundy (#A61C28) */
+    --primary: 355 71% 38%; /* #A61C28 - Burgundy primary */
+    --primary-foreground: 0 0% 96.1%; /* #F5F5F5 */
     
-    /* Additional aviation colors */
-    --aviation-sky: 199 85% 76%; /* #93C5FD - Sky Light Blue */
-    --aviation-metallic: 0 0% 75%; /* #C0C0C0 - Metallic silver */
+    /* Secondary: Dark Slate (#1C2526) */
+    --secondary: 200 14% 14%; /* #1C2526 - Dark slate */
+    --secondary-foreground: 0 0% 96.1%; /* #F5F5F5 */
     
-    /* Standard interface colors */
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --destructive: 0 84.2% 60.2%; /* #EF4444 - Red for alerts */
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 220 79% 33%;
+    /* Accent: Gold (#D4AF37) */
+    --accent: 46 69% 52%; /* #D4AF37 - Gold accent */
+    --accent-foreground: 0 0% 0%; /* Black text on gold */
+    
+    /* Additional luxury colors */
+    --luxury-gold: 46 69% 52%; /* #D4AF37 - Gold */
+    --luxury-burgundy: 355 71% 38%; /* #A61C28 - Burgundy */
+    --luxury-slate: 200 14% 14%; /* #1C2526 - Dark slate */
+    --luxury-cream: 39 30% 95%; /* #F9F5EB - Cream */
+    --luxury-silver: 0 0% 75%; /* #C0C0C0 - Silver */
+    
+    /* Standard interface colors - adjusted for luxury theme */
+    --muted: 0 0% 92%; /* #EBEBEB */
+    --muted-foreground: 0 0% 45%; /* #737373 */
+    --destructive: 355 71% 38%; /* #A61C28 same as primary - for consistency */
+    --destructive-foreground: 0 0% 96.1%; /* #F5F5F5 */
+    --border: 0 0% 88%; /* #E0E0E0 */
+    --input: 0 0% 88%; /* #E0E0E0 */
+    --ring: 46 69% 52%; /* #D4AF37 - Gold for ring focus */
     --radius: 0.5rem;
     
-    /* Custom aviation variables */
-    --aviation-blue-dark: #1E3A8A;
-    --aviation-blue-medium: #3B82F6; 
-    --aviation-blue-light: #60A5FA;
-    --aviation-cyan: #93C5FD;
-    --aviation-teal-color: #60A5FA;
-    --aviation-orange: #F97316;
+    /* Status colors - adjusted for luxury theme */
+    --status-active: #22c55e; /* Success green */
+    --status-landed: #4A4A4A; /* Dark gray */
+    --status-scheduled: #D4AF37; /* Gold */
+    --status-delayed: #A61C28; /* Burgundy */
+    --status-cancelled: #A61C28; /* Burgundy */
+    --status-diverted: #6C5B7B; /* Purple */
     
-    /* Status colors */
-    --status-active: #22c55e;
-    --status-landed: #3b82f6;
-    --status-scheduled: #f97316;
-    --status-delayed: #ef4444;
-    --status-cancelled: #ef4444;
-    --status-diverted: #8b5cf6;
+    /* Gradients */
+    --luxury-gradient-primary: linear-gradient(135deg, #A61C28, #7A151E); /* Burgundy gradient */
+    --luxury-gradient-accent: linear-gradient(to right, #D4AF37, #BF9B30); /* Gold gradient */
+    --luxury-gradient-dark: linear-gradient(135deg, #1C2526, #2D3A3C); /* Dark slate gradient */
+    --luxury-gradient-button: linear-gradient(to right, #A61C28, #7A151E); /* Button gradient */
+    --luxury-gradient-card: linear-gradient(135deg, rgba(28, 37, 38, 0.02), rgba(166, 28, 40, 0.05)); /* Subtle card gradient */
+    
+    /* Shadows and effects */
+    --luxury-shadow-sm: 0 2px 4px rgba(28, 37, 38, 0.1);
+    --luxury-shadow-md: 0 4px 8px rgba(28, 37, 38, 0.12);
+    --luxury-shadow-lg: 0 8px 16px rgba(28, 37, 38, 0.14);
+    --luxury-glow-gold: 0 0 15px rgba(212, 175, 55, 0.5);
+    --luxury-glow-burgundy: 0 0 15px rgba(166, 28, 40, 0.5);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --background: 200 14% 14%; /* #1C2526 - Dark slate */
+    --foreground: 0 0% 96.1%; /* #F5F5F5 */
+    --card: 200 14% 18%; /* #1F2A2C - Slightly lighter dark slate */
+    --card-foreground: 0 0% 96.1%; /* #F5F5F5 */
+    --popover: 200 14% 14%; /* #1C2526 - Dark slate */
+    --popover-foreground: 0 0% 96.1%; /* #F5F5F5 */
     
-    /* Aviation blues - adjusted for dark mode */
-    --primary: 220 79% 33%; /* #1E3A8A - Aviation blue primary */
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217 91% 60%; /* #3B82F6 - Aviation blue medium */
-    --secondary-foreground: 210 40% 98%;
-    --accent: 32 98% 53%; /* #F97316 - Aviation accent orange */
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Primary: Burgundy (brighter in dark mode) */
+    --primary: 355 71% 42%; /* #BB1F2E - Brighter burgundy for dark mode */
+    --primary-foreground: 0 0% 96.1%; /* #F5F5F5 */
     
-    /* Additional aviation colors - adjusted for dark mode */
-    --aviation-sky: 199 85% 76%; /* #93C5FD - Sky Light Blue */
-    --aviation-metallic: 0 0% 75%; /* #C0C0C0 - Metallic silver */
+    /* Secondary: Slate Gray (lighter in dark mode) */
+    --secondary: 200 14% 26%; /* #38474A - Lighter slate for dark mode */
+    --secondary-foreground: 0 0% 96.1%; /* #F5F5F5 */
     
-    /* Standard interface colors */
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212 64% 45%;
+    /* Accent: Gold (slightly brighter in dark mode) */
+    --accent: 46 69% 57%; /* #DCBA4A - Brighter gold for dark mode */
+    --accent-foreground: 0 0% 0%; /* Black text on gold */
     
-    /* Custom aviation variables for dark mode */
-    --aviation-blue-dark: #1E3A8A;
-    --aviation-blue-medium: #3B82F6; 
-    --aviation-blue-light: #60A5FA;
-    --aviation-cyan: #93C5FD;
-    --aviation-teal-color: #60A5FA;
-    --aviation-orange: #F97316;
+    /* Additional luxury colors - adjusted for dark mode */
+    --luxury-gold: 46 69% 57%; /* #DCBA4A - Brighter gold */
+    --luxury-burgundy: 355 71% 42%; /* #BB1F2E - Brighter burgundy */
+    --luxury-slate: 200 14% 26%; /* #38474A - Lighter slate */
+    --luxury-cream: 39 30% 15%; /* #2B2517 - Dark cream (adapted for dark mode) */
+    --luxury-silver: 0 0% 60%; /* #999999 - Darker silver */
+    
+    /* Standard interface colors - adjusted for dark luxury theme */
+    --muted: 200 14% 20%; /* #232E30 - Darker muted background */
+    --muted-foreground: 0 0% 75%; /* #BFBFBF - Lighter muted text */
+    --destructive: 355 71% 42%; /* #BB1F2E - Same as primary for consistency */
+    --destructive-foreground: 0 0% 96.1%; /* #F5F5F5 */
+    --border: 200 14% 22%; /* #273335 - Darker border color */
+    --input: 200 14% 22%; /* #273335 - Darker input color */
+    --ring: 46 69% 57%; /* #DCBA4A - Brighter gold for ring focus */
+    
+    /* Gradients - adjusted for dark mode */
+    --luxury-gradient-primary: linear-gradient(135deg, #BB1F2E, #8A1720); /* Burgundy gradient */
+    --luxury-gradient-accent: linear-gradient(to right, #DCBA4A, #C9A73E); /* Gold gradient */
+    --luxury-gradient-dark: linear-gradient(135deg, #1C2526, #38474A); /* Dark slate gradient */
+    --luxury-gradient-button: linear-gradient(to right, #BB1F2E, #8A1720); /* Button gradient */
+    --luxury-gradient-card: linear-gradient(135deg, rgba(28, 37, 38, 0.9), rgba(41, 54, 56, 0.9)); /* Card gradient */
+    
+    /* Shadows and effects - adjusted for dark mode */
+    --luxury-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --luxury-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+    --luxury-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+    --luxury-glow-gold: 0 0 15px rgba(220, 186, 74, 0.4);
+    --luxury-glow-burgundy: 0 0 15px rgba(187, 31, 46, 0.4);
   }
 }
 
-/* Aviation Blues Color Palette */
+/* Luxury Aviation Color Palette */
 :root {
-  /* Core aviation blues */
-  --aviation-blue-dark: #003a65;    /* Deep aviation blue */
-  --aviation-blue-medium: #0a4995;  /* Medium aviation blue */
-  --aviation-blue-light: #4995fd;   /* Light aviation blue */
-  --aviation-blue-accent: #4995fd;  /* Accent blue */
-  --aviation-blue-ultra-light: #a0d0ec; /* Sky Light Blue for backgrounds */
+  /* Core luxury colors */
+  --luxury-burgundy-dark: #7A151E;   /* Deep burgundy */
+  --luxury-burgundy: #A61C28;        /* Burgundy primary */
+  --luxury-burgundy-light: #BB1F2E;  /* Light burgundy */
+  --luxury-gold-dark: #BF9B30;       /* Deep gold */
+  --luxury-gold: #D4AF37;            /* Gold primary */
+  --luxury-gold-light: #DCBA4A;      /* Light gold */
+  --luxury-slate-dark: #1C2526;      /* Dark slate */
+  --luxury-slate: #2D3A3C;           /* Slate primary */
+  --luxury-slate-light: #38474A;     /* Light slate */
+  --luxury-cream: #F9F5EB;           /* Cream */
+  --luxury-silver: #C0C0C0;          /* Silver */
   
-  /* Extended aviation color palette */
-  --aviation-sky-blue: #a0d0ec;     /* Sky Light Blue */
-  --aviation-navy: #001f3f;         /* Navy blue for night flights */
-  --aviation-highlight: #4995fd;    /* Highlight blue for selections */
-  --aviation-alert: #ff5a5f;        /* Alert red for warnings */
-  --aviation-success: #00c07f;      /* Success green for confirmations */
-  --aviation-deep-ocean: #002b4c;   /* Deeper blue for serious elements */
-  --aviation-cyan: #a0d0ec;         /* Sky Light Blue */
+  /* Extended luxury color palette */
+  --luxury-cream-light: #FAF8F3;    /* Lighter cream */
+  --luxury-champagne: #F8E9C9;      /* Champagne */
+  --luxury-highlight: #D4AF37;      /* Gold for highlights */
+  --luxury-alert: #A61C28;          /* Burgundy for alerts */
+  --luxury-success: #22C55E;        /* Success green */
+  --luxury-navy: #1F2937;           /* Navy for dark elements */
   
   /* Gradients */
-  --aviation-gradient: linear-gradient(135deg, var(--aviation-blue-dark), var(--aviation-blue-medium));
-  --aviation-gradient-light: linear-gradient(135deg, var(--aviation-blue-medium), var(--aviation-blue-light));
-  --aviation-gradient-accent: linear-gradient(135deg, var(--aviation-blue-dark), var(--aviation-blue-accent));
-  --aviation-gradient-sky: linear-gradient(135deg, var(--aviation-blue-light), var(--aviation-sky-blue));
-  --aviation-gradient-alert: linear-gradient(135deg, var(--aviation-alert), #ff8c8f);
-  --aviation-gradient-glow: linear-gradient(135deg, var(--aviation-blue-light), var(--aviation-cyan));
-  --aviation-gradient-deep: linear-gradient(135deg, var(--aviation-deep-ocean), var(--aviation-blue-dark));
-  --aviation-gradient-accent-strong: linear-gradient(135deg, var(--aviation-blue-accent), var(--aviation-cyan));
-  --aviation-gradient-button: linear-gradient(to right, var(--aviation-blue-medium), var(--aviation-blue-accent));
+  --luxury-gradient-primary: linear-gradient(135deg, var(--luxury-burgundy-dark), var(--luxury-burgundy));
+  --luxury-gradient-gold: linear-gradient(135deg, var(--luxury-gold-dark), var(--luxury-gold-light));
+  --luxury-gradient-dark: linear-gradient(135deg, var(--luxury-slate-dark), var(--luxury-slate));
+  --luxury-gradient-accent: linear-gradient(135deg, var(--luxury-burgundy), var(--luxury-gold));
+  --luxury-gradient-header: linear-gradient(to right, var(--luxury-slate-dark), var(--luxury-slate));
+  --luxury-gradient-button: linear-gradient(to right, var(--luxury-burgundy), var(--luxury-burgundy-dark));
+  --luxury-gradient-card: linear-gradient(135deg, rgba(28, 37, 38, 0.02), rgba(166, 28, 40, 0.05));
+  --luxury-gradient-footer: linear-gradient(to right, var(--luxury-slate), var(--luxury-slate-dark));
+  
+  /* Shadows and effects */
+  --luxury-shadow-sm: 0 2px 4px rgba(28, 37, 38, 0.1);
+  --luxury-shadow-md: 0 4px 8px rgba(28, 37, 38, 0.12);
+  --luxury-shadow-lg: 0 8px 16px rgba(28, 37, 38, 0.14);
+  --luxury-glow-gold: 0 0 15px rgba(212, 175, 55, 0.5);
+  --luxury-glow-burgundy: 0 0 15px rgba(166, 28, 40, 0.5);
+  --luxury-inset-sm: inset 0 1px 3px rgba(28, 37, 38, 0.1);
+  --luxury-text-shadow: 0 1px 1px rgba(28, 37, 38, 0.2);
+  
+  /* Dark mode luxury colors */
+  --dark-burgundy: #8A1720;        /* Darker burgundy for dark mode */
+  --dark-gold: #C9A73E;            /* Darker gold for dark mode */
+  --dark-slate: #121819;           /* Darker slate for dark mode */
+}
+
+/* Luxury UI Components */
+.luxury-section {
+  @apply relative overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-md;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.98));
+  backdrop-filter: blur(10px);
+  box-shadow: var(--luxury-shadow-md);
+  border-color: rgba(212, 175, 55, 0.2);
+}
+
+.dark .luxury-section {
+  @apply border-gray-800 bg-slate-900;
+  background: linear-gradient(135deg, rgba(28, 37, 38, 0.9), rgba(31, 41, 43, 0.95));
+  border-color: rgba(212, 175, 55, 0.1);
+}
+
+.luxury-card {
+  @apply relative overflow-hidden rounded-lg border p-4 transition-all duration-300;
+  background: white;
+  border-color: rgba(166, 28, 40, 0.1);
+  box-shadow: var(--luxury-shadow-sm);
+}
+
+.luxury-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--luxury-shadow-md), 0 0 0 1px rgba(212, 175, 55, 0.2);
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+.dark .luxury-card {
+  background: var(--luxury-slate-dark);
+  border-color: rgba(212, 175, 55, 0.1);
+}
+
+/* Luxury Buttons */
+.luxury-btn {
+  @apply relative inline-flex items-center justify-center rounded-md px-4 py-2 font-medium transition-all;
+  background: var(--luxury-gradient-button);
+  color: white;
+  box-shadow: var(--luxury-shadow-sm);
+  text-shadow: var(--luxury-text-shadow);
+  border: 1px solid rgba(166, 28, 40, 0.1);
+  overflow: hidden;
+}
+
+.luxury-btn:hover {
+  box-shadow: var(--luxury-shadow-md), var(--luxury-glow-burgundy);
+  transform: translateY(-1px);
+}
+
+.luxury-btn:active {
+  box-shadow: var(--luxury-inset-sm);
+  transform: translateY(0);
+}
+
+.luxury-btn-gold {
+  background: var(--luxury-gradient-gold);
+  color: var(--luxury-slate-dark);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.luxury-btn-gold:hover {
+  box-shadow: var(--luxury-shadow-md), var(--luxury-glow-gold);
+}
+
+/* Luxury Typography */
+.luxury-heading {
+  @apply text-4xl font-bold tracking-tight;
+  font-family: 'Garamond', 'EB Garamond', serif;
+  color: var(--luxury-slate-dark);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  letter-spacing: -0.02em;
+}
+
+.dark .luxury-heading {
+  color: var(--luxury-cream);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.luxury-subheading {
+  @apply text-2xl font-semibold;
+  font-family: 'Garamond', 'EB Garamond', serif;
+  color: var(--luxury-burgundy);
+}
+
+.dark .luxury-subheading {
+  color: var(--luxury-burgundy-light);
+}
+
+.luxury-label {
+  @apply text-xs font-medium uppercase tracking-wider;
+  color: var(--luxury-slate);
+  letter-spacing: 0.1em;
+}
+
+.dark .luxury-label {
+  color: var(--luxury-silver);
+}
+
+.luxury-value {
+  @apply text-lg font-medium;
+  color: var(--luxury-slate-dark);
+}
+
+.dark .luxury-value {
+  color: white;
+}
+
+/* Luxury Accent Elements */
+.luxury-accent {
+  position: relative;
+  padding-left: 0.75rem;
+}
+
+.luxury-accent::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--luxury-gradient-gold);
+  border-radius: 3px;
+}
+
+/* Gold text effect */
+.gold-text {
+  background: linear-gradient(to right, #BF9B30 0%, #D4AF37 40%, #F2E394 50%, #D4AF37 60%, #BF9B30 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 200% auto;
+  animation: goldShine 4s linear infinite;
+}
+
+@keyframes goldShine {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Burgundy text effect */
+.burgundy-text {
+  background: linear-gradient(to right, #7A151E 0%, #A61C28 40%, #BB1F2E 50%, #A61C28 60%, #7A151E 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 200% auto;
+  animation: burgundyShine 4s linear infinite;
+}
+
+@keyframes burgundyShine {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Luxury input field */
+.luxury-input {
+  @apply block w-full rounded-md border-0 bg-white px-3 py-2 text-gray-900 shadow-sm ring-1 ring-inset transition-all duration-200;
+  border: 1px solid rgba(45, 58, 60, 0.1);
+  box-shadow: var(--luxury-inset-sm);
+}
+
+.luxury-input:focus {
+  @apply outline-none;
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.5);
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
+.dark .luxury-input {
+  @apply bg-slate-800 text-white;
+  border-color: rgba(212, 175, 55, 0.2);
+}
+
+.dark .luxury-input:focus {
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.4);
+}
+
+/* Luxury divider */
+.luxury-divider {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5), transparent);
+  margin: 2rem 0;
+}
+
+.luxury-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #D4AF37;
+  box-shadow: var(--luxury-glow-gold);
+}
+
+.dark .luxury-divider {
+  background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3), transparent);
+}
+
+/* Glass effect */
+.glass-effect {
+  @apply rounded-xl;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.dark .glass-effect {
+  background: rgba(28, 37, 38, 0.7);
+  border: 1px solid rgba(212, 175, 55, 0.05);
+}
+
+/* Keep original aviation variables for backward compatibility */
+:root {
+  /* Map to luxury colors for backward compatibility */
+  --aviation-blue-dark: var(--luxury-slate-dark);
+  --aviation-blue-medium: var(--luxury-slate);
+  --aviation-blue-light: var(--luxury-burgundy);
+  --aviation-blue-accent: var(--luxury-gold);
+  --aviation-blue-ultra-light: var(--luxury-cream);
+  --aviation-sky-blue: var(--luxury-cream-light);
+  --aviation-navy: var(--luxury-slate-dark);
+  --aviation-highlight: var(--luxury-gold);
+  --aviation-alert: var(--luxury-burgundy);
+  --aviation-success: var(--luxury-success);
+  --aviation-deep-ocean: var(--luxury-slate-dark);
+  --aviation-cyan: var(--luxury-silver);
+  
+  /* Update gradients to use luxury colors */
+  --aviation-gradient: var(--luxury-gradient-primary);
+  --aviation-gradient-light: var(--luxury-gradient-gold);
+  --aviation-gradient-accent: var(--luxury-gradient-accent);
+  --aviation-gradient-sky: var(--luxury-gradient-card);
+  --aviation-gradient-alert: var(--luxury-gradient-primary);
+  --aviation-gradient-glow: linear-gradient(135deg, var(--luxury-burgundy-light), var(--luxury-gold));
+  --aviation-gradient-deep: var(--luxury-gradient-dark);
+  --aviation-gradient-accent-strong: var(--luxury-gradient-accent);
+  --aviation-gradient-button: var(--luxury-gradient-button);
   
   /* Dark mode aviation colors */
-  --aviation-dark-blue: #002b4c;    /* Darker blue for dark mode */
-  --aviation-dark-accent: #003a65;  /* Darker accent for dark mode */
-  --aviation-dark-gradient: linear-gradient(135deg, var(--aviation-dark-blue), var(--aviation-dark-accent));
-  --aviation-dark-gradient-glow: linear-gradient(135deg, var(--aviation-dark-blue), var(--aviation-blue-light));
-  --aviation-dark-gradient-sky: linear-gradient(135deg, var(--aviation-dark-accent), var(--aviation-cyan));
-  --aviation-dark-highlight: rgba(160, 208, 236, 0.3); /* Subtle Sky Light Blue highlight for dark mode */
+  --aviation-dark-blue: var(--dark-slate);
+  --aviation-dark-accent: var(--dark-burgundy);
+  --aviation-dark-gradient: var(--luxury-gradient-dark);
+  --aviation-dark-gradient-glow: linear-gradient(135deg, var(--dark-slate), var(--luxury-burgundy-light));
+  --aviation-dark-gradient-sky: linear-gradient(135deg, var(--dark-burgundy), var(--luxury-silver));
+  --aviation-dark-highlight: rgba(212, 175, 55, 0.3);
   
   /* Glow effects */
-  --aviation-glow-sm: 0 0 8px rgba(73, 149, 253, 0.3);
-  --aviation-glow-md: 0 0 15px rgba(73, 149, 253, 0.5);
-  --aviation-glow-lg: 0 0 25px rgba(73, 149, 253, 0.7);
-  --aviation-glow-accent: 0 0 12px rgba(73, 149, 253, 0.4);
+  --aviation-glow-sm: var(--luxury-glow-gold);
+  --aviation-glow-md: var(--luxury-glow-burgundy);
+  --aviation-glow-lg: 0 0 25px rgba(212, 175, 55, 0.7);
+  --aviation-glow-accent: 0 0 12px rgba(212, 175, 55, 0.4);
 }
 
 /* Material icons */ 

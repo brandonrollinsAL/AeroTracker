@@ -29,19 +29,26 @@ export default function HeaderNavigation({
   onMyLocation,
   isDarkMode 
 }: HeaderNavigationProps) {
-  // Luxury-themed button classes
-  const activeButtonClass = filters.showLiveTracking 
-    ? 'bg-gradient-to-r from-[#D4AF37] to-[#A61C28] text-[#F5F5F5] transition-all duration-300 shadow-[0_3px_10px_rgba(212,175,55,0.4)] transform hover:scale-105 hover:shadow-[0_6px_15px_rgba(212,175,55,0.5)]'
-    : 'bg-gradient-to-r from-[#A61C28] to-[#1C2526] text-[#F5F5F5] transition-all duration-300 shadow-[0_3px_10px_rgba(166,28,40,0.4)] transform hover:scale-105 hover:shadow-[0_6px_15px_rgba(166,28,40,0.5)]';
-    
+  // Luxury-themed button classes with enhanced styling
+  const activeButtonClass = 'relative bg-gradient-to-r from-[#A61C28] to-[#7A151E] text-white font-medium transition-all duration-300 shadow-[0_2px_10px_rgba(166,28,40,0.4)] hover:shadow-[0_4px_15px_rgba(166,28,40,0.5)] hover:translate-y-[-2px] border border-[#D4AF37]/30';
+  
+  const goldButtonClass = 'relative bg-gradient-to-r from-[#D4AF37] to-[#BF9B30] text-[#1C2526] font-medium transition-all duration-300 shadow-[0_2px_10px_rgba(212,175,55,0.4)] hover:shadow-[0_4px_15px_rgba(212,175,55,0.5)] hover:translate-y-[-2px] border border-[#D4AF37]/50';
+  
   const inactiveButtonClass = isDarkMode
-    ? 'border-[#4A4A4A] hover:bg-[#1C2526]/20 text-[#F5F5F5] transition-all duration-300 shadow-[0_2px_6px_rgba(28,37,38,0.3)] transform hover:scale-105 hover:shadow-[0_4px_12px_rgba(28,37,38,0.4)]'
-    : 'border-[#4A4A4A]/30 hover:bg-[#F5F5F5]/80 text-[#1C2526] transition-all duration-300 shadow-[0_2px_6px_rgba(28,37,38,0.15)] transform hover:scale-105 hover:shadow-[0_4px_12px_rgba(28,37,38,0.25)]';
+    ? 'relative border border-[#D4AF37]/20 bg-[#1C2526]/80 hover:bg-[#1C2526]/90 text-[#F5F5F5] transition-all duration-300 shadow-[0_2px_6px_rgba(28,37,38,0.3)] hover:shadow-[0_4px_12px_rgba(28,37,38,0.4)] hover:translate-y-[-2px]'
+    : 'relative border border-[#A61C28]/20 bg-white hover:bg-[#F9F5EB] text-[#1C2526] transition-all duration-300 shadow-[0_2px_6px_rgba(28,37,38,0.15)] hover:shadow-[0_4px_12px_rgba(28,37,38,0.25)] hover:translate-y-[-2px]';
   
   // Frosted glass effect with luxury colors
   const headerBgClass = isDarkMode 
-    ? 'bg-[#1C2526]/95 backdrop-blur-[12px] shadow-md border-b border-[#D4AF37]/20' 
-    : 'bg-[#F5F5F5]/95 backdrop-blur-[12px] shadow-sm border-b border-[#D4AF37]/30';
+    ? 'bg-gradient-to-r from-[#1C2526]/95 to-[#2D3A3C]/95 backdrop-blur-[12px] shadow-md border-b border-[#D4AF37]/20' 
+    : 'bg-gradient-to-r from-[#F5F5F5]/95 to-[#F9F5EB]/95 backdrop-blur-[12px] shadow-sm border-b border-[#A61C28]/10';
+    
+  // Get the correct button styling based on filter status and type
+  const getButtonStyle = (isActive: boolean, isLiveTracking: boolean = false) => {
+    if (!isActive) return inactiveButtonClass;
+    if (isLiveTracking) return goldButtonClass;
+    return activeButtonClass;
+  };
 
   return (
     <div className={`w-full flex items-center justify-center ${headerBgClass} sticky top-0 z-50`}>
@@ -53,7 +60,7 @@ export default function HeaderNavigation({
               <Button
                 variant={filters.showWeather ? "default" : "outline"}
                 className={`rounded-md px-3 py-2 h-10 font-heading ${
-                  filters.showWeather ? activeButtonClass : inactiveButtonClass
+                  getButtonStyle(filters.showWeather)
                 }`}
                 onClick={() => onFilterChange({ showWeather: !filters.showWeather })}
               >
@@ -64,8 +71,8 @@ export default function HeaderNavigation({
                 )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="bg-white text-primary-blue-dark border border-metallic font-body">
-              <p>Toggle NEXRAD weather radar overlay</p>
+            <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
+              <p className="text-sm">Toggle NEXRAD weather radar overlay</p>
             </TooltipContent>
           </Tooltip>
           
@@ -75,7 +82,7 @@ export default function HeaderNavigation({
               <Button
                 variant={filters.showFlightPaths ? "default" : "outline"}
                 className={`rounded-md px-3 py-2 h-10 font-heading ${
-                  filters.showFlightPaths ? activeButtonClass : inactiveButtonClass
+                  getButtonStyle(filters.showFlightPaths)
                 }`}
                 onClick={() => onFilterChange({ showFlightPaths: !filters.showFlightPaths })}
               >
@@ -86,8 +93,8 @@ export default function HeaderNavigation({
                 )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="bg-white text-primary-blue-dark border border-metallic font-body">
-              <p>Show detailed flight trajectories and routes</p>
+            <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
+              <p className="text-sm">Show detailed flight trajectories and routes</p>
             </TooltipContent>
           </Tooltip>
           
@@ -97,7 +104,7 @@ export default function HeaderNavigation({
               <Button
                 variant={filters.showAirports ? "default" : "outline"}
                 className={`rounded-md px-3 py-2 h-10 font-heading ${
-                  filters.showAirports ? activeButtonClass : inactiveButtonClass
+                  getButtonStyle(filters.showAirports)
                 }`}
                 onClick={() => onFilterChange({ showAirports: !filters.showAirports })}
               >
@@ -108,8 +115,8 @@ export default function HeaderNavigation({
                 )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="bg-white text-primary-blue-dark border border-metallic font-body">
-              <p>Display international and domestic airport locations</p>
+            <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
+              <p className="text-sm">Display international and domestic airport locations</p>
             </TooltipContent>
           </Tooltip>
           
@@ -119,19 +126,19 @@ export default function HeaderNavigation({
               <Button
                 variant={filters.showLiveTracking ? "default" : "outline"}
                 className={`rounded-md px-3 py-2 h-10 font-heading relative overflow-hidden ${
-                  filters.showLiveTracking ? activeButtonClass : inactiveButtonClass
+                  getButtonStyle(filters.showLiveTracking, true)
                 }`}
                 onClick={() => onFilterChange({ showLiveTracking: !filters.showLiveTracking })}
               >
-                <Plane className={`h-4 w-4 mr-2 ${filters.showLiveTracking ? 'text-white' : ''}`} />
+                <Plane className={`h-4 w-4 mr-2 ${filters.showLiveTracking ? 'text-[#1C2526]' : ''}`} />
                 <span className="text-sm font-label">Live Tracking</span>
                 {filters.showLiveTracking && (
                   <span className="absolute inset-0 rounded-md bg-white/10 animate-pulse"></span>
                 )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="bg-white text-primary-blue-dark border border-metallic font-body">
-              <p>Enable real-time global flight tracking via FlightAware</p>
+            <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
+              <p className="text-sm">Enable real-time global flight tracking via FlightAware</p>
             </TooltipContent>
           </Tooltip>
           
@@ -152,8 +159,8 @@ export default function HeaderNavigation({
                   <span className="absolute inset-0 bg-aviation-blue-light/10 opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent className="bg-white text-primary-blue-dark border border-metallic font-body">
-                <p>Zoom in for detailed view</p>
+              <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
+                <p className="text-sm">Zoom in for detailed view</p>
               </TooltipContent>
             </Tooltip>
             
@@ -169,8 +176,8 @@ export default function HeaderNavigation({
                   <span className="absolute inset-0 bg-aviation-blue-light/10 opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent className="bg-white text-primary-blue-dark border border-metallic font-body">
-                <p>Zoom out for broader coverage</p>
+              <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
+                <p className="text-sm">Zoom out for broader coverage</p>
               </TooltipContent>
             </Tooltip>
             
@@ -186,8 +193,8 @@ export default function HeaderNavigation({
                   <span className="absolute inset-0 bg-aviation-blue-light/10 opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent className="bg-white text-primary-blue-dark border border-metallic font-body">
-                <p>Center map on your current location</p>
+              <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
+                <p className="text-sm">Center map on your current location</p>
               </TooltipContent>
             </Tooltip>
           </div>
