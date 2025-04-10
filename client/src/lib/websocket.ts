@@ -138,6 +138,39 @@ export function useWebSocket(filters: MapFilter) {
               return;
             }
             
+            // Handle connection status messages
+            if (data.type === 'connectionStatus') {
+              console.log('Received connection status update:', data);
+              
+              if (data.status === 'throttled') {
+                // Show user-friendly message about throttling
+                toast({
+                  title: "Connection throttled",
+                  description: data.message || "FlightAware connection is being throttled. Will reconnect automatically.",
+                  duration: 8000,
+                });
+                
+                // Update UI as needed to show temporary disruption
+                setIsConnected(false);
+              }
+              
+              return;
+            }
+            
+            // Handle error messages
+            if (data.type === 'error') {
+              console.error('Received error from server:', data);
+              
+              toast({
+                title: "Server Error",
+                description: data.message || "An error occurred with the flight data connection.",
+                variant: "destructive",
+                duration: 8000,
+              });
+              
+              return;
+            }
+            
             // Support both 'flights' and 'flightUpdate' message types for better compatibility
             if (data.type === 'flights' || data.type === 'flightUpdate') {
               const flightData = data.flights || data.data;

@@ -10,7 +10,7 @@ const FLIGHTAWARE_PASSWORD = process.env.FLIGHTAWARE_PASSWORD;
 
 // Always use REAL flight data with FlightAware credentials
 // Never use mock data even if credentials are not available
-const USE_MOCK_DATA = false; // Force to always use real data, never use mock
+let USE_MOCK_DATA = false; // Force to always use real data, never use mock
 let FALLBACK_TO_MOCK = false; // Never fall back to mock data
 
 // Helper variables for timing broadcasts
@@ -54,27 +54,43 @@ let connectionRetryJitter = () => Math.floor(Math.random() * 1000); // Add rando
 /**
  * Initialize connection to FlightAware Firehose
  */
+// Connection throttling manager
+let isConnectionThrottled = false;
+let throttleTimer: NodeJS.Timeout | null = null;
+
+function startConnectionThrottling(duration: number): void {
+  isConnectionThrottled = true;
+  
+  // Clear any existing throttle timer
+  if (throttleTimer) {
+    clearTimeout(throttleTimer);
+  }
+  
+  console.log(`Starting connection throttling for ${duration/1000} seconds`);
+  
+  // Set a timer to release the throttle
+  throttleTimer = setTimeout(() => {
+    console.log('Connection throttling period ended');
+    isConnectionThrottled = false;
+    reconnectAttempts = 0;
+    throttleTimer = null;
+  }, duration);
+}
+
 export function initializeFlightAwareConnection() {
-  // If using mock data, skip real connection
-  if (USE_MOCK_DATA) {
-    console.log('Using mock data for flight information - skipping FlightAware connection');
-    isConnected = true; // Set connected state to true
-    
-    // Since we're using mock data, populate the cache with mock flights
-    const mockFlights = generateMockFlights(50);
-    flightCache = new Map();
-    mockFlights.forEach(flight => {
-      flightCache.set(flight.id, flight);
-    });
-    
-    // Broadcast the mock data immediately
-    broadcastMessage('flights', mockFlights);
-    storage.cacheFlightData(mockFlights).catch(err => {
-      console.error('Error caching mock flight data:', err);
-    });
-    
+  // Don't attempt to connect if we're in throttling mode
+  if (isConnectionThrottled) {
+    console.log('Connection attempt blocked by throttling');
     return;
   }
+  
+  // Track connection attempts for throttling
+  lastConnectionAttempt = Date.now();
+  connectionPhase = ConnectionPhase.CONNECTING;
+  
+  // Ensure mock data is never used
+  USE_MOCK_DATA = false;
+  FALLBACK_TO_MOCK = false;
   
   // Verify FlightAware credentials
   if (!FLIGHTAWARE_USERNAME || !FLIGHTAWARE_PASSWORD) {
@@ -244,15 +260,42 @@ export function initializeFlightAwareConnection() {
                       
                       // Handle connection limit exceeded
                       if (jsonObj.error_msg && jsonObj.error_msg.includes("Maximum simultaneous connection")) {
-                        console.error('Connection limit exceeded - waiting before reconnecting');
-                        socket?.end();
+                        console.error('CONNECTION LIMIT EXCEEDED - Activating connection throttling');
                         
-                        // Delay reconnection attempt
+                        // Close the current connection properly
+                        if (socket) {
+                          try {
+                            socket.removeAllListeners();
+                            socket.end();
+                            socket.destroy();
+                          } catch (e) {
+                            console.error('Error while closing socket:', e);
+                          }
+                          socket = null;
+                        }
+                        
+                        // Use the throttling manager to prevent excessive connection attempts
+                        const waitTime = 180000 + Math.floor(Math.random() * 60000); // 3-4 minutes
+                        
+                        // Notify clients about the throttling
+                        broadcastMessage('connectionStatus', {
+                          status: 'throttled',
+                          message: 'FlightAware connection throttled due to connection limits. Will automatically reconnect when conditions allow.',
+                          reconnectIn: waitTime
+                        });
+                        
+                        // Start the throttling period
+                        startConnectionThrottling(waitTime);
+                        
+                        // Schedule a single reconnect attempt after the throttling period
                         setTimeout(() => {
-                          reconnectAttempts = 0; // Reset attempts
+                          console.log('Throttling period completed, attempting reconnection');
+                          reconnectAttempts = 0; // Reset attempts counter
                           initializeFlightAwareConnection();
-                        }, 60000); // Wait 60 seconds
+                        }, waitTime + 1000); // Add 1 second buffer after throttling ends
                         
+                        isConnected = false;
+                        connectionPhase = ConnectionPhase.DISCONNECTED;
                         return;
                       }
                     }
@@ -405,31 +448,40 @@ function attemptReconnect() {
     flightCache.clear();
   }
   
+  // If connection is already throttled, don't schedule another reconnect
+  if (isConnectionThrottled) {
+    console.log('Connection attempt blocked by active throttling - will reconnect when throttling ends');
+    return;
+  }
+  
   if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-    console.error(`Max reconnection attempts (${MAX_RECONNECT_ATTEMPTS}) reached. Entering extended retry mode.`);
+    console.error(`Max reconnection attempts (${MAX_RECONNECT_ATTEMPTS}) reached. Entering throttled retry mode.`);
     
-    // No fallback to mock data, ONLY use real flight data
     // Send error message to clients so they can display it
     broadcastMessage('error', {
       message: 'Unable to connect to FlightAware. The server will continue trying to reconnect in the background.',
       code: 'FLIGHTAWARE_CONNECTION_FAILED'
     });
     
-    // DO NOT use mock data under any circumstances - keep the cache empty
-    flightCache.clear();
+    // Start extended throttling
+    const throttleTime = 60000 + Math.floor(Math.random() * 30000); // 60-90 seconds
     
-    // Set connected state to false explicitly
-    isConnected = false;
+    // Notify clients about connection status
+    broadcastMessage('connectionStatus', {
+      status: 'throttled',
+      message: 'FlightAware connection retry limit reached. Implementing extended throttling to avoid API rate limits.',
+      reconnectIn: throttleTime
+    });
     
-    // Reset counters and try with a longer delay
-    reconnectAttempts = 0;
+    // Start throttling
+    startConnectionThrottling(throttleTime);
     
-    // Extended retry with a longer delay (30 seconds)
-    console.log('Switching to extended retry mode with 30 second interval');
+    // Schedule a single reconnect after throttling period
     setTimeout(() => {
-      console.log('Extended retry: attempting to reconnect to FlightAware');
+      console.log('Extended throttling completed, attempting reconnection with reset counter');
+      reconnectAttempts = 0;
       initializeFlightAwareConnection();
-    }, 30000); // 30 seconds between extended retries
+    }, throttleTime + 1000); // Add 1 second buffer
     
     return;
   }
