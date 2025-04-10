@@ -142,16 +142,47 @@ export function useWebSocket(filters: MapFilter) {
             if (data.type === 'connectionStatus') {
               console.log('Received connection status update:', data);
               
-              if (data.status === 'throttled') {
-                // Show user-friendly message about throttling
-                toast({
-                  title: "Connection throttled",
-                  description: data.message || "FlightAware connection is being throttled. Will reconnect automatically.",
-                  duration: 8000,
-                });
-                
-                // Update UI as needed to show temporary disruption
-                setIsConnected(false);
+              switch (data.status) {
+                case 'throttled':
+                  // Show user-friendly message about throttling
+                  toast({
+                    title: "Connection throttled",
+                    description: data.message || "FlightAware connection is being throttled. Will reconnect automatically.",
+                    duration: 8000,
+                  });
+                  
+                  // Update UI as needed to show temporary disruption
+                  setIsConnected(false);
+                  break;
+                  
+                case 'reconnecting':
+                  toast({
+                    title: "Reconnecting",
+                    description: data.message || "Reconnecting to FlightAware...",
+                    duration: 3000,
+                  });
+                  setIsConnected(false);
+                  break;
+                  
+                case 'disconnected':
+                  toast({
+                    title: "Disconnected",
+                    description: data.message || "Lost connection to FlightAware. Reconnecting...",
+                    variant: "destructive",
+                    duration: 5000,
+                  });
+                  setIsConnected(false);
+                  break;
+                  
+                case 'timeout':
+                  toast({
+                    title: "Connection Timeout",
+                    description: data.message || "Connection to FlightAware timed out. Reconnecting...",
+                    variant: "destructive",
+                    duration: 5000,
+                  });
+                  setIsConnected(false);
+                  break;
               }
               
               return;

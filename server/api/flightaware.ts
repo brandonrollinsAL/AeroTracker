@@ -402,19 +402,69 @@ export function initializeFlightAwareConnection() {
     socket.on('error', (error) => {
       console.error('FlightAware connection error:', error);
       isConnected = false;
+      
+      // Handle specific connection errors
+      if (error.code === 'ECONNRESET') {
+        console.log('Connection reset by FlightAware - likely due to API load');
+        
+        // Notify clients about the connection reset
+        broadcastMessage('connectionStatus', {
+          status: 'reconnecting',
+          message: 'FlightAware connection was reset. Reconnecting...',
+          code: 'FLIGHTAWARE_CONNECTION_RESET'
+        });
+        
+        // Apply shorter delay for connection resets
+        const resetDelay = 5000 + Math.floor(Math.random() * 5000); // 5-10 seconds
+        setTimeout(() => {
+          console.log('Retry after connection reset');
+          initializeFlightAwareConnection();
+        }, resetDelay);
+        return;
+      }
+      
       attemptReconnect();
     });
 
     socket.on('close', () => {
       console.log('FlightAware connection closed');
       isConnected = false;
+      connectionPhase = ConnectionPhase.DISCONNECTED;
+      
+      // Notify clients about the connection close
+      broadcastMessage('connectionStatus', {
+        status: 'disconnected',
+        message: 'FlightAware connection closed. Reconnecting...',
+        code: 'FLIGHTAWARE_CONNECTION_CLOSED'
+      });
+      
       attemptReconnect();
     });
     
     socket.on('timeout', () => {
       console.log('FlightAware connection timeout');
       isConnected = false;
-      socket?.end();
+      connectionPhase = ConnectionPhase.DISCONNECTED;
+      
+      // Notify clients about the timeout
+      broadcastMessage('connectionStatus', {
+        status: 'timeout',
+        message: 'FlightAware connection timed out. Reconnecting...',
+        code: 'FLIGHTAWARE_CONNECTION_TIMEOUT'
+      });
+      
+      // Ensure socket is properly closed
+      if (socket) {
+        try {
+          socket.removeAllListeners();
+          socket.end();
+          socket.destroy();
+        } catch (e) {
+          console.error('Error while closing socket after timeout:', e);
+        }
+        socket = null;
+      }
+      
       attemptReconnect();
     });
     
