@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.cdnfonts.com/css/avenir-next-lt-pro');
 
 @tailwind base;
 @tailwind components;
@@ -588,6 +589,110 @@
   margin-bottom: 0.2rem;
   display: block;
   position: relative;
+  padding-left: 1px;
+}
+
+/* Luxury UI Typography */
+.heading-garamond {
+  font-family: 'EB Garamond', Garamond, serif;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.heading-large {
+  font-size: 48px;
+}
+
+.heading-medium {
+  font-size: 36px;
+}
+
+.heading-small {
+  font-size: 24px;
+}
+
+.body-avenir {
+  font-family: 'Avenir Next LT Pro', 'Avenir', 'Avenir Next', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+.luxury-gradient-text {
+  background: linear-gradient(135deg, #A61C28, #D4AF37);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}
+
+.luxury-container {
+  background-color: #F5F5F5;
+  color: #1C2526;
+  border: 1px solid #4A4A4A;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(28, 37, 38, 0.15);
+  padding: 2rem;
+}
+
+.luxury-button {
+  background: linear-gradient(to right, #D4AF37, #A61C28);
+  color: #F5F5F5;
+  font-family: 'Avenir Next LT Pro', 'Avenir', 'Avenir Next', sans-serif;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(212, 175, 55, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.luxury-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.2));
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.luxury-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(212, 175, 55, 0.5);
+}
+
+.luxury-button:hover::before {
+  transform: translateX(100%);
+}
+
+.luxury-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(212, 175, 55, 0.3);
+}
+
+.dark .luxury-container {
+  background-color: #1C2526;
+  color: #F5F5F5;
+  border-color: #4A4A4A;
+}
+
+.dark .luxury-button {
+  box-shadow: 0 3px 10px rgba(166, 28, 40, 0.4);
+}
+
+.dark .luxury-button:hover {
+  box-shadow: 0 6px 15px rgba(166, 28, 40, 0.5);
+}
+
+/* Original code continues */
+.aviation-label {
   padding-left: 1px;
 }
 

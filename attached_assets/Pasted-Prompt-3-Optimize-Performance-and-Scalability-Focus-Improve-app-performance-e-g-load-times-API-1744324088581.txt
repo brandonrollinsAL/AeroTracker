@@ -1,0 +1,26 @@
+Prompt 3: Optimize Performance and Scalability
+Focus: Improve app performance (e.g., load times, API response times) and scalability for high traffic.
+Character Count: ~5,900
+text
+CollapseWrapCopy
+I am tasking Replit AI with optimizing performance and scalability for my full-stack web platform, built with a React frontend, Node.js/Express backend, and a database (e.g., MongoDB/PostgreSQL). The app includes various pages, features, and integrations. Make no assumptions about performance—examine every component, API, and database query, optimizing for fast load times, low API response times, and scalability for high traffic. Provide explicit, step-by-step instructions for a beginner to optimize, test, and deploy the app on Replit Autoscale and Render, targeting Google Lighthouse scores of 95+ for Performance, Accessibility, and SEO.
+
+#### Step-by-Step Instructions
+1. **Optimize Frontend**: In `client/vite.config.ts`, enable code splitting: `build: { rollupOptions: { output: { manualChunks: { vendor: ['react', 'react-dom'] } } } }`. Use dynamic imports: `const Component = React.lazy(() => import('./Component'));`.
+2. **Optimize Images**: Convert all images in `public/images/` to WebP, ensure `loading="lazy"`, and use 16:9 aspect ratio.
+3. **Optimize API Calls**: In `server/routes/index.ts`, cache frequent API responses with Redis: `import redis from 'redis'; const client = redis.createClient(); client.setex('key', 3600, JSON.stringify(data));`.
+4. **Optimize Database**: In `server/index.ts`, add MongoDB indexes: `mongoose.model('Item').createIndex({ category: 1 });`.
+5. **Minify Code**: In `client/vite.config.ts`, enable minification: `build: { minify: 'esbuild' }`.
+6. **Test Performance**: Run `cd client && npm run build`, `npm start`. Use Chrome DevTools (Lighthouse) to confirm scores of 95+ for Performance, Accessibility, SEO.
+7. **Deploy**: Configure Replit Autoscale (build: `npm install && cd client && npm run build`, start: `npm start`). Deploy on Render: `git add .`, `git commit -m "Optimized performance"`, `git push origin main`, click "Clear build cache & deploy".
+
+#### Deliverables
+- **Codebase**: Optimized React frontend, Node.js backend.
+- **Docs**: README with performance optimizations, deployment instructions.
+- **Testing**: Report confirming Lighthouse scores, deployment success.
+#### Success Criteria
+- Lighthouse scores 95+ for Performance, Accessibility, SEO.
+- App handles high traffic with no performance issues.
+#### Steps
+1. Optimize frontend, APIs, database, and code.
+2. Test performance, deploy, document changes.
