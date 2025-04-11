@@ -36,6 +36,7 @@ function App() {
                   <ProtectedRoute path="/subscription/success" component={SubscriptionSuccessPage} />
                   {/* Public routes */}
                   <Route path="/privacy-policy" component={PrivacyPolicy} />
+                  <Route path="/history" component={HistoryPage} />
                   <Route path="/" component={HomePage} />
                   <Route component={NotFound} />
                 </Switch>

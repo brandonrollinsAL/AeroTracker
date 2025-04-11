@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'wouter';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { 
   MoonIcon, 
@@ -24,6 +25,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useSubscription } from '@/hooks/use-subscription';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { LanguageSelector } from '@/components/LanguageSelector';
 
 interface HeaderProps {
   isDarkMode: boolean;
@@ -150,6 +152,9 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
         
         {/* Action buttons - Simplified */}
         <div className="flex items-center space-x-1.5">
+          {/* Language selector */}
+          <LanguageSelector />
+          
           {/* Theme toggle button - Kept this as it's essential for user experience */}
           <Button
             variant="ghost"

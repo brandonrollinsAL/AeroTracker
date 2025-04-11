@@ -1,132 +1,246 @@
 {
-  "app": {
-    "name": "AeroTracker",
-    "tagline": "Advanced Flight Tracking Platform"
+  "common": {
+    "appName": "AeroTracker",
+    "tagline": "Advanced Flight Tracking",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "search": "Search",
+    "filter": "Filter",
+    "viewAll": "View All",
+    "viewMore": "View More",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "confirm": "Confirm",
+    "welcome": "Welcome",
+    "login": "Log In",
+    "signup": "Sign Up",
+    "logout": "Log Out",
+    "profile": "Profile",
+    "home": "Home",
+    "settings": "Settings"
   },
   "header": {
-    "home": "Home",
+    "dashboard": "Dashboard",
     "flights": "Flights",
     "airports": "Airports",
-    "premium": "Premium",
-    "about": "About",
+    "map": "Map",
+    "subscribe": "Subscribe",
+    "account": "My Account",
     "history": "Our History",
-    "login": "Login",
-    "register": "Register",
-    "profile": "Profile",
-    "logout": "Logout"
-  },
-  "map": {
-    "title": "Live Flight Tracking",
-    "filters": {
-      "title": "Map Filters",
-      "all": "All Flights",
-      "commercial": "Commercial",
-      "private": "Private",
-      "weather": "Weather",
-      "paths": "Flight Paths",
-      "airports": "Airports",
-      "live": "Live Tracking"
-    }
-  },
-  "flight": {
-    "details": {
-      "title": "Flight Details",
-      "callsign": "Callsign",
-      "flightNumber": "Flight Number",
-      "origin": "Origin",
-      "destination": "Destination",
-      "aircraft": "Aircraft",
-      "altitude": "Altitude",
-      "speed": "Speed",
-      "status": "Status",
-      "scheduled": "Scheduled",
-      "estimated": "Estimated",
-      "actual": "Actual",
-      "departure": "Departure",
-      "arrival": "Arrival"
-    },
-    "status": {
-      "active": "Active",
-      "landed": "Landed",
-      "scheduled": "Scheduled",
-      "delayed": "Delayed",
-      "cancelled": "Cancelled",
-      "diverted": "Diverted"
-    }
-  },
-  "premium": {
-    "title": "Premium Features",
-    "tagline": "Enhance Your Flight Tracking Experience",
-    "features": {
-      "title": "Exclusive Premium Features",
-      "weatherOverlay": "Weather Overlay",
-      "detailedInfo": "Detailed Aircraft Information",
-      "routeOptimizer": "Route Optimizer",
-      "notifications": "Real-time Notifications",
-      "historical": "Historical Flight Data",
-      "export": "Data Export & Reports"
-    },
-    "plans": {
-      "title": "Subscription Plans",
-      "free": "Free",
-      "premium": "Premium",
-      "enterprise": "Enterprise",
-      "monthly": "Monthly",
-      "yearly": "Yearly",
-      "subscribe": "Subscribe"
-    },
-    "prompt": "Sign in or create an account to access premium features."
-  },
-  "about": {
-    "title": "About AeroTracker",
-    "mission": "Our Mission",
-    "missionText": "AeroTracker strives to provide the most comprehensive and accurate flight tracking platform in the world, empowering aviation professionals and enthusiasts with real-time data and innovative tools.",
-    "team": "Our Team",
-    "technology": "Our Technology"
-  },
-  "history": {
-    "title": "Our History",
-    "subtitle": "The Journey of AeroTracker from Vision to Industry Leader",
-    "timeline": {
-      "founding": "Founding",
-      "firstRelease": "First Release",
-      "majorUpdate": "Major Update",
-      "globalExpansion": "Global Expansion",
-      "aiIntegration": "AI Integration",
-      "present": "Present"
-    }
-  },
-  "footer": {
-    "quickLinks": "Quick Links",
-    "resources": "Resources",
-    "legal": "Legal",
-    "contactSupport": "Contact Support",
-    "copyright": "© {{year}} AeroTracker. All rights reserved."
+    "signIn": "Sign In",
+    "local": "Local",
+    "zulu": "Zulu"
   },
   "auth": {
-    "login": "Login",
-    "register": "Register",
+    "title": "Account Access",
     "email": "Email",
     "username": "Username",
     "password": "Password",
-    "confirm": "Confirm Password",
+    "confirmPassword": "Confirm Password",
     "forgotPassword": "Forgot Password?",
-    "alreadyHaveAccount": "Already have an account?",
-    "needAccount": "Need an account?"
+    "loginTitle": "Welcome Back",
+    "loginSubtitle": "Log in to access your AeroTracker account",
+    "registerTitle": "Create an Account",
+    "registerSubtitle": "Join AeroTracker to unlock all features",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "loginSuccess": "Login successful",
+    "registerSuccess": "Registration successful",
+    "loginError": "Login failed",
+    "registerError": "Registration failed",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "emailInvalid": "Invalid email address",
+    "passwordRequirements": "Password must be at least 8 characters and include a number",
+    "usernameExists": "Username already exists"
   },
-  "settings": {
-    "title": "Settings",
-    "account": "Account",
-    "preferences": "Preferences",
-    "theme": "Theme",
-    "language": "Language",
-    "notifications": "Notifications",
-    "privacy": "Privacy",
-    "languages": {
-      "en": "English",
-      "fr": "Français",
-      "es": "Español",
-      "zh": "中文"
+  "map": {
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "myLocation": "My Location",
+    "legend": "Map Legend",
+    "layers": "Map Layers",
+    "satellite": "Satellite",
+    "terrain": "Terrain",
+    "dark": "Dark Mode",
+    "light": "Light Mode",
+    "traffic": "Traffic",
+    "weather": "Weather",
+    "airports": "Airports",
+    "flights": "Flights",
+    "noFlights": "No flights in this area",
+    "loading": "Loading flight data...",
+    "refreshing": "Refreshing data...",
+    "filters": {
+      "title": "Filters",
+      "airline": "Airline",
+      "aircraft": "Aircraft Type",
+      "altitude": "Altitude (ft)",
+      "speed": "Speed (kts)",
+      "status": "Flight Status",
+      "clear": "Clear Filters"
     }
+  },
+  "flights": {
+    "flightNumber": "Flight Number",
+    "airline": "Airline",
+    "status": "Status",
+    "departure": "Departure",
+    "arrival": "Arrival",
+    "aircraft": "Aircraft",
+    "registration": "Registration",
+    "altitude": "Altitude",
+    "speed": "Speed",
+    "heading": "Heading",
+    "tracking": "Track",
+    "details": "Details",
+    "origin": "Origin",
+    "destination": "Destination",
+    "scheduledDeparture": "Scheduled Departure",
+    "actualDeparture": "Actual Departure",
+    "scheduledArrival": "Scheduled Arrival",
+    "estimatedArrival": "Estimated Arrival",
+    "terminal": "Terminal",
+    "gate": "Gate",
+    "route": "Route",
+    "duration": "Duration",
+    "distance": "Distance",
+    "flightInfo": "Flight Information",
+    "status": {
+      "scheduled": "Scheduled",
+      "active": "Active",
+      "landed": "Landed",
+      "cancelled": "Cancelled",
+      "diverted": "Diverted",
+      "delayed": "Delayed"
+    }
+  },
+  "airports": {
+    "code": "Code",
+    "name": "Name",
+    "city": "City",
+    "country": "Country",
+    "timezone": "Timezone",
+    "coordinates": "Coordinates",
+    "elevation": "Elevation",
+    "runways": "Runways",
+    "terminals": "Terminals",
+    "weather": "Weather",
+    "departures": "Departures",
+    "arrivals": "Arrivals",
+    "alerts": "Alerts",
+    "facilities": "Facilities",
+    "information": "Airport Information"
+  },
+  "subscription": {
+    "title": "Subscription Plans",
+    "subtitle": "Choose the plan that suits your needs",
+    "current": "Current Plan",
+    "upgrade": "Upgrade",
+    "downgrade": "Downgrade",
+    "renew": "Renew",
+    "cancel": "Cancel Subscription",
+    "expiry": "Expires on",
+    "payment": "Payment Information",
+    "cardName": "Name on Card",
+    "cardNumber": "Card Number",
+    "cardExpiry": "Expiry Date",
+    "cardCVC": "CVC",
+    "billingAddress": "Billing Address",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "description": "Basic flight tracking",
+        "price": "Free",
+        "features": [
+          "Real-time flight tracking",
+          "Basic map features",
+          "Limited flight history",
+          "Standard data refresh rate"
+        ]
+      },
+      "premium": {
+        "name": "Premium",
+        "description": "Enhanced flight tracking for aviation enthusiasts",
+        "price": "$9.99/month",
+        "features": [
+          "Everything in Free plan",
+          "Advanced filters and search",
+          "Extended flight history",
+          "Faster data refresh rate",
+          "Weather overlays",
+          "Route optimization",
+          "Flight alerts"
+        ]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "description": "Professional tools for aviation businesses",
+        "price": "$29.99/month",
+        "features": [
+          "Everything in Premium plan",
+          "API access",
+          "Data export",
+          "Priority support",
+          "Custom dashboard",
+          "Advanced analytics",
+          "Multiple user accounts"
+        ]
+      }
+    },
+    "success": "Subscription successfully updated",
+    "failure": "Failed to update subscription"
+  },
+  "history": {
+    "title": "Our History",
+    "subtitle": "The story of AeroTracker's journey to becoming the leading flight tracking platform",
+    "timeline": {
+      "founding": "Company Foundation",
+      "firstRelease": "First Platform Release",
+      "majorUpdate": "Major Platform Update",
+      "globalExpansion": "Global Expansion",
+      "aiIntegration": "AI Integration",
+      "present": "Leading the Industry"
+    }
+  },
+  "about": {
+    "team": "Our Team",
+    "mission": "Our Mission",
+    "missionText": "To provide the most accurate, comprehensive, and user-friendly flight tracking platform in the world, empowering aviation professionals and enthusiasts with real-time insights and advanced analytics."
+  },
+  "footer": {
+    "copyright": "© 2025 AeroTracker. All rights reserved.",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "contact": "Contact Us",
+    "about": "About",
+    "careers": "Careers",
+    "help": "Help Center",
+    "feedback": "Feedback",
+    "followUs": "Follow Us",
+    "newsletter": "Subscribe to our newsletter",
+    "emailPlaceholder": "Enter your email",
+    "subscribe": "Subscribe"
+  },
+  "alerts": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information"
+  },
+  "errors": {
+    "general": "Something went wrong",
+    "network": "Network error",
+    "unauthorized": "Please log in to continue",
+    "forbidden": "You do not have permission to access this resource",
+    "notFound": "Resource not found",
+    "serverError": "Server error",
+    "validation": "Validation error",
+    "timeout": "Request timed out"
   }
 }
