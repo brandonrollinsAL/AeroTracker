@@ -1,15 +1,16 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Express } from "express";
+import { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
+import jwt from "jsonwebtoken";
 import { storage } from "./storage";
 import { User as SelectUser } from "@shared/schema";
 // Import PostgreSQL session store with dynamic import for ES Module compatibility
 import { pool } from "./db";
-import session from "express-session";
 import pgSession from "connect-pg-simple";
+import { validationResult, body } from "express-validator";
 
 // Create session store
 const PostgresSessionStore = pgSession(session);
@@ -21,6 +22,45 @@ declare global {
 }
 
 const scryptAsync = promisify(scrypt);
+
+// JWT Settings
+const JWT_SECRET = process.env.JWT_SECRET || 'aero-tracker-jwt-secret-dev';
+const JWT_EXPIRES_IN = '24h'; // Token expires in 24 hours
+
+// Function to generate a JWT token
+function generateJwtToken(user: SelectUser) {
+  const { password, ...userDataForToken } = user;
+  return jwt.sign(
+    userDataForToken, 
+    JWT_SECRET, 
+    { 
+      expiresIn: JWT_EXPIRES_IN,
+      subject: user.id.toString()
+    }
+  );
+}
+
+// JWT Authentication Middleware
+function authenticateJWT(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers.authorization;
+  
+  if (authHeader) {
+    const token = authHeader.split(' ')[1];
+    
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+      if (err) {
+        return res.status(403).json({ error: 'Token is invalid or expired' });
+      }
+      
+      // Add the decoded user to request
+      req.user = user as Express.User;
+      next();
+    });
+  } else {
+    // If no token, continue with session-based auth
+    next();
+  }
+}
 
 async function hashPassword(password: string) {
   const salt = randomBytes(16).toString("hex");
@@ -97,26 +137,29 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/register", async (req, res, next) => {
+  // Enhanced registration with validation and security checks
+  app.post("/api/register", [
+    body('username')
+      .trim()
+      .isLength({ min: 3 }).withMessage('Username must be at least 3 characters long')
+      .matches(/^[a-zA-Z0-9_]+$/).withMessage('Username can only contain letters, numbers, and underscores')
+      .escape(),
+    body('password')
+      .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/).withMessage('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
+    body('email')
+      .trim()
+      .isEmail().withMessage('Invalid email format')
+      .normalizeEmail()
+  ], async (req, res, next) => {
     try {
+      // Check for validation errors
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      
       const { username, password, email } = req.body;
-
-      // Validation
-      if (!username || !password || !email) {
-        return res.status(400).json({ error: "Username, password and email are required" });
-      }
-
-      if (username.length < 3) {
-        return res.status(400).json({ error: "Username must be at least 3 characters long" });
-      }
-
-      if (password.length < 8) {
-        return res.status(400).json({ error: "Password must be at least 8 characters long" });
-      }
-
-      if (!isValidEmail(email)) {
-        return res.status(400).json({ error: "Invalid email format" });
-      }
 
       const isUsernameAvailable = await checkUsernameAvailability(username);
       if (!isUsernameAvailable) {
@@ -158,7 +201,17 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/login", (req, res, next) => {
+  // Enhanced login with JWT token generation and input validation
+  app.post("/api/login", [
+    body('username').trim().notEmpty().withMessage('Username is required'),
+    body('password').trim().notEmpty().withMessage('Password is required')
+  ], (req, res, next) => {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     passport.authenticate("local", (err: any, user: Express.User | false, info: { message: string } | undefined) => {
       if (err) return next(err);
       if (!user) {
@@ -166,9 +219,19 @@ export function setupAuth(app: Express) {
       }
       req.login(user, (err: any) => {
         if (err) return next(err);
+        
+        // Generate JWT token
+        const token = generateJwtToken(user);
+        
         // Don't send the password hash back to the client
         const { password, ...userWithoutPassword } = user;
-        res.status(200).json(userWithoutPassword);
+        
+        // Send both user data and JWT token
+        res.status(200).json({
+          user: userWithoutPassword,
+          token: token,
+          expiresIn: JWT_EXPIRES_IN
+        });
       });
     })(req, res, next);
   });

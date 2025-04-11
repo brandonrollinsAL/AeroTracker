@@ -1,0 +1,25 @@
+Prompt 4: Enhance Security to Industry-Leading Standards
+Focus: Strengthen security with best practices (e.g., JWT, input validation, GDPR compliance).
+Character Count: ~5,900
+text
+CollapseWrapCopy
+I am tasking Replit AI with enhancing security for my full-stack web platform, built with a React frontend, Node.js/Express backend, and a database (e.g., MongoDB/PostgreSQL). The app includes various pages, features, and integrations. Make no assumptions about security—examine every endpoint, input, and data flow, implementing industry-leading security practices (e.g., JWT, input validation, GDPR compliance). Provide explicit, step-by-step instructions for a beginner to secure, test, and deploy the app on Replit Autoscale and Render.
+
+#### Step-by-Step Instructions
+1. **Add JWT Authentication**: In `server/index.ts`, add `jsonwebtoken`: `npm install jsonwebtoken`. Implement JWT: `const jwt = require('jsonwebtoken'); app.use((req, res, next) => { const token = req.headers['authorization']; if (!token) return res.status(401).json({ message: 'No token' }); jwt.verify(token, process.env.JWT_SECRET, (err, user) => { if (err) return res.status(403).json({ message: 'Invalid token' }); req.user = user; next(); }); });`.
+2. **Add Input Validation**: In `server/routes/index.ts`, use `express-validator`: `npm install express-validator`. Validate inputs: `const { body, validationResult } = require('express-validator'); router.post('/contact', [body('email').isEmail()], (req, res) => { const errors = validationResult(req); if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() }); });`.
+3. **Add Security Headers**: In `server/index.ts`, use `helmet`: `npm install helmet`. Add `app.use(helmet());`.
+4. **Ensure GDPR Compliance**: In `client/src/pages/Privacy.tsx`, add a consent popup for cookies and data collection.
+5. **Test Security**: Run `npm start`, test endpoints with invalid inputs, confirm JWT protection, and check for GDPR consent.
+6. **Deploy**: Configure Replit Autoscale (build: `npm install && cd client && npm run build`, start: `npm start`). Deploy on Render: `git add .`, `git commit -m "Enhanced security"`, `git push origin main`, click "Clear build cache & deploy".
+
+#### Deliverables
+- **Codebase**: Secured React frontend, Node.js backend.
+- **Docs**: README with security enhancements, deployment instructions.
+- **Testing**: Report confirming security measures, deployment success.
+#### Success Criteria
+- App is secure with JWT, input validation, GDPR compliance.
+- Deployment succeeds with no security issues.
+#### Steps
+1. Add JWT, input validation, security headers, GDPR compliance.
+2. Test security, deploy, document changes.
