@@ -1,9 +1,9 @@
 {
   "common": {
     "appName": "AeroTracker",
-    "tagline": "Seguimiento de Vuelos Avanzado",
+    "tagline": "Seguimiento Avanzado de Vuelos",
     "loading": "Cargando...",
-    "error": "Ha ocurrido un error",
+    "error": "Se ha producido un error",
     "retry": "Reintentar",
     "save": "Guardar",
     "cancel": "Cancelar",
@@ -42,27 +42,27 @@
     "email": "Correo electrónico",
     "username": "Nombre de usuario",
     "password": "Contraseña",
-    "confirmPassword": "Confirmar Contraseña",
-    "forgotPassword": "¿Olvidó su Contraseña?",
+    "confirmPassword": "Confirmar contraseña",
+    "forgotPassword": "¿Olvidó su contraseña?",
     "loginTitle": "Bienvenido de Nuevo",
-    "loginSubtitle": "Inicia sesión para acceder a tu cuenta AeroTracker",
+    "loginSubtitle": "Inicie sesión para acceder a su cuenta AeroTracker",
     "registerTitle": "Crear una Cuenta",
-    "registerSubtitle": "Únete a AeroTracker para desbloquear todas las funciones",
-    "noAccount": "¿No tienes una cuenta?",
-    "hasAccount": "¿Ya tienes una cuenta?",
+    "registerSubtitle": "Únase a AeroTracker para desbloquear todas las funciones",
+    "noAccount": "¿No tiene cuenta?",
+    "hasAccount": "¿Ya tiene una cuenta?",
     "loginSuccess": "Inicio de sesión exitoso",
     "registerSuccess": "Registro exitoso",
-    "loginError": "Error al iniciar sesión",
-    "registerError": "Error al registrarse",
+    "loginError": "Error de inicio de sesión",
+    "registerError": "Error de registro",
     "passwordsDoNotMatch": "Las contraseñas no coinciden",
     "emailInvalid": "Correo electrónico inválido",
     "passwordRequirements": "La contraseña debe tener al menos 8 caracteres e incluir un número",
-    "usernameExists": "El nombre de usuario ya existe"
+    "usernameExists": "Este nombre de usuario ya existe"
   },
   "map": {
     "zoomIn": "Acercar",
     "zoomOut": "Alejar",
-    "myLocation": "Mi Ubicación",
+    "myLocation": "Mi ubicación",
     "legend": "Leyenda",
     "layers": "Capas",
     "satellite": "Satélite",
@@ -97,7 +97,7 @@
     "altitude": "Altitud",
     "speed": "Velocidad",
     "heading": "Rumbo",
-    "tracking": "Seguir",
+    "tracking": "Seguimiento",
     "details": "Detalles",
     "origin": "Origen",
     "destination": "Destino",
@@ -110,10 +110,10 @@
     "route": "Ruta",
     "duration": "Duración",
     "distance": "Distancia",
-    "flightInfo": "Información de Vuelo",
+    "flightInfo": "Información del Vuelo",
     "status": {
       "scheduled": "Programado",
-      "active": "Activo",
+      "active": "En Vuelo",
       "landed": "Aterrizado",
       "cancelled": "Cancelado",
       "diverted": "Desviado",
@@ -139,10 +139,10 @@
   },
   "subscription": {
     "title": "Planes de Suscripción",
-    "subtitle": "Elige el plan que se adapte a tus necesidades",
+    "subtitle": "Elija el plan que satisfaga sus necesidades",
     "current": "Plan Actual",
     "upgrade": "Mejorar",
-    "downgrade": "Reducir",
+    "downgrade": "Degradar",
     "renew": "Renovar",
     "cancel": "Cancelar Suscripción",
     "expiry": "Expira el",
@@ -154,7 +154,7 @@
     "billingAddress": "Dirección de Facturación",
     "plans": {
       "free": {
-        "name": "Gratis",
+        "name": "Gratuito",
         "description": "Seguimiento de vuelo básico",
         "price": "Gratis",
         "features": [
@@ -167,55 +167,55 @@
       "premium": {
         "name": "Premium",
         "description": "Seguimiento de vuelo mejorado para entusiastas de la aviación",
-        "price": "$9.99/mes",
+        "price": "9,99€/mes",
         "features": [
-          "Todo lo incluido en el plan Gratis",
-          "Filtros avanzados y búsqueda",
+          "Todo lo incluido en el plan Gratuito",
+          "Filtros y búsqueda avanzados",
           "Historial de vuelo extendido",
           "Velocidad de actualización más rápida",
-          "Capas climáticas",
+          "Capas meteorológicas",
           "Optimización de ruta",
           "Alertas de vuelo"
         ]
       },
       "enterprise": {
         "name": "Empresarial",
-        "description": "Herramientas profesionales para empresas de aviación",
-        "price": "$29.99/mes",
+        "description": "Herramientas profesionales para empresas aeronáuticas",
+        "price": "29,99€/mes",
         "features": [
           "Todo lo incluido en el plan Premium",
           "Acceso API",
           "Exportación de datos",
           "Soporte prioritario",
-          "Panel personalizado",
+          "Panel de control personalizado",
           "Análisis avanzados",
           "Múltiples cuentas de usuario"
         ]
       }
     },
-    "success": "Suscripción actualizada exitosamente",
+    "success": "Suscripción actualizada con éxito",
     "failure": "Error al actualizar la suscripción"
   },
   "history": {
     "title": "Nuestra Historia",
-    "subtitle": "La historia del viaje de AeroTracker para convertirse en la plataforma líder de seguimiento de vuelos",
+    "subtitle": "La historia del viaje de AeroTracker para convertirse en la plataforma líder de seguimiento de vuelo",
     "timeline": {
       "founding": "Fundación de la Empresa",
       "firstRelease": "Primer Lanzamiento de la Plataforma",
       "majorUpdate": "Actualización Mayor de la Plataforma",
       "globalExpansion": "Expansión Global",
       "aiIntegration": "Integración de IA",
-      "present": "Liderando la Industria"
+      "present": "Líder de la Industria"
     }
   },
   "about": {
     "team": "Nuestro Equipo",
     "mission": "Nuestra Misión",
-    "missionText": "Proporcionar la plataforma de seguimiento de vuelos más precisa, completa y fácil de usar en el mundo, empoderando a profesionales y entusiastas de la aviación con información en tiempo real y análisis avanzados."
+    "missionText": "Proporcionar la plataforma de seguimiento de vuelo más precisa, completa y fácil de usar del mundo, ofreciendo a profesionales de la aviación y entusiastas información en tiempo real y análisis avanzados."
   },
   "footer": {
     "copyright": "© 2025 AeroTracker. Todos los derechos reservados.",
-    "terms": "Términos de Servicio",
+    "terms": "Términos de Uso",
     "privacy": "Política de Privacidad",
     "contact": "Contáctenos",
     "about": "Acerca de",
@@ -224,7 +224,7 @@
     "feedback": "Comentarios",
     "followUs": "Síguenos",
     "newsletter": "Suscríbete a nuestro boletín",
-    "emailPlaceholder": "Ingresa tu correo electrónico",
+    "emailPlaceholder": "Introduce tu correo electrónico",
     "subscribe": "Suscribirse"
   },
   "alerts": {
@@ -234,10 +234,10 @@
     "info": "Información"
   },
   "errors": {
-    "general": "Algo salió mal",
+    "general": "Se ha producido un error",
     "network": "Error de red",
-    "unauthorized": "Por favor inicia sesión para continuar",
-    "forbidden": "No tienes permiso para acceder a este recurso",
+    "unauthorized": "Por favor inicie sesión para continuar",
+    "forbidden": "No tiene permiso para acceder a este recurso",
     "notFound": "Recurso no encontrado",
     "serverError": "Error del servidor",
     "validation": "Error de validación",

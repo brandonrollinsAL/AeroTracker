@@ -20,7 +20,7 @@
     "welcome": "欢迎",
     "login": "登录",
     "signup": "注册",
-    "logout": "退出登录",
+    "logout": "登出",
     "profile": "个人资料",
     "home": "首页",
     "settings": "设置"
@@ -35,7 +35,7 @@
     "history": "我们的历史",
     "signIn": "登录",
     "local": "本地时间",
-    "zulu": "协调世界时"
+    "zulu": "世界时间"
   },
   "auth": {
     "title": "账户访问",
@@ -48,16 +48,16 @@
     "loginSubtitle": "登录以访问您的AeroTracker账户",
     "registerTitle": "创建账户",
     "registerSubtitle": "加入AeroTracker以解锁所有功能",
-    "noAccount": "没有账户？",
+    "noAccount": "还没有账户？",
     "hasAccount": "已有账户？",
     "loginSuccess": "登录成功",
     "registerSuccess": "注册成功",
-    "loginError": "登录失败",
-    "registerError": "注册失败",
+    "loginError": "登录错误",
+    "registerError": "注册错误",
     "passwordsDoNotMatch": "密码不匹配",
-    "emailInvalid": "无效的电子邮箱",
+    "emailInvalid": "电子邮箱无效",
     "passwordRequirements": "密码必须至少包含8个字符和一个数字",
-    "usernameExists": "用户名已存在"
+    "usernameExists": "此用户名已存在"
   },
   "map": {
     "zoomIn": "放大",
@@ -67,8 +67,8 @@
     "layers": "图层",
     "satellite": "卫星",
     "terrain": "地形",
-    "dark": "暗黑模式",
-    "light": "明亮模式",
+    "dark": "暗模式",
+    "light": "亮模式",
     "traffic": "交通",
     "weather": "天气",
     "airports": "机场",
@@ -99,7 +99,7 @@
     "heading": "航向",
     "tracking": "追踪",
     "details": "详情",
-    "origin": "始发地",
+    "origin": "出发地",
     "destination": "目的地",
     "scheduledDeparture": "计划出发",
     "actualDeparture": "实际出发",
@@ -108,13 +108,13 @@
     "terminal": "航站楼",
     "gate": "登机口",
     "route": "航线",
-    "duration": "飞行时间",
+    "duration": "时长",
     "distance": "距离",
     "flightInfo": "航班信息",
     "status": {
-      "scheduled": "已排定",
+      "scheduled": "已计划",
       "active": "飞行中",
-      "landed": "已着陆",
+      "landed": "已降落",
       "cancelled": "已取消",
       "diverted": "已改道",
       "delayed": "已延误"
@@ -139,7 +139,7 @@
   },
   "subscription": {
     "title": "订阅计划",
-    "subtitle": "选择适合您需求的计划",
+    "subtitle": "选择满足您需求的计划",
     "current": "当前计划",
     "upgrade": "升级",
     "downgrade": "降级",
@@ -150,7 +150,7 @@
     "cardName": "持卡人姓名",
     "cardNumber": "卡号",
     "cardExpiry": "有效期",
-    "cardCVC": "CVC码",
+    "cardCVC": "安全码",
     "billingAddress": "账单地址",
     "plans": {
       "free": {
@@ -161,29 +161,29 @@
           "实时航班追踪",
           "基本地图功能",
           "有限的航班历史",
-          "标准数据刷新率"
+          "标准刷新速率"
         ]
       },
       "premium": {
         "name": "高级",
-        "description": "面向航空爱好者的增强型航班追踪",
-        "price": "$9.99/月",
+        "description": "为航空爱好者提供增强的航班追踪",
+        "price": "9.99€/月",
         "features": [
-          "免费计划中的所有功能",
+          "包含免费计划的所有功能",
           "高级筛选和搜索",
           "扩展的航班历史",
-          "更快的数据刷新率",
-          "天气叠加层",
+          "更快的刷新速率",
+          "天气图层",
           "航线优化",
           "航班提醒"
         ]
       },
       "enterprise": {
-        "name": "企业版",
-        "description": "面向航空企业的专业工具",
-        "price": "$29.99/月",
+        "name": "企业",
+        "description": "航空公司专业工具",
+        "price": "29.99€/月",
         "features": [
-          "高级计划中的所有功能",
+          "包含高级计划的所有功能",
           "API访问",
           "数据导出",
           "优先支持",
@@ -193,33 +193,33 @@
         ]
       }
     },
-    "success": "订阅更新成功",
-    "failure": "订阅更新失败"
+    "success": "订阅已成功更新",
+    "failure": "更新订阅失败"
   },
   "history": {
     "title": "我们的历史",
     "subtitle": "AeroTracker成为领先航班追踪平台的历程",
     "timeline": {
       "founding": "公司成立",
-      "firstRelease": "第一版平台发布",
+      "firstRelease": "平台首次发布",
       "majorUpdate": "平台重大更新",
-      "globalExpansion": "全球扩张",
-      "aiIntegration": "AI整合",
-      "present": "引领行业"
+      "globalExpansion": "全球扩展",
+      "aiIntegration": "人工智能集成",
+      "present": "行业领导者"
     }
   },
   "about": {
     "team": "我们的团队",
     "mission": "我们的使命",
-    "missionText": "提供全球最精确、最全面、最用户友好的航班追踪平台，为航空专业人士和爱好者提供实时见解和高级分析。"
+    "missionText": "提供全球最精确、最全面、最用户友好的航班追踪平台，为航空专业人士和爱好者提供实时信息和高级分析。"
   },
   "footer": {
     "copyright": "© 2025 AeroTracker。保留所有权利。",
-    "terms": "服务条款",
+    "terms": "使用条款",
     "privacy": "隐私政策",
     "contact": "联系我们",
     "about": "关于我们",
-    "careers": "招聘信息",
+    "careers": "职业机会",
     "help": "帮助中心",
     "feedback": "反馈",
     "followUs": "关注我们",
@@ -234,13 +234,13 @@
     "info": "信息"
   },
   "errors": {
-    "general": "出现错误",
+    "general": "发生错误",
     "network": "网络错误",
     "unauthorized": "请登录以继续",
-    "forbidden": "您没有权限访问此资源",
+    "forbidden": "您无权访问此资源",
     "notFound": "未找到资源",
     "serverError": "服务器错误",
     "validation": "验证错误",
-    "timeout": "请求超时"
+    "timeout": "超时"
   }
 }

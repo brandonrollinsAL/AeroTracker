@@ -1,161 +1,123 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet';
+import { motion } from 'framer-motion';
+import { History, Award, Globe, Target, Cpu, UsersRound } from 'lucide-react';
+import Header from '@/components/Header';
 
 export default function HistoryPage() {
   const { t } = useTranslation();
   
-  // Company timeline events
+  // Timeline data with dates and key milestones
   const timeline = [
     {
       year: '2020',
       title: t('history.timeline.founding'),
-      description: 'AeroTracker was founded with a mission to revolutionize flight tracking for aviation professionals and enthusiasts.',
-      icon: '🚀'
+      description: 'The founding team of aviation enthusiasts and software engineers came together to build a better flight tracking platform.',
+      icon: <History className="h-8 w-8 text-blue-600" />
     },
     {
       year: '2021',
       title: t('history.timeline.firstRelease'),
-      description: 'The first version of AeroTracker was released, featuring basic flight tracking and airport information.',
-      icon: '✈️'
+      description: 'The first version of AeroTracker was released, offering basic flight tracking capabilities.',
+      icon: <Award className="h-8 w-8 text-blue-600" />
     },
     {
       year: '2022',
       title: t('history.timeline.majorUpdate'),
-      description: 'Major platform update with advanced filtering, clustering, and weather overlays.',
-      icon: '⚡'
+      description: 'Major platform update with enhanced UI, additional data sources, and advanced filtering.',
+      icon: <Target className="h-8 w-8 text-blue-600" />
     },
     {
       year: '2023',
       title: t('history.timeline.globalExpansion'),
-      description: 'Global expansion with multilingual support and partnerships with major aviation data providers.',
-      icon: '🌎'
+      description: 'Expanded global coverage with additional data sources and partnerships with international aviation organizations.',
+      icon: <Globe className="h-8 w-8 text-blue-600" />
     },
     {
       year: '2024',
       title: t('history.timeline.aiIntegration'),
-      description: 'Integration of artificial intelligence for route optimization and predictive analytics.',
-      icon: '🧠'
+      description: 'Integration of AI-powered features for flight prediction, route optimization, and advanced analytics.',
+      icon: <Cpu className="h-8 w-8 text-blue-600" />
     },
     {
       year: '2025',
       title: t('history.timeline.present'),
-      description: 'Continued innovation and development to maintain position as the industry-leading flight tracking platform.',
-      icon: '🏆'
-    }
-  ];
-  
-  // Team members
-  const team = [
-    {
-      name: 'Alex Reynolds',
-      title: 'CEO & Founder',
-      bio: 'Former airline pilot with 20+ years of aviation experience and a passion for technology.'
-    },
-    {
-      name: 'Sophia Chen',
-      title: 'CTO',
-      bio: 'Computer science PhD with expertise in real-time data processing and geospatial visualization.'
-    },
-    {
-      name: 'Marcus Johnson',
-      title: 'Head of Data Engineering',
-      bio: 'Expert in big data systems and cloud infrastructure with a background in aerospace engineering.'
-    },
-    {
-      name: 'Olivia Patel',
-      title: 'UX Design Lead',
-      bio: 'Award-winning designer focused on creating intuitive interfaces for complex data visualization.'
+      description: 'AeroTracker becomes the leading flight tracking platform with millions of users worldwide.',
+      icon: <UsersRound className="h-8 w-8 text-blue-600" />
     }
   ];
 
   return (
-    <div className="container mx-auto py-12 px-4 md:px-6">
-      <Helmet>
-        <title>{t('history.title')} | AeroTracker</title>
-        <meta name="description" content="The history and journey of AeroTracker from founding to becoming an industry leader in flight tracking technology." />
-      </Helmet>
-      
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-2 text-center luxury-heading">
-          {t('history.title')}
-        </h1>
-        <p className="text-xl text-center text-muted-foreground mb-12">
-          {t('history.subtitle')}
-        </p>
-        
-        {/* Timeline section */}
-        <div className="mb-20">
-          <h2 className="text-2xl font-semibold mb-8 luxury-subheading">
-            Our Journey
-          </h2>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="container mx-auto px-4 py-16">
+        {/* Hero section */}
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            {t('history.title')}
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            {t('history.subtitle')}
+          </p>
+        </motion.div>
+
+        {/* Timeline */}
+        <div className="relative">
+          {/* Center line */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-blue-200 dark:bg-blue-900"></div>
           
-          <div className="relative border-l-2 border-primary/30 pl-10 ml-6">
-            {timeline.map((event, index) => (
-              <div key={index} className="mb-12 relative">
-                <div className="absolute -left-[3.25rem] flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-[#003a65] to-[#4995fd] text-white">
-                  <span className="text-lg">{event.icon}</span>
+          {/* Timeline items */}
+          <div className="space-y-12">
+            {timeline.map((item, index) => (
+              <motion.div 
+                key={index}
+                className={`flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}
+                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <div className={`w-1/2 ${index % 2 === 0 ? 'pr-16 text-right' : 'pl-16'}`}>
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+                    <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 block mb-1">
+                      {item.year}
+                    </span>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {item.description}
+                    </p>
+                  </div>
                 </div>
-                <div className="glass-effect p-6 rounded-lg">
-                  <div className="text-sm text-muted-foreground mb-1">{event.year}</div>
-                  <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
-                  <p className="text-muted-foreground">{event.description}</p>
+                
+                <div className="z-10 flex items-center justify-center w-12 h-12 rounded-full bg-white dark:bg-gray-800 border-4 border-blue-500 shadow">
+                  {item.icon}
                 </div>
-              </div>
+                
+                <div className="w-1/2"></div>
+              </motion.div>
             ))}
           </div>
         </div>
-        
-        {/* Team section */}
-        <div className="mb-20">
-          <h2 className="text-2xl font-semibold mb-8 luxury-subheading">
-            {t('about.team')}
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {team.map((member, index) => (
-              <div key={index} className="luxury-card p-6">
-                <h3 className="text-xl font-semibold mb-1">{member.name}</h3>
-                <div className="text-primary font-medium mb-2">{member.title}</div>
-                <p className="text-muted-foreground">{member.bio}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-        
+
         {/* Mission section */}
-        <div className="mb-20">
-          <h2 className="text-2xl font-semibold mb-6 luxury-subheading">
+        <motion.div 
+          className="mt-24 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md border border-gray-200 dark:border-gray-700"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+        >
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
             {t('about.mission')}
           </h2>
-          
-          <div className="luxury-section p-8">
-            <blockquote className="text-lg italic border-l-4 border-primary pl-6 py-2">
-              {t('about.missionText')}
-            </blockquote>
-          </div>
-        </div>
-        
-        {/* Testimonials */}
-        <div>
-          <h2 className="text-2xl font-semibold mb-8 luxury-subheading">
-            What Our Users Say
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="luxury-card p-6">
-              <p className="italic mb-4">"AeroTracker has transformed how our airline manages flight operations. The real-time data and analytics have become an essential part of our daily workflow."</p>
-              <div className="font-semibold">James Wilson</div>
-              <div className="text-muted-foreground text-sm">Chief Operations Officer, Pacific Airways</div>
-            </div>
-            
-            <div className="luxury-card p-6">
-              <p className="italic mb-4">"As a private pilot, the route optimization features have helped me plan more efficient flights and save on fuel costs. The interface is intuitive and packed with useful information."</p>
-              <div className="font-semibold">Maria Rodriguez</div>
-              <div className="text-muted-foreground text-sm">Private Pilot & Flight Instructor</div>
-            </div>
-          </div>
-        </div>
+          <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
+            {t('about.missionText')}
+          </p>
+        </motion.div>
       </div>
     </div>
   );

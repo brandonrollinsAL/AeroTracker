@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Route, Switch } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/hooks/use-theme";
@@ -21,13 +22,41 @@ import HistoryPage from "@/pages/history-page";
 import '@/i18n';
 
 function App() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  
+  // Effect to initialize theme from localStorage
+  useEffect(() => {
+    const storedTheme = localStorage.getItem('aerotracker-theme');
+    if (storedTheme === 'dark') {
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
+    } else {
+      setIsDarkMode(false);
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+  
+  // Function to toggle dark mode
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    
+    if (newMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('aerotracker-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('aerotracker-theme', 'light');
+    }
+  };
+  
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" storageKey="aerotracker-theme">
+      <ThemeProvider defaultTheme={isDarkMode ? "dark" : "light"} storageKey="aerotracker-theme">
         <AuthProvider>
           <SubscriptionProvider>
             <div className="flex flex-col min-h-screen">
-              <Header isDarkMode={false} onThemeToggle={() => {}} />
+              <Header isDarkMode={isDarkMode} onThemeToggle={toggleDarkMode} />
               <main className="flex-grow">
                 <Switch>
                   <Route path="/auth" component={AuthPage} />
