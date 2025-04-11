@@ -317,6 +317,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           (flight.callsign && typeof flight.callsign === 'string' && flight.callsign.toLowerCase().includes(normalizedQuery)) ||
           (flight.flightNumber && typeof flight.flightNumber === 'string' && flight.flightNumber.toLowerCase().includes(normalizedQuery)) ||
           (flight.airline && typeof flight.airline === 'string' && flight.airline.toLowerCase().includes(normalizedQuery)) ||
+          (flight.airline && typeof flight.airline === 'object' && 'name' in flight.airline && typeof flight.airline.name === 'string' && flight.airline.name.toLowerCase().includes(normalizedQuery)) ||
           (flight.departure?.icao && flight.departure.icao.toLowerCase().includes(normalizedQuery)) ||
           (flight.arrival?.icao && flight.arrival.icao.toLowerCase().includes(normalizedQuery)) ||
           (flight.registration && flight.registration.toLowerCase().includes(normalizedQuery))
