@@ -1,7 +1,6 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Twitter, Facebook, Linkedin, Share2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Button } from './ui/button';
+import { FaTwitter, FaFacebook, FaLinkedin, FaPinterest, FaReddit, FaWhatsapp, FaEnvelope } from 'react-icons/fa';
 
 interface SocialMediaShareProps {
   url?: string;
@@ -12,106 +11,78 @@ interface SocialMediaShareProps {
 }
 
 export function SocialMediaShare({ 
-  url = window.location.href,
-  title = 'AeroTracker - Advanced Flight Tracking Platform',
-  description = 'Real-time flight tracking with advanced analytics and route optimization.',
+  url = window.location.href, 
+  title = 'AeroTracker - Advanced Flight Tracking Platform', 
+  description = 'Real-time flight tracking with advanced analytics and route optimization',
   className = '',
-  showText = false
+  showText = true
 }: SocialMediaShareProps) {
-  const { toast } = useToast();
-  
-  const shareData = {
-    url,
-    title,
-    text: description
-  };
-  
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(url).then(() => {
-      toast({
-        title: 'Link Copied',
-        description: 'The link has been copied to your clipboard.'
-      });
-    }).catch(err => {
-      toast({
-        title: 'Copy Failed',
-        description: 'Could not copy the link to clipboard.',
-        variant: 'destructive'
-      });
-      console.error('Could not copy text: ', err);
-    });
-  };
-  
-  const handleNativeShare = () => {
-    if (navigator.share) {
-      navigator.share(shareData)
-        .then(() => {
-          console.log('Successfully shared');
-        })
-        .catch((error) => {
-          console.error('Error sharing:', error);
-        });
-    } else {
-      handleCopyLink();
+  // Define social media share URLs
+  const encodedUrl = encodeURIComponent(url);
+  const encodedTitle = encodeURIComponent(title);
+  const encodedDescription = encodeURIComponent(description);
+
+  // Social media share links
+  const socialLinks = [
+    {
+      name: 'Twitter',
+      url: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
+      icon: <FaTwitter className="h-4 w-4" />,
+      color: 'bg-twitter hover:bg-twitter/90'
+    },
+    {
+      name: 'Facebook',
+      url: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+      icon: <FaFacebook className="h-4 w-4" />,
+      color: 'bg-facebook hover:bg-facebook/90'
+    },
+    {
+      name: 'LinkedIn',
+      url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+      icon: <FaLinkedin className="h-4 w-4" />,
+      color: 'bg-linkedin hover:bg-linkedin/90'
+    },
+    {
+      name: 'Pinterest',
+      url: `https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedDescription}`,
+      icon: <FaPinterest className="h-4 w-4" />,
+      color: 'bg-pinterest hover:bg-pinterest/90'
+    },
+    {
+      name: 'Reddit',
+      url: `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}`,
+      icon: <FaReddit className="h-4 w-4" />,
+      color: 'bg-[#FF4500] hover:bg-[#FF4500]/90'
+    },
+    {
+      name: 'WhatsApp',
+      url: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
+      icon: <FaWhatsapp className="h-4 w-4" />,
+      color: 'bg-[#25D366] hover:bg-[#25D366]/90'
+    },
+    {
+      name: 'Email',
+      url: `mailto:?subject=${encodedTitle}&body=${encodedDescription}%0A%0A${encodedUrl}`,
+      icon: <FaEnvelope className="h-4 w-4" />,
+      color: 'bg-gray-600 hover:bg-gray-600/90'
     }
-  };
-  
-  const handleTwitterShare = () => {
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
-    window.open(twitterUrl, '_blank');
-  };
-  
-  const handleFacebookShare = () => {
-    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-    window.open(facebookUrl, '_blank');
-  };
-  
-  const handleLinkedInShare = () => {
-    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-    window.open(linkedInUrl, '_blank');
-  };
-  
+  ];
+
   return (
-    <div className={`flex gap-2 ${className}`}>
-      <Button
-        variant="outline"
-        size="sm"
-        className="flex items-center gap-2 text-twitter hover:text-twitter/90 hover:bg-twitter/10"
-        onClick={handleTwitterShare}
-      >
-        <Twitter size={16} />
-        {showText && <span>Tweet</span>}
-      </Button>
-      
-      <Button
-        variant="outline"
-        size="sm"
-        className="flex items-center gap-2 text-facebook hover:text-facebook/90 hover:bg-facebook/10"
-        onClick={handleFacebookShare}
-      >
-        <Facebook size={16} />
-        {showText && <span>Share</span>}
-      </Button>
-      
-      <Button
-        variant="outline"
-        size="sm"
-        className="flex items-center gap-2 text-linkedin hover:text-linkedin/90 hover:bg-linkedin/10"
-        onClick={handleLinkedInShare}
-      >
-        <Linkedin size={16} />
-        {showText && <span>Post</span>}
-      </Button>
-      
-      <Button
-        variant="outline"
-        size="sm"
-        className="flex items-center gap-2"
-        onClick={handleNativeShare}
-      >
-        <Share2 size={16} />
-        {showText && <span>Share</span>}
-      </Button>
+    <div className={`flex flex-wrap gap-2 ${className}`}>
+      {socialLinks.map((social) => (
+        <Button
+          key={social.name}
+          variant="default"
+          size="sm"
+          className={`${social.color} flex items-center gap-2`}
+          onClick={() => window.open(social.url, '_blank')}
+          aria-label={`Share on ${social.name}`}
+        >
+          {social.icon}
+          {showText && <span>{social.name}</span>}
+        </Button>
+      ))}
     </div>
   );
 }

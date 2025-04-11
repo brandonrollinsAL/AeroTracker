@@ -1,0 +1,72 @@
+{
+  "name": "AeroTracker",
+  "short_name": "AeroTracker",
+  "description": "Advanced flight tracking platform with real-time data and analytics",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#2563EB",
+  "theme_color": "#2563EB",
+  "orientation": "any",
+  "categories": ["aviation", "travel", "navigation", "transportation"],
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot1.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpg",
+      "platform": "wide",
+      "label": "Live Flight Tracking with AeroTracker"
+    },
+    {
+      "src": "/screenshot2.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpg",
+      "platform": "wide",
+      "label": "Advanced Weather Overlay"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Live Tracking",
+      "short_name": "Tracking",
+      "description": "View live flight tracking",
+      "url": "/",
+      "icons": [{ "src": "/icon-track.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Route Optimizer",
+      "short_name": "Routes",
+      "description": "Plan optimal flight routes",
+      "url": "/routes",
+      "icons": [{ "src": "/icon-route.png", "sizes": "96x96" }]
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "web"
+    },
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.aerotracker.app",
+      "id": "com.aerotracker.app"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/app/aerotracker/id123456789"
+    }
+  ],
+  "prefer_related_applications": false
+}
