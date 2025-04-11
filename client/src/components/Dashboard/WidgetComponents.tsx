@@ -149,10 +149,10 @@ export function FlightListWidget({ widget, className }: WidgetProps) {
     const filterSettings = widget.settings?.filters;
     if (filterSettings) {
       // Apply airline filter
-      if (filterSettings.airline) {
+      if (filterSettings.airline && typeof filterSettings.airline === 'string') {
         filtered = filtered.filter(f => {
           // Check if airline is a string before using toLowerCase
-          if (typeof f.airline === 'string' && typeof filterSettings.airline === 'string') {
+          if (f.airline && typeof f.airline === 'string') {
             return f.airline.toLowerCase().includes(filterSettings.airline.toLowerCase());
           }
           return false;

@@ -314,9 +314,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const matchingFlights = cachedFlights.filter(flight => {
         const normalizedQuery = query.toLowerCase();
         return (
-          (flight.callsign && flight.callsign.toLowerCase().includes(normalizedQuery)) ||
-          (flight.flightNumber && flight.flightNumber.toLowerCase().includes(normalizedQuery)) ||
-          (typeof flight.airline === 'string' && flight.airline.toLowerCase().includes(normalizedQuery)) ||
+          (flight.callsign && typeof flight.callsign === 'string' && flight.callsign.toLowerCase().includes(normalizedQuery)) ||
+          (flight.flightNumber && typeof flight.flightNumber === 'string' && flight.flightNumber.toLowerCase().includes(normalizedQuery)) ||
+          (flight.airline && typeof flight.airline === 'string' && flight.airline.toLowerCase().includes(normalizedQuery)) ||
           (flight.departure?.icao && flight.departure.icao.toLowerCase().includes(normalizedQuery)) ||
           (flight.arrival?.icao && flight.arrival.icao.toLowerCase().includes(normalizedQuery)) ||
           (flight.registration && flight.registration.toLowerCase().includes(normalizedQuery))
@@ -329,9 +329,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const matchingAircraft = aircraft.filter(ac => {
         const normalizedQuery = query.toLowerCase();
         return (
-          (ac.registration && ac.registration.toLowerCase().includes(normalizedQuery)) ||
-          (ac.type && ac.type.toLowerCase().includes(normalizedQuery)) ||
-          (ac.operator && ac.operator.toLowerCase().includes(normalizedQuery))
+          (ac.registration && typeof ac.registration === 'string' && ac.registration.toLowerCase().includes(normalizedQuery)) ||
+          (ac.type && typeof ac.type === 'string' && ac.type.toLowerCase().includes(normalizedQuery)) ||
+          ('operator' in ac && ac.operator && typeof ac.operator === 'string' && ac.operator.toLowerCase().includes(normalizedQuery))
         );
       });
       results.aircraft = matchingAircraft;

@@ -61,12 +61,15 @@ export default function FlightSearch() {
 
   // View flight details
   const handleViewFlight = (flight: LiveFlight) => {
-    setLocation(`/flights/${flight.id}`);
+    // For now, just navigate to the homepage with the flight ID as a parameter
+    // until we create a dedicated flight details page
+    setLocation(`/?flight=${flight.id}`);
   };
 
   // View on map
   const handleViewOnMap = (flight: LiveFlight) => {
-    setLocation(`/map?flight=${flight.id}`);
+    // Navigate to the homepage with the flight ID and map=true parameters
+    setLocation(`/?flight=${flight.id}&view=map`);
   };
 
   return (
@@ -250,7 +253,10 @@ export default function FlightSearch() {
                                 <div className="space-y-1">
                                   <h3 className="text-lg font-medium">{aircraft.registration}</h3>
                                   <p className="text-sm text-muted-foreground">{aircraft.type}</p>
-                                  <p className="text-sm">Operator: {aircraft.operator}</p>
+                                  <p className="text-sm">
+                                    {aircraft.manufacturer && `${aircraft.manufacturer} `}
+                                    {aircraft.model || aircraft.type}
+                                  </p>
                                 </div>
                                 <Button variant="outline" size="sm">
                                   <Plane className="mr-2 h-4 w-4" />
