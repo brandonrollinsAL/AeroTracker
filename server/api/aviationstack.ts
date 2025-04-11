@@ -8,6 +8,10 @@ const AVIATIONSTACK_API_KEY = process.env.AVIATION_API_KEY;
 let flightCache: LiveFlight[] = [];
 let lastFetchTimestamp = 0;
 const CACHE_TTL = 60000; // 1 minute cache TTL to avoid excessive API calls
+let retryCount = 0;
+let lastRetryTimestamp = 0;
+const MAX_RETRIES = 5;
+const BASE_RETRY_DELAY = 30000; // 30 seconds
 
 // AviationStack API base URL
 const API_BASE_URL = 'http://api.aviationstack.com/v1';
@@ -168,10 +172,37 @@ function mapToLiveFlight(flight: AviationStackFlight): LiveFlight | null {
 /**
  * Fetch real-time flight data from AviationStack API
  */
+/**
+ * Calculate exponential backoff time based on retry count
+ */
+function calculateRetryDelay(): number {
+  // Calculate exponential backoff delay with some jitter
+  const delay = Math.min(BASE_RETRY_DELAY * Math.pow(2, retryCount), 10 * 60 * 1000); // Max 10 minutes
+  const jitter = Math.random() * 0.3 * delay; // Add up to 30% jitter
+  return delay + jitter;
+}
+
 export async function fetchFlightsFromAviationStack(): Promise<LiveFlight[]> {
   try {
-    // Check if we can return cache data
     const now = Date.now();
+    
+    // Check if we should throttle requests due to previous rate limiting
+    if (retryCount > 0) {
+      const retryDelay = calculateRetryDelay();
+      const timeSinceLastRetry = now - lastRetryTimestamp;
+      
+      if (timeSinceLastRetry < retryDelay) {
+        console.log(`Throttling AviationStack API requests. Will retry in ${Math.round((retryDelay - timeSinceLastRetry) / 1000)}s (retry ${retryCount}/${MAX_RETRIES})`);
+        
+        // If cache exists, return that instead
+        if (flightCache.length > 0) {
+          return flightCache;
+        }
+        return [];
+      }
+    }
+    
+    // Check if we can return cache data
     if (flightCache.length > 0 && now - lastFetchTimestamp < CACHE_TTL) {
       console.log(`Using cached AviationStack data with ${flightCache.length} flights (cache age: ${Math.round((now - lastFetchTimestamp) / 1000)}s)`);
       return flightCache;
@@ -207,15 +238,43 @@ export async function fetchFlightsFromAviationStack(): Promise<LiveFlight[]> {
     // Update cache
     flightCache = mappedFlights;
     lastFetchTimestamp = now;
+    
+    // Reset retry count on successful request
+    retryCount = 0;
+    lastRetryTimestamp = 0;
 
     return mappedFlights;
-  } catch (error) {
-    console.error('Error fetching data from AviationStack:', error);
-    
-    // If cache exists, return that instead
-    if (flightCache.length > 0) {
-      console.log(`Returning ${flightCache.length} cached flights due to API error`);
-      return flightCache;
+  } catch (error: any) {
+    // Check if it's a rate limiting error (HTTP 429)
+    if (error.response && error.response.status === 429) {
+      console.log('AviationStack API rate limit exceeded. Using cached data or waiting for FlightAware data.');
+      
+      // Update retry mechanism
+      retryCount = Math.min(retryCount + 1, MAX_RETRIES);
+      lastRetryTimestamp = Date.now();
+      const nextRetryDelay = calculateRetryDelay();
+      console.log(`Rate limit hit. Next retry in ${Math.round(nextRetryDelay / 1000)}s (retry ${retryCount}/${MAX_RETRIES})`);
+      
+      // Set a longer cache time to avoid requesting again quickly
+      lastFetchTimestamp = Date.now() - (CACHE_TTL / 2); // Set to halfway through the cache TTL to delay next attempt
+      
+      // If cache exists, return that instead
+      if (flightCache.length > 0) {
+        console.log(`Returning ${flightCache.length} cached flights due to API rate limiting`);
+        return flightCache;
+      }
+    } else {
+      console.error('Error fetching data from AviationStack:', error);
+      
+      // For other errors, increment retry count but use a lower value
+      retryCount = Math.min(retryCount + 1, 2); // Max 2 retries for non-rate-limit errors
+      lastRetryTimestamp = Date.now();
+      
+      // If cache exists, return that instead
+      if (flightCache.length > 0) {
+        console.log(`Returning ${flightCache.length} cached flights due to API error`);
+        return flightCache;
+      }
     }
     
     return [];

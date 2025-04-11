@@ -151,8 +151,12 @@ export function FlightListWidget({ widget, className }: WidgetProps) {
       // Apply airline filter
       if (filterSettings.airline && typeof filterSettings.airline === 'string') {
         filtered = filtered.filter(f => {
-          // Check if airline is a string before using toLowerCase
-          if (f.airline && typeof f.airline === 'string') {
+          // Check if airline is an object with name property
+          if (f.airline && typeof f.airline === 'object' && 'name' in f.airline && typeof f.airline.name === 'string') {
+            return f.airline.name.toLowerCase().includes(filterSettings.airline.toLowerCase());
+          }
+          // If airline is a string (legacy format)
+          else if (f.airline && typeof f.airline === 'string') {
             return f.airline.toLowerCase().includes(filterSettings.airline.toLowerCase());
           }
           return false;
