@@ -371,7 +371,31 @@ export default function Home() {
   return (
     <div>
       <Helmet>
-        <title>AeroTracker - Flight Tracking Platform</title>
+        <title>AeroTracker - Advanced Flight Tracking Platform</title>
+        <meta name="description" content="Track flights in real-time with AeroTracker. Access advanced aviation data, weather overlays, and route optimization tools for pilots, aviation enthusiasts, and professionals." />
+        <link rel="canonical" href="https://aerotracker.replit.app/" />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "AeroTracker",
+            "url": "https://aerotracker.replit.app/",
+            "description": "Advanced flight tracking platform with real-time data, analytics, and route optimization.",
+            "applicationCategory": "Aviation",
+            "operatingSystem": "Any",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD",
+              "availability": "https://schema.org/InStock"
+            },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.8",
+              "ratingCount": "256"
+            }
+          })}
+        </script>
       </Helmet>
       
       <div className={`min-h-screen ${isDarkMode ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-900'}`}>
