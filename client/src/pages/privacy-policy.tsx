@@ -4,11 +4,11 @@ import { Link } from "wouter";
 export default function PrivacyPolicy() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6 text-burgundy-gold">Privacy Policy</h1>
+      <h1 className="text-3xl font-bold mb-6 text-primary">Privacy Policy</h1>
       
       <div className="prose prose-lg prose-slate max-w-none">
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-burgundy-gold">Introduction</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-primary">Introduction</h2>
           <p>
             AeroTracker ("we", "our", or "us") is committed to protecting your privacy. 
             This Privacy Policy explains how we collect, use, and safeguard your information 
@@ -17,7 +17,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-burgundy-gold">Information We Collect</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-primary">Information We Collect</h2>
           <ul className="list-disc pl-5 space-y-2">
             <li>
               <strong>Account Information:</strong> When you register, we collect your username, 
@@ -39,7 +39,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-burgundy-gold">How We Use Your Information</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-primary">How We Use Your Information</h2>
           <ul className="list-disc pl-5 space-y-2">
             <li>To provide and maintain our flight tracking service</li>
             <li>To authenticate you and secure your account</li>
@@ -51,7 +51,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-burgundy-gold">Data Security</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-primary">Data Security</h2>
           <p>
             We implement appropriate technical and organizational measures to protect your 
             personal data against unauthorized or unlawful processing, accidental loss, 
@@ -61,7 +61,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-burgundy-gold">Your Rights</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-primary">Your Rights</h2>
           <p>Under applicable data protection laws, you have the right to:</p>
           <ul className="list-disc pl-5 space-y-2">
             <li>Access and receive a copy of your personal data</li>
@@ -74,7 +74,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-burgundy-gold">Cookies</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-primary">Cookies</h2>
           <p>
             We use cookies and similar tracking technologies to enhance your experience, 
             analyze usage patterns, and collect information about how you interact with our platform. 
@@ -83,7 +83,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-burgundy-gold">Contact Information</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-primary">Contact Information</h2>
           <p>
             If you have any questions about this Privacy Policy or our data practices, 
             please contact us at privacy@aerotracker.com.
@@ -91,7 +91,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-burgundy-gold">Changes to This Privacy Policy</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-primary">Changes to This Privacy Policy</h2>
           <p>
             We may update our Privacy Policy from time to time. We will notify you of any 
             changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.
@@ -104,7 +104,7 @@ export default function PrivacyPolicy() {
       
       <div className="mt-10 mb-6">
         <Link href="/">
-          <a className="text-burgundy-gold hover:text-burgundy-gold-hover underline">
+          <a className="text-primary hover:text-primary/80 underline">
             Return to Home
           </a>
         </Link>
