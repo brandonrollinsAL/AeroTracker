@@ -30,7 +30,7 @@ type SearchFormValues = z.infer<typeof searchSchema>;
 
 export default function FlightSearch() {
   const [searchPerformed, setSearchPerformed] = useState(false);
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
   
   // Initialize the form with react-hook-form
   const form = useForm<SearchFormValues>({
@@ -61,12 +61,12 @@ export default function FlightSearch() {
 
   // View flight details
   const handleViewFlight = (flight: LiveFlight) => {
-    navigate(`/flights/${flight.id}`);
+    setLocation(`/flights/${flight.id}`);
   };
 
   // View on map
   const handleViewOnMap = (flight: LiveFlight) => {
-    navigate(`/map?flight=${flight.id}`);
+    setLocation(`/map?flight=${flight.id}`);
   };
 
   return (

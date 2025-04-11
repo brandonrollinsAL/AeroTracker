@@ -11,7 +11,8 @@ import {
   LogOut,
   User,
   CreditCard,
-  Crown
+  Crown,
+  Search
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -98,13 +99,15 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
     >
       {/* Left side - Logo and app name only */}
       <div className="flex items-center">
-        <div className="mr-3 relative group">
-          {/* Logo */}
-          <div className="h-10 w-10 rounded-lg flex items-center justify-center relative overflow-hidden bg-[#4995fd]">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#4995fd] to-[#003a65] opacity-90"></div>
-            <PlaneTakeoffIcon className="h-5 w-5 text-white transform rotate-45 relative z-10" />
+        <Link href="/">
+          <div className="mr-3 relative group">
+            {/* Logo */}
+            <div className="h-10 w-10 rounded-lg flex items-center justify-center relative overflow-hidden bg-[#4995fd]">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#4995fd] to-[#003a65] opacity-90"></div>
+              <PlaneTakeoffIcon className="h-5 w-5 text-white transform rotate-45 relative z-10" />
+            </div>
           </div>
-        </div>
+        </Link>
         
         {/* App name */}
         <div>
@@ -116,6 +119,21 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
           <span className={`text-xs ${isDarkMode ? 'text-[#a0d0ec]/80' : 'text-[#003a65]/70'}`}>
             Advanced Flight Tracking
           </span>
+        </div>
+        
+        {/* Navigation Links */}
+        <div className="hidden md:flex ml-8 space-x-1">
+          <Link href="/search">
+            <Button variant="ghost" className={`px-3 ${isDarkMode ? 'text-white hover:bg-[#003a65]/30' : 'text-[#003a65] hover:bg-[#4995fd]/10'}`}>
+              <Search className="h-4 w-4 mr-2" />
+              Search
+            </Button>
+          </Link>
+          <Link href="/dashboard">
+            <Button variant="ghost" className={`px-3 ${isDarkMode ? 'text-white hover:bg-[#003a65]/30' : 'text-[#003a65] hover:bg-[#4995fd]/10'}`}>
+              Dashboard
+            </Button>
+          </Link>
         </div>
       </div>
       
