@@ -1,0 +1,109 @@
+{
+  "title": "Subscription Plans",
+  "subtitle": "Choose a plan that fits your needs",
+  "current": "Current Plan",
+  "upgrade": "Upgrade",
+  "downgrade": "Downgrade",
+  "renew": "Renew",
+  "cancel": "Cancel Subscription",
+  "expiry": "Expiration Date",
+  "payment": "Payment Details",
+  "cardName": "Cardholder Name",
+  "cardNumber": "Card Number",
+  "cardExpiry": "Expiration Date",
+  "cardCVC": "CVC",
+  "billingAddress": "Billing Address",
+  "plans": {
+    "free": {
+      "name": "Free",
+      "description": "Basic flight tracking",
+      "price": "Free",
+      "features": [
+        "Real-time flight tracking",
+        "Basic map features",
+        "Limited flight history",
+        "Standard refresh rate"
+      ]
+    },
+    "premium": {
+      "name": "Premium",
+      "description": "Enhanced flight tracking with additional features",
+      "price": "$9.99/month",
+      "features": [
+        "All Free features",
+        "Advanced weather overlays",
+        "Detailed aircraft information",
+        "Flight alerts and notifications",
+        "Extended flight history",
+        "Faster refresh rate",
+        "Ad-free experience"
+      ]
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "description": "Professional flight tracking for business use",
+      "price": "$29.99/month",
+      "features": [
+        "All Premium features",
+        "API access",
+        "Data exports",
+        "Multiple users",
+        "Priority support",
+        "Custom branding",
+        "Advanced analytics",
+        "Fastest refresh rate"
+      ]
+    }
+  },
+  "billing": {
+    "title": "Billing Information",
+    "history": "Billing History",
+    "nextPayment": "Next Payment",
+    "lastPayment": "Last Payment",
+    "amount": "Amount",
+    "date": "Date",
+    "status": "Status",
+    "method": "Payment Method",
+    "invoice": "Invoice",
+    "download": "Download",
+    "view": "View",
+    "addPaymentMethod": "Add Payment Method",
+    "updatePaymentMethod": "Update Payment Method",
+    "removePaymentMethod": "Remove Payment Method",
+    "defaultPaymentMethod": "Default Payment Method",
+    "setAsDefault": "Set as Default"
+  },
+  "confirmCancel": {
+    "title": "Cancel Subscription",
+    "message": "Are you sure you want to cancel your subscription? You will lose access to premium features at the end of your current billing period.",
+    "confirm": "Yes, Cancel",
+    "cancel": "No, Keep Subscription"
+  },
+  "success": {
+    "upgrade": "Successfully upgraded to {{plan}}",
+    "downgrade": "Successfully downgraded to {{plan}}",
+    "renew": "Successfully renewed your subscription",
+    "cancel": "Your subscription has been cancelled"
+  },
+  "error": {
+    "upgrade": "Failed to upgrade subscription",
+    "downgrade": "Failed to downgrade subscription",
+    "renew": "Failed to renew subscription",
+    "cancel": "Failed to cancel subscription",
+    "payment": "Payment failed"
+  },
+  "compare": "Compare Plans",
+  "subscribingTo": "Subscribing to {{plan}}",
+  "monthlyBilling": "Monthly Billing",
+  "annualBilling": "Annual Billing (Save 20%)",
+  "trialPeriod": "{{days}}-day free trial, cancel anytime",
+  "autoRenew": "Your subscription will automatically renew on {{date}}",
+  "manageSubscription": "Manage Subscription",
+  "subscriptionDetails": "Subscription Details",
+  "subscriptionStatus": "Subscription Status",
+  "active": "Active",
+  "cancelled": "Cancelled",
+  "expired": "Expired",
+  "trialing": "Trial Period",
+  "pastDue": "Past Due"
+}

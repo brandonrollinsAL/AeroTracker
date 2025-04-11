@@ -1,0 +1,70 @@
+{
+  "pageTitle": "Our History",
+  "subtitle": "The Journey of AeroTracker",
+  "foundingTitle": "Founding Story",
+  "foundingContent": "AeroTracker was founded in 2020 by a team of aviation enthusiasts and technology experts with a shared vision: to create the most comprehensive and user-friendly flight tracking platform in the world. What began as a passion project in a small garage has grown into a global service trusted by millions of users.",
+  "milestones": {
+    "title": "Key Milestones",
+    "2020": {
+      "title": "2020: Taking Flight",
+      "content": "AeroTracker launches with basic flight tracking capabilities, covering major airlines and airports in North America."
+    },
+    "2021": {
+      "title": "2021: Expanding Horizons",
+      "content": "Global coverage expanded to include Europe, Asia, and Australia. Mobile applications for iOS and Android released."
+    },
+    "2022": {
+      "title": "2022: Technological Advancements",
+      "content": "Implementation of real-time weather overlays, aircraft details, and enhanced mapping features. Launch of subscription service."
+    },
+    "2023": {
+      "title": "2023: Community Growth",
+      "content": "Reached 1 million active users. Introduced social features allowing users to share flight information and experiences."
+    },
+    "2024": {
+      "title": "2024: Data Revolution",
+      "content": "Integration with multiple data sources for unprecedented accuracy. Introduction of AI-powered predictions for delays and optimal routes."
+    },
+    "2025": {
+      "title": "2025: New Heights",
+      "content": "Complete platform redesign with enhanced user experience. Launch of enterprise solutions for aviation professionals and businesses."
+    }
+  },
+  "missionTitle": "Our Mission",
+  "missionContent": "At AeroTracker, our mission is to make accurate flight information accessible to everyone. We strive to provide the most reliable, up-to-date, and comprehensive aviation data while maintaining an intuitive user experience.",
+  "visionTitle": "Our Vision",
+  "visionContent": "We envision a world where travelers, aviation enthusiasts, and industry professionals have seamless access to real-time flight information. By combining cutting-edge technology with our passion for aviation, we aim to become the global standard for flight tracking by 2030.",
+  "valuesTitle": "Our Values",
+  "values": {
+    "accuracy": {
+      "title": "Accuracy",
+      "content": "We are committed to providing the most precise and reliable flight information possible."
+    },
+    "innovation": {
+      "title": "Innovation",
+      "content": "We continuously explore new technologies and approaches to improve our service."
+    },
+    "accessibility": {
+      "title": "Accessibility",
+      "content": "We believe flight information should be easy to understand and available to everyone."
+    },
+    "community": {
+      "title": "Community",
+      "content": "We foster a global community of aviation enthusiasts and professionals."
+    },
+    "privacy": {
+      "title": "Privacy",
+      "content": "We respect and protect user data with the highest standards of security."
+    }
+  },
+  "teamTitle": "Our Team",
+  "teamSubtitle": "Meet the people behind AeroTracker",
+  "joinTeam": "Join Our Team",
+  "careersLink": "View Open Positions",
+  "partnersTitle": "Our Partners",
+  "partnersContent": "We collaborate with leading airlines, airports, and aviation organizations worldwide to ensure the highest quality of data and service.",
+  "testimonials": "What Users Say",
+  "contactUs": "Contact Us",
+  "learnMore": "Learn More",
+  "timelineTitle": "AeroTracker Timeline"
+}
