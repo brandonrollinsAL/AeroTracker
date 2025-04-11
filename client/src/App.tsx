@@ -14,6 +14,10 @@ import SubscriptionPage from "@/pages/subscription-page";
 import SubscriptionSuccessPage from "@/pages/subscription-success";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import NotFound from "@/pages/not-found";
+import HistoryPage from "@/pages/history-page";
+
+// Import i18n (needs to be bundled)
+import '@/i18n';
 
 function App() {
   return (

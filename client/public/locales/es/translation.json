@@ -1,0 +1,132 @@
+{
+  "app": {
+    "name": "AeroTracker",
+    "tagline": "Plataforma Avanzada de Seguimiento de Vuelos"
+  },
+  "header": {
+    "home": "Inicio",
+    "flights": "Vuelos",
+    "airports": "Aeropuertos",
+    "premium": "Premium",
+    "about": "Acerca de",
+    "history": "Nuestra Historia",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "profile": "Perfil",
+    "logout": "Cerrar Sesión"
+  },
+  "map": {
+    "title": "Seguimiento de Vuelos en Vivo",
+    "filters": {
+      "title": "Filtros de Mapa",
+      "all": "Todos los Vuelos",
+      "commercial": "Comercial",
+      "private": "Privado",
+      "weather": "Clima",
+      "paths": "Rutas de Vuelo",
+      "airports": "Aeropuertos",
+      "live": "Seguimiento en Vivo"
+    }
+  },
+  "flight": {
+    "details": {
+      "title": "Detalles del Vuelo",
+      "callsign": "Señal de Llamada",
+      "flightNumber": "Número de Vuelo",
+      "origin": "Origen",
+      "destination": "Destino",
+      "aircraft": "Aeronave",
+      "altitude": "Altitud",
+      "speed": "Velocidad",
+      "status": "Estado",
+      "scheduled": "Programado",
+      "estimated": "Estimado",
+      "actual": "Real",
+      "departure": "Salida",
+      "arrival": "Llegada"
+    },
+    "status": {
+      "active": "Activo",
+      "landed": "Aterrizado",
+      "scheduled": "Programado",
+      "delayed": "Retrasado",
+      "cancelled": "Cancelado",
+      "diverted": "Desviado"
+    }
+  },
+  "premium": {
+    "title": "Características Premium",
+    "tagline": "Mejora Tu Experiencia de Seguimiento de Vuelos",
+    "features": {
+      "title": "Características Premium Exclusivas",
+      "weatherOverlay": "Superposición del Clima",
+      "detailedInfo": "Información Detallada de Aeronaves",
+      "routeOptimizer": "Optimizador de Rutas",
+      "notifications": "Notificaciones en Tiempo Real",
+      "historical": "Datos Históricos de Vuelos",
+      "export": "Exportación de Datos e Informes"
+    },
+    "plans": {
+      "title": "Planes de Suscripción",
+      "free": "Gratuito",
+      "premium": "Premium",
+      "enterprise": "Empresarial",
+      "monthly": "Mensual",
+      "yearly": "Anual",
+      "subscribe": "Suscribirse"
+    },
+    "prompt": "Inicia sesión o crea una cuenta para acceder a las características premium."
+  },
+  "about": {
+    "title": "Acerca de AeroTracker",
+    "mission": "Nuestra Misión",
+    "missionText": "AeroTracker se esfuerza por proporcionar la plataforma de seguimiento de vuelos más completa y precisa del mundo, potenciando a profesionales y entusiastas de la aviación con datos en tiempo real y herramientas innovadoras.",
+    "team": "Nuestro Equipo",
+    "technology": "Nuestra Tecnología"
+  },
+  "history": {
+    "title": "Nuestra Historia",
+    "subtitle": "El Viaje de AeroTracker desde la Visión hasta el Liderazgo en la Industria",
+    "timeline": {
+      "founding": "Fundación",
+      "firstRelease": "Primera Versión",
+      "majorUpdate": "Actualización Mayor",
+      "globalExpansion": "Expansión Global",
+      "aiIntegration": "Integración de IA",
+      "present": "Presente"
+    }
+  },
+  "footer": {
+    "quickLinks": "Enlaces Rápidos",
+    "resources": "Recursos",
+    "legal": "Legal",
+    "contactSupport": "Contactar Soporte",
+    "copyright": "© {{year}} AeroTracker. Todos los derechos reservados."
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "email": "Correo Electrónico",
+    "username": "Nombre de Usuario",
+    "password": "Contraseña",
+    "confirm": "Confirmar Contraseña",
+    "forgotPassword": "¿Olvidaste tu Contraseña?",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "needAccount": "¿Necesitas una cuenta?"
+  },
+  "settings": {
+    "title": "Configuración",
+    "account": "Cuenta",
+    "preferences": "Preferencias",
+    "theme": "Tema",
+    "language": "Idioma",
+    "notifications": "Notificaciones",
+    "privacy": "Privacidad",
+    "languages": {
+      "en": "English",
+      "fr": "Français",
+      "es": "Español",
+      "zh": "中文"
+    }
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "app": {
+    "name": "AeroTracker",
+    "tagline": "Plateforme Avancée de Suivi des Vols"
+  },
+  "header": {
+    "home": "Accueil",
+    "flights": "Vols",
+    "airports": "Aéroports",
+    "premium": "Premium",
+    "about": "À Propos",
+    "history": "Notre Histoire",
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "profile": "Profil",
+    "logout": "Déconnexion"
+  },
+  "map": {
+    "title": "Suivi des Vols en Direct",
+    "filters": {
+      "title": "Filtres de la Carte",
+      "all": "Tous les Vols",
+      "commercial": "Commercial",
+      "private": "Privé",
+      "weather": "Météo",
+      "paths": "Trajectoires de Vol",
+      "airports": "Aéroports",
+      "live": "Suivi en Direct"
+    }
+  },
+  "flight": {
+    "details": {
+      "title": "Détails du Vol",
+      "callsign": "Indicatif",
+      "flightNumber": "Numéro de Vol",
+      "origin": "Origine",
+      "destination": "Destination",
+      "aircraft": "Aéronef",
+      "altitude": "Altitude",
+      "speed": "Vitesse",
+      "status": "Statut",
+      "scheduled": "Prévu",
+      "estimated": "Estimé",
+      "actual": "Réel",
+      "departure": "Départ",
+      "arrival": "Arrivée"
+    },
+    "status": {
+      "active": "Actif",
+      "landed": "Atterri",
+      "scheduled": "Prévu",
+      "delayed": "Retardé",
+      "cancelled": "Annulé",
+      "diverted": "Dérouté"
+    }
+  },
+  "premium": {
+    "title": "Fonctionnalités Premium",
+    "tagline": "Améliorez Votre Expérience de Suivi des Vols",
+    "features": {
+      "title": "Fonctionnalités Premium Exclusives",
+      "weatherOverlay": "Superposition Météo",
+      "detailedInfo": "Informations Détaillées sur les Aéronefs",
+      "routeOptimizer": "Optimiseur d'Itinéraire",
+      "notifications": "Notifications en Temps Réel",
+      "historical": "Données Historiques des Vols",
+      "export": "Exportation de Données et Rapports"
+    },
+    "plans": {
+      "title": "Plans d'Abonnement",
+      "free": "Gratuit",
+      "premium": "Premium",
+      "enterprise": "Entreprise",
+      "monthly": "Mensuel",
+      "yearly": "Annuel",
+      "subscribe": "S'abonner"
+    },
+    "prompt": "Connectez-vous ou créez un compte pour accéder aux fonctionnalités premium."
+  },
+  "about": {
+    "title": "À Propos d'AeroTracker",
+    "mission": "Notre Mission",
+    "missionText": "AeroTracker s'efforce de fournir la plateforme de suivi des vols la plus complète et précise au monde, offrant aux professionnels de l'aviation et aux passionnés des données en temps réel et des outils innovants.",
+    "team": "Notre Équipe",
+    "technology": "Notre Technologie"
+  },
+  "history": {
+    "title": "Notre Histoire",
+    "subtitle": "Le Parcours d'AeroTracker de la Vision au Leader de l'Industrie",
+    "timeline": {
+      "founding": "Fondation",
+      "firstRelease": "Première Version",
+      "majorUpdate": "Mise à Jour Majeure",
+      "globalExpansion": "Expansion Mondiale",
+      "aiIntegration": "Intégration de l'IA",
+      "present": "Présent"
+    }
+  },
+  "footer": {
+    "quickLinks": "Liens Rapides",
+    "resources": "Ressources",
+    "legal": "Mentions Légales",
+    "contactSupport": "Contacter le Support",
+    "copyright": "© {{year}} AeroTracker. Tous droits réservés."
+  },
+  "auth": {
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "email": "Email",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "confirm": "Confirmer le mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "alreadyHaveAccount": "Vous avez déjà un compte ?",
+    "needAccount": "Besoin d'un compte ?"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "account": "Compte",
+    "preferences": "Préférences",
+    "theme": "Thème",
+    "language": "Langue",
+    "notifications": "Notifications",
+    "privacy": "Confidentialité",
+    "languages": {
+      "en": "English",
+      "fr": "Français",
+      "es": "Español",
+      "zh": "中文"
+    }
+  }
+}

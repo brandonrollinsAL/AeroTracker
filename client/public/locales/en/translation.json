@@ -1,0 +1,132 @@
+{
+  "app": {
+    "name": "AeroTracker",
+    "tagline": "Advanced Flight Tracking Platform"
+  },
+  "header": {
+    "home": "Home",
+    "flights": "Flights",
+    "airports": "Airports",
+    "premium": "Premium",
+    "about": "About",
+    "history": "Our History",
+    "login": "Login",
+    "register": "Register",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "map": {
+    "title": "Live Flight Tracking",
+    "filters": {
+      "title": "Map Filters",
+      "all": "All Flights",
+      "commercial": "Commercial",
+      "private": "Private",
+      "weather": "Weather",
+      "paths": "Flight Paths",
+      "airports": "Airports",
+      "live": "Live Tracking"
+    }
+  },
+  "flight": {
+    "details": {
+      "title": "Flight Details",
+      "callsign": "Callsign",
+      "flightNumber": "Flight Number",
+      "origin": "Origin",
+      "destination": "Destination",
+      "aircraft": "Aircraft",
+      "altitude": "Altitude",
+      "speed": "Speed",
+      "status": "Status",
+      "scheduled": "Scheduled",
+      "estimated": "Estimated",
+      "actual": "Actual",
+      "departure": "Departure",
+      "arrival": "Arrival"
+    },
+    "status": {
+      "active": "Active",
+      "landed": "Landed",
+      "scheduled": "Scheduled",
+      "delayed": "Delayed",
+      "cancelled": "Cancelled",
+      "diverted": "Diverted"
+    }
+  },
+  "premium": {
+    "title": "Premium Features",
+    "tagline": "Enhance Your Flight Tracking Experience",
+    "features": {
+      "title": "Exclusive Premium Features",
+      "weatherOverlay": "Weather Overlay",
+      "detailedInfo": "Detailed Aircraft Information",
+      "routeOptimizer": "Route Optimizer",
+      "notifications": "Real-time Notifications",
+      "historical": "Historical Flight Data",
+      "export": "Data Export & Reports"
+    },
+    "plans": {
+      "title": "Subscription Plans",
+      "free": "Free",
+      "premium": "Premium",
+      "enterprise": "Enterprise",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "subscribe": "Subscribe"
+    },
+    "prompt": "Sign in or create an account to access premium features."
+  },
+  "about": {
+    "title": "About AeroTracker",
+    "mission": "Our Mission",
+    "missionText": "AeroTracker strives to provide the most comprehensive and accurate flight tracking platform in the world, empowering aviation professionals and enthusiasts with real-time data and innovative tools.",
+    "team": "Our Team",
+    "technology": "Our Technology"
+  },
+  "history": {
+    "title": "Our History",
+    "subtitle": "The Journey of AeroTracker from Vision to Industry Leader",
+    "timeline": {
+      "founding": "Founding",
+      "firstRelease": "First Release",
+      "majorUpdate": "Major Update",
+      "globalExpansion": "Global Expansion",
+      "aiIntegration": "AI Integration",
+      "present": "Present"
+    }
+  },
+  "footer": {
+    "quickLinks": "Quick Links",
+    "resources": "Resources",
+    "legal": "Legal",
+    "contactSupport": "Contact Support",
+    "copyright": "© {{year}} AeroTracker. All rights reserved."
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "username": "Username",
+    "password": "Password",
+    "confirm": "Confirm Password",
+    "forgotPassword": "Forgot Password?",
+    "alreadyHaveAccount": "Already have an account?",
+    "needAccount": "Need an account?"
+  },
+  "settings": {
+    "title": "Settings",
+    "account": "Account",
+    "preferences": "Preferences",
+    "theme": "Theme",
+    "language": "Language",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "languages": {
+      "en": "English",
+      "fr": "Français",
+      "es": "Español",
+      "zh": "中文"
+    }
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "app": {
+    "name": "航空追踪",
+    "tagline": "先进的航班追踪平台"
+  },
+  "header": {
+    "home": "首页",
+    "flights": "航班",
+    "airports": "机场",
+    "premium": "高级版",
+    "about": "关于我们",
+    "history": "发展历程",
+    "login": "登录",
+    "register": "注册",
+    "profile": "个人资料",
+    "logout": "退出登录"
+  },
+  "map": {
+    "title": "实时航班追踪",
+    "filters": {
+      "title": "地图筛选",
+      "all": "所有航班",
+      "commercial": "商业航班",
+      "private": "私人航班",
+      "weather": "天气",
+      "paths": "飞行路径",
+      "airports": "机场",
+      "live": "实时追踪"
+    }
+  },
+  "flight": {
+    "details": {
+      "title": "航班详情",
+      "callsign": "呼号",
+      "flightNumber": "航班号",
+      "origin": "出发地",
+      "destination": "目的地",
+      "aircraft": "飞机",
+      "altitude": "高度",
+      "speed": "速度",
+      "status": "状态",
+      "scheduled": "计划",
+      "estimated": "预计",
+      "actual": "实际",
+      "departure": "起飞",
+      "arrival": "到达"
+    },
+    "status": {
+      "active": "飞行中",
+      "landed": "已降落",
+      "scheduled": "已计划",
+      "delayed": "延误",
+      "cancelled": "取消",
+      "diverted": "改航"
+    }
+  },
+  "premium": {
+    "title": "高级功能",
+    "tagline": "提升您的航班追踪体验",
+    "features": {
+      "title": "专属高级功能",
+      "weatherOverlay": "天气覆盖层",
+      "detailedInfo": "详细的飞机信息",
+      "routeOptimizer": "航线优化器",
+      "notifications": "实时通知",
+      "historical": "历史航班数据",
+      "export": "数据导出和报告"
+    },
+    "plans": {
+      "title": "订阅计划",
+      "free": "免费版",
+      "premium": "高级版",
+      "enterprise": "企业版",
+      "monthly": "月付",
+      "yearly": "年付",
+      "subscribe": "订阅"
+    },
+    "prompt": "登录或创建账户以访问高级功能。"
+  },
+  "about": {
+    "title": "关于航空追踪",
+    "mission": "我们的使命",
+    "missionText": "航空追踪致力于提供全球最全面、最准确的航班追踪平台，为航空专业人士和爱好者提供实时数据和创新工具。",
+    "team": "我们的团队",
+    "technology": "我们的技术"
+  },
+  "history": {
+    "title": "发展历程",
+    "subtitle": "航空追踪从愿景到行业领导者的旅程",
+    "timeline": {
+      "founding": "创立",
+      "firstRelease": "首次发布",
+      "majorUpdate": "重大更新",
+      "globalExpansion": "全球扩张",
+      "aiIntegration": "人工智能集成",
+      "present": "现在"
+    }
+  },
+  "footer": {
+    "quickLinks": "快速链接",
+    "resources": "资源",
+    "legal": "法律信息",
+    "contactSupport": "联系支持",
+    "copyright": "© {{year}} 航空追踪。保留所有权利。"
+  },
+  "auth": {
+    "login": "登录",
+    "register": "注册",
+    "email": "电子邮件",
+    "username": "用户名",
+    "password": "密码",
+    "confirm": "确认密码",
+    "forgotPassword": "忘记密码？",
+    "alreadyHaveAccount": "已有账户？",
+    "needAccount": "需要一个账户？"
+  },
+  "settings": {
+    "title": "设置",
+    "account": "账户",
+    "preferences": "偏好",
+    "theme": "主题",
+    "language": "语言",
+    "notifications": "通知",
+    "privacy": "隐私",
+    "languages": {
+      "en": "English",
+      "fr": "Français",
+      "es": "Español",
+      "zh": "中文"
+    }
+  }
+}
