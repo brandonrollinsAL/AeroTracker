@@ -402,13 +402,13 @@ export function FlightDetailsWidget({ widget, className }: WidgetProps) {
             <div className="mb-4">
               <h3 className="text-lg font-semibold">{flight.callsign || flight.flightNumber}</h3>
               <p className="text-sm text-muted-foreground">
-                {flight.airline} {flight.flightNumber}
+                {typeof flight.airline === 'string' ? flight.airline : ''} {flight.flightNumber}
               </p>
               <div className="mt-2 flex justify-between">
                 <div>
                   <p className="text-xs text-muted-foreground">From</p>
                   <p className="font-medium">{flight.departure?.icao}</p>
-                  <p className="text-xs">{flight.departure?.name}</p>
+                  <p className="text-xs">{typeof flight.departure?.name === 'string' ? flight.departure.name : ''}</p>
                 </div>
                 <div className="text-center">
                   <Plane className="h-5 w-5 inline-block text-primary transform rotate-90" />
@@ -416,7 +416,7 @@ export function FlightDetailsWidget({ widget, className }: WidgetProps) {
                 <div className="text-right">
                   <p className="text-xs text-muted-foreground">To</p>
                   <p className="font-medium">{flight.arrival?.icao}</p>
-                  <p className="text-xs">{flight.arrival?.name}</p>
+                  <p className="text-xs">{typeof flight.arrival?.name === 'string' ? flight.arrival.name : ''}</p>
                 </div>
               </div>
             </div>
