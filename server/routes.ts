@@ -24,6 +24,8 @@ import {
 import { handleNexradRequest } from "./api/nexrad";
 import { setupDashboardRoutes } from "./api/dashboard";
 import { testConnection } from "./db";
+import subscriptionRoutes from "./routes/subscription";
+import webhookRoutes from "./routes/webhook";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Test database connection on startup
@@ -48,6 +50,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Set up dashboard routes
   setupDashboardRoutes(app);
+  
+  // Register subscription and webhook routes
+  app.use('/api/subscription', subscriptionRoutes);
+  app.use('/api/webhooks', webhookRoutes);
 
   // API Routes - prefix all routes with /api
   
