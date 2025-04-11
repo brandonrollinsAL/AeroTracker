@@ -7,6 +7,7 @@ import FlightDetailPanel from '@/components/FlightDetailPanel';
 import RouteOptimizer from '@/components/RouteOptimizer';
 import { AuthPopup } from '@/components/AuthPopup';
 import Footer from '@/components/Footer';
+import { FlightSafetyCompanion } from '@/components/FlightSafetyCompanion';
 import { LiveFlight, Airport } from '@shared/schema';
 import { MapFilter } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -452,6 +453,9 @@ export default function Home() {
           />
         )}
 
+        {/* Flight Safety Companion */}
+        <FlightSafetyCompanion flight={selectedFlight} />
+        
         {/* Keyboard shortcuts help button */}
         <div className="fixed bottom-4 left-4 z-50">
           <Button 
