@@ -137,13 +137,13 @@ export default function HeaderNavigation({
                 )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
+            <TooltipContent className="bg-white border border-[#60A5FA]/30 shadow-md rounded-md p-3 text-[#002B4C] font-body">
               <p className="text-sm">Enable real-time global flight tracking via FlightAware</p>
             </TooltipContent>
           </Tooltip>
           
-          {/* Luxury divider */}
-          <div className="h-8 w-px mx-2 bg-gradient-to-b from-[#A61C28]/10 via-[#D4AF37]/40 to-[#A61C28]/10 shadow-sm"></div>
+          {/* Professional divider */}
+          <div className="h-8 w-px mx-2 bg-gradient-to-b from-[#2563EB]/10 via-[#60A5FA]/40 to-[#2563EB]/10 shadow-sm"></div>
           
           {/* Zoom controls with cockpit-inspired styling */}
           <div className="flex gap-2">
@@ -152,14 +152,14 @@ export default function HeaderNavigation({
                 <Button
                   variant="outline"
                   size="icon"
-                  className={`h-10 w-10 rounded-md border border-[#D4AF37]/30 bg-white/90 hover:bg-[#F9F5EB] text-[#1C2526] transition-all duration-300 shadow-md hover:shadow-lg hover:translate-y-[-2px] relative overflow-hidden`}
+                  className={`h-10 w-10 rounded-md border border-[#60A5FA]/30 bg-white/90 hover:bg-[#F0F9FF] text-[#002B4C] transition-all duration-300 shadow-md hover:shadow-lg hover:translate-y-[-2px] relative overflow-hidden`}
                   onClick={onZoomIn}
                 >
-                  <Plus className="h-5 w-5 text-[#A61C28]" />
-                  <span className="absolute inset-0 bg-[#D4AF37]/5 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-md"></span>
+                  <Plus className="h-5 w-5 text-[#2563EB]" />
+                  <span className="absolute inset-0 bg-[#60A5FA]/5 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-md"></span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
+              <TooltipContent className="bg-white border border-[#60A5FA]/30 shadow-md rounded-md p-3 text-[#002B4C] font-body">
                 <p className="text-sm">Zoom in for detailed view</p>
               </TooltipContent>
             </Tooltip>
@@ -169,14 +169,14 @@ export default function HeaderNavigation({
                 <Button
                   variant="outline"
                   size="icon"
-                  className={`h-10 w-10 rounded-md border border-[#D4AF37]/30 bg-white/90 hover:bg-[#F9F5EB] text-[#1C2526] transition-all duration-300 shadow-md hover:shadow-lg hover:translate-y-[-2px] relative overflow-hidden`}
+                  className={`h-10 w-10 rounded-md border border-[#60A5FA]/30 bg-white/90 hover:bg-[#F0F9FF] text-[#002B4C] transition-all duration-300 shadow-md hover:shadow-lg hover:translate-y-[-2px] relative overflow-hidden`}
                   onClick={onZoomOut}
                 >
-                  <Minus className="h-5 w-5 text-[#A61C28]" />
-                  <span className="absolute inset-0 bg-[#D4AF37]/5 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-md"></span>
+                  <Minus className="h-5 w-5 text-[#2563EB]" />
+                  <span className="absolute inset-0 bg-[#60A5FA]/5 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-md"></span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
+              <TooltipContent className="bg-white border border-[#60A5FA]/30 shadow-md rounded-md p-3 text-[#002B4C] font-body">
                 <p className="text-sm">Zoom out for broader coverage</p>
               </TooltipContent>
             </Tooltip>
@@ -186,14 +186,14 @@ export default function HeaderNavigation({
                 <Button
                   variant="outline"
                   size="icon"
-                  className={`h-10 w-10 rounded-md border border-[#D4AF37]/30 bg-white/90 hover:bg-[#F9F5EB] text-[#1C2526] transition-all duration-300 shadow-md hover:shadow-lg hover:translate-y-[-2px] relative overflow-hidden`}
+                  className={`h-10 w-10 rounded-md border border-[#60A5FA]/30 bg-white/90 hover:bg-[#F0F9FF] text-[#002B4C] transition-all duration-300 shadow-md hover:shadow-lg hover:translate-y-[-2px] relative overflow-hidden`}
                   onClick={onMyLocation}
                 >
-                  <Navigation className="h-5 w-5 text-[#A61C28]" />
-                  <span className="absolute inset-0 bg-[#D4AF37]/5 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-md"></span>
+                  <Navigation className="h-5 w-5 text-[#2563EB]" />
+                  <span className="absolute inset-0 bg-[#60A5FA]/5 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-md"></span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
+              <TooltipContent className="bg-white border border-[#60A5FA]/30 shadow-md rounded-md p-3 text-[#002B4C] font-body">
                 <p className="text-sm">Center map on your current location</p>
               </TooltipContent>
             </Tooltip>

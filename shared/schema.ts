@@ -8,6 +8,11 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   email: text("email").notNull().unique(),
   preferences: json("preferences").$type<UserPreferences>(),
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  subscriptionTier: text("subscription_tier", { enum: ['free', 'premium', 'enterprise'] }).default('free'),
+  subscriptionStatus: text("subscription_status", { enum: ['active', 'canceled', 'past_due', 'trialing', 'inactive'] }),
+  subscriptionExpiresAt: timestamp("subscription_expires_at", { mode: 'string' }),
 });
 
 export const flights = pgTable("flights", {

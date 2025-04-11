@@ -1,0 +1,24 @@
+Prompt 7: Boost Digital Presence with SEO and Social Media Integration
+Focus: Improve SEO and social media engagement to increase digital reach.
+Character Count: ~5,900
+text
+CollapseWrapCopy
+I am tasking Replit AI with boosting the digital presence of my full-stack web platform, built with a React frontend, Node.js/Express backend, and a database (e.g., MongoDB/PostgreSQL). The app includes various pages, features, and integrations. Make no assumptions about digital presence—examine all SEO and social media aspects, adding keyword optimization, meta tags, schema markup, and social media integration. Provide explicit, step-by-step instructions for a beginner to implement, test, and deploy the app on Replit Autoscale and Render.
+
+#### Step-by-Step Instructions
+1. **Optimize SEO**: In `client/public/index.html`, add meta tags: `<meta name="description" content="Top app for [industry] services">`, `<meta name="keywords" content="[industry], services, premium">`.
+2. **Add Schema Markup**: In `client/src/pages/LandingPage.tsx`, add Article schema: `<script type="application/ld+json">{ "@context": "https://schema.org", "@type": "Article", "headline": "Welcome to [App Name]" }</script>`.
+3. **Integrate Social Media**: Create `client/src/components/SocialFeed.tsx`, embed Instagram/Twitter feeds, add sharing buttons: `<button onClick={() => window.open('https://twitter.com/intent/tweet?url=' + encodeURIComponent(window.location.href))}>Share on Twitter</button>`.
+4. **Test Digital Presence**: Run `npm start`, test SEO (e.g., Google Search Console), confirm social media feeds load.
+5. **Deploy**: Configure Replit Autoscale (build: `npm install && cd client && npm run build`, start: `npm start`). Deploy on Render: `git add .`, `git commit -m "Boosted digital presence"`, `git push origin main`, click "Clear build cache & deploy".
+
+#### Deliverables
+- **Codebase**: Updated with SEO and social media integration.
+- **Docs**: README with digital presence enhancements, deployment instructions.
+- **Testing**: Report confirming SEO improvements, social media functionality, deployment success.
+#### Success Criteria
+- 50% increase in monthly uniques, improved search rankings.
+- Deployment succeeds with no issues.
+#### Steps
+1. Add SEO optimizations and social media integration.
+2. Test digital presence, deploy, document changes.
