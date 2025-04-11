@@ -17,12 +17,16 @@ import SubscriptionSuccessPage from "@/pages/subscription-success";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import NotFound from "@/pages/not-found";
 import HistoryPage from "@/pages/history-page";
+import { useTranslation } from 'react-i18next';
+import { getLanguageDir } from '@/i18n';
 
 // Import i18n (needs to be bundled)
 import '@/i18n';
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const { i18n } = useTranslation();
+  const dir = getLanguageDir(i18n.language);
   
   // Effect to initialize theme from localStorage
   useEffect(() => {
@@ -55,7 +59,7 @@ function App() {
       <ThemeProvider defaultTheme={isDarkMode ? "dark" : "light"} storageKey="aerotracker-theme">
         <AuthProvider>
           <SubscriptionProvider>
-            <div className="flex flex-col min-h-screen">
+            <div className={`flex flex-col min-h-screen ${dir === 'rtl' ? 'rtl-layout' : ''}`} dir={dir}>
               <Header isDarkMode={isDarkMode} onThemeToggle={toggleDarkMode} />
               <main className="flex-grow">
                 <Switch>

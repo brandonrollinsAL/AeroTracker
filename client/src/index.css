@@ -462,6 +462,73 @@
   }
 }
 
+/* RTL Layout Support */
+.rtl-layout {
+  text-align: right;
+}
+
+/* Flip directional UI elements in RTL mode */
+.rtl-layout .rtl-flip {
+  transform: scaleX(-1);
+}
+
+/* Adjust margins and paddings for RTL */
+.rtl-layout .ml-auto {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.rtl-layout .mr-auto {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+.rtl-layout .pl-8 {
+  padding-left: 0;
+  padding-right: 2rem;
+}
+
+.rtl-layout .pr-8 {
+  padding-right: 0;
+  padding-left: 2rem;
+}
+
+/* Adjust positioning for RTL */
+.rtl-layout .left-2 {
+  left: auto;
+  right: 0.5rem;
+}
+
+.rtl-layout .right-2 {
+  right: auto;
+  left: 0.5rem;
+}
+
+/* Adjust flex direction for RTL */
+.rtl-layout .flex-row {
+  flex-direction: row-reverse;
+}
+
+/* Adjust text alignment */
+.rtl-layout .text-left {
+  text-align: right;
+}
+
+.rtl-layout .text-right {
+  text-align: left;
+}
+
+/* Override specific component styles for RTL */
+.rtl-layout .luxury-accent {
+  padding-left: 0;
+  padding-right: 0.75rem;
+}
+
+.rtl-layout .luxury-accent::before {
+  left: auto;
+  right: 0;
+}
+
 /* Luxury input field */
 .luxury-input {
   @apply block w-full rounded-md border-0 bg-white px-3 py-2 text-gray-900 shadow-sm ring-1 ring-inset transition-all duration-200;
