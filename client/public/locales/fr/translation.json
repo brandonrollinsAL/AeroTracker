@@ -1,132 +1,246 @@
 {
-  "app": {
-    "name": "AeroTracker",
-    "tagline": "Plateforme Avancée de Suivi des Vols"
+  "common": {
+    "appName": "AeroTracker",
+    "tagline": "Suivi de Vol Avancé",
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "retry": "Réessayer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "viewAll": "Voir Tout",
+    "viewMore": "Voir Plus",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "submit": "Soumettre",
+    "confirm": "Confirmer",
+    "welcome": "Bienvenue",
+    "login": "Connexion",
+    "signup": "S'inscrire",
+    "logout": "Déconnexion",
+    "profile": "Profil",
+    "home": "Accueil",
+    "settings": "Paramètres"
   },
   "header": {
-    "home": "Accueil",
+    "dashboard": "Tableau de Bord",
     "flights": "Vols",
     "airports": "Aéroports",
-    "premium": "Premium",
-    "about": "À Propos",
+    "map": "Carte",
+    "subscribe": "Abonnement",
+    "account": "Mon Compte",
     "history": "Notre Histoire",
-    "login": "Connexion",
-    "register": "S'inscrire",
-    "profile": "Profil",
-    "logout": "Déconnexion"
-  },
-  "map": {
-    "title": "Suivi des Vols en Direct",
-    "filters": {
-      "title": "Filtres de la Carte",
-      "all": "Tous les Vols",
-      "commercial": "Commercial",
-      "private": "Privé",
-      "weather": "Météo",
-      "paths": "Trajectoires de Vol",
-      "airports": "Aéroports",
-      "live": "Suivi en Direct"
-    }
-  },
-  "flight": {
-    "details": {
-      "title": "Détails du Vol",
-      "callsign": "Indicatif",
-      "flightNumber": "Numéro de Vol",
-      "origin": "Origine",
-      "destination": "Destination",
-      "aircraft": "Aéronef",
-      "altitude": "Altitude",
-      "speed": "Vitesse",
-      "status": "Statut",
-      "scheduled": "Prévu",
-      "estimated": "Estimé",
-      "actual": "Réel",
-      "departure": "Départ",
-      "arrival": "Arrivée"
-    },
-    "status": {
-      "active": "Actif",
-      "landed": "Atterri",
-      "scheduled": "Prévu",
-      "delayed": "Retardé",
-      "cancelled": "Annulé",
-      "diverted": "Dérouté"
-    }
-  },
-  "premium": {
-    "title": "Fonctionnalités Premium",
-    "tagline": "Améliorez Votre Expérience de Suivi des Vols",
-    "features": {
-      "title": "Fonctionnalités Premium Exclusives",
-      "weatherOverlay": "Superposition Météo",
-      "detailedInfo": "Informations Détaillées sur les Aéronefs",
-      "routeOptimizer": "Optimiseur d'Itinéraire",
-      "notifications": "Notifications en Temps Réel",
-      "historical": "Données Historiques des Vols",
-      "export": "Exportation de Données et Rapports"
-    },
-    "plans": {
-      "title": "Plans d'Abonnement",
-      "free": "Gratuit",
-      "premium": "Premium",
-      "enterprise": "Entreprise",
-      "monthly": "Mensuel",
-      "yearly": "Annuel",
-      "subscribe": "S'abonner"
-    },
-    "prompt": "Connectez-vous ou créez un compte pour accéder aux fonctionnalités premium."
-  },
-  "about": {
-    "title": "À Propos d'AeroTracker",
-    "mission": "Notre Mission",
-    "missionText": "AeroTracker s'efforce de fournir la plateforme de suivi des vols la plus complète et précise au monde, offrant aux professionnels de l'aviation et aux passionnés des données en temps réel et des outils innovants.",
-    "team": "Notre Équipe",
-    "technology": "Notre Technologie"
-  },
-  "history": {
-    "title": "Notre Histoire",
-    "subtitle": "Le Parcours d'AeroTracker de la Vision au Leader de l'Industrie",
-    "timeline": {
-      "founding": "Fondation",
-      "firstRelease": "Première Version",
-      "majorUpdate": "Mise à Jour Majeure",
-      "globalExpansion": "Expansion Mondiale",
-      "aiIntegration": "Intégration de l'IA",
-      "present": "Présent"
-    }
-  },
-  "footer": {
-    "quickLinks": "Liens Rapides",
-    "resources": "Ressources",
-    "legal": "Mentions Légales",
-    "contactSupport": "Contacter le Support",
-    "copyright": "© {{year}} AeroTracker. Tous droits réservés."
+    "signIn": "Se Connecter",
+    "local": "Local",
+    "zulu": "Zulu"
   },
   "auth": {
-    "login": "Connexion",
-    "register": "S'inscrire",
+    "title": "Accès au Compte",
     "email": "Email",
     "username": "Nom d'utilisateur",
     "password": "Mot de passe",
-    "confirm": "Confirmer le mot de passe",
-    "forgotPassword": "Mot de passe oublié ?",
-    "alreadyHaveAccount": "Vous avez déjà un compte ?",
-    "needAccount": "Besoin d'un compte ?"
+    "confirmPassword": "Confirmer le mot de passe",
+    "forgotPassword": "Mot de passe oublié?",
+    "loginTitle": "Bon Retour",
+    "loginSubtitle": "Connectez-vous pour accéder à votre compte AeroTracker",
+    "registerTitle": "Créer un Compte",
+    "registerSubtitle": "Rejoignez AeroTracker pour débloquer toutes les fonctionnalités",
+    "noAccount": "Pas encore de compte?",
+    "hasAccount": "Vous avez déjà un compte?",
+    "loginSuccess": "Connexion réussie",
+    "registerSuccess": "Inscription réussie",
+    "loginError": "Échec de la connexion",
+    "registerError": "Échec de l'inscription",
+    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+    "emailInvalid": "Adresse email invalide",
+    "passwordRequirements": "Le mot de passe doit contenir au moins 8 caractères et inclure un chiffre",
+    "usernameExists": "Ce nom d'utilisateur existe déjà"
   },
-  "settings": {
-    "title": "Paramètres",
-    "account": "Compte",
-    "preferences": "Préférences",
-    "theme": "Thème",
-    "language": "Langue",
-    "notifications": "Notifications",
-    "privacy": "Confidentialité",
-    "languages": {
-      "en": "English",
-      "fr": "Français",
-      "es": "Español",
-      "zh": "中文"
+  "map": {
+    "zoomIn": "Zoom Avant",
+    "zoomOut": "Zoom Arrière",
+    "myLocation": "Ma Position",
+    "legend": "Légende",
+    "layers": "Couches",
+    "satellite": "Satellite",
+    "terrain": "Terrain",
+    "dark": "Mode Sombre",
+    "light": "Mode Clair",
+    "traffic": "Trafic",
+    "weather": "Météo",
+    "airports": "Aéroports",
+    "flights": "Vols",
+    "noFlights": "Aucun vol dans cette zone",
+    "loading": "Chargement des données de vol...",
+    "refreshing": "Actualisation des données...",
+    "filters": {
+      "title": "Filtres",
+      "airline": "Compagnie Aérienne",
+      "aircraft": "Type d'Avion",
+      "altitude": "Altitude (pieds)",
+      "speed": "Vitesse (nœuds)",
+      "status": "Statut du Vol",
+      "clear": "Effacer les Filtres"
     }
+  },
+  "flights": {
+    "flightNumber": "Numéro de Vol",
+    "airline": "Compagnie Aérienne",
+    "status": "Statut",
+    "departure": "Départ",
+    "arrival": "Arrivée",
+    "aircraft": "Avion",
+    "registration": "Immatriculation",
+    "altitude": "Altitude",
+    "speed": "Vitesse",
+    "heading": "Cap",
+    "tracking": "Suivre",
+    "details": "Détails",
+    "origin": "Origine",
+    "destination": "Destination",
+    "scheduledDeparture": "Départ Prévu",
+    "actualDeparture": "Départ Réel",
+    "scheduledArrival": "Arrivée Prévue",
+    "estimatedArrival": "Arrivée Estimée",
+    "terminal": "Terminal",
+    "gate": "Porte",
+    "route": "Itinéraire",
+    "duration": "Durée",
+    "distance": "Distance",
+    "flightInfo": "Informations de Vol",
+    "status": {
+      "scheduled": "Programmé",
+      "active": "Actif",
+      "landed": "Atterri",
+      "cancelled": "Annulé",
+      "diverted": "Dérouté",
+      "delayed": "Retardé"
+    }
+  },
+  "airports": {
+    "code": "Code",
+    "name": "Nom",
+    "city": "Ville",
+    "country": "Pays",
+    "timezone": "Fuseau Horaire",
+    "coordinates": "Coordonnées",
+    "elevation": "Élévation",
+    "runways": "Pistes",
+    "terminals": "Terminaux",
+    "weather": "Météo",
+    "departures": "Départs",
+    "arrivals": "Arrivées",
+    "alerts": "Alertes",
+    "facilities": "Installations",
+    "information": "Informations sur l'Aéroport"
+  },
+  "subscription": {
+    "title": "Plans d'Abonnement",
+    "subtitle": "Choisissez le plan qui répond à vos besoins",
+    "current": "Plan Actuel",
+    "upgrade": "Surclasser",
+    "downgrade": "Rétrograder",
+    "renew": "Renouveler",
+    "cancel": "Annuler l'Abonnement",
+    "expiry": "Expire le",
+    "payment": "Informations de Paiement",
+    "cardName": "Nom sur la Carte",
+    "cardNumber": "Numéro de Carte",
+    "cardExpiry": "Date d'Expiration",
+    "cardCVC": "CVC",
+    "billingAddress": "Adresse de Facturation",
+    "plans": {
+      "free": {
+        "name": "Gratuit",
+        "description": "Suivi de vol basique",
+        "price": "Gratuit",
+        "features": [
+          "Suivi de vol en temps réel",
+          "Fonctionnalités de carte basiques",
+          "Historique de vol limité",
+          "Taux de rafraîchissement standard"
+        ]
+      },
+      "premium": {
+        "name": "Premium",
+        "description": "Suivi de vol amélioré pour les passionnés d'aviation",
+        "price": "9,99€/mois",
+        "features": [
+          "Tout ce qui est inclus dans le plan Gratuit",
+          "Filtres avancés et recherche",
+          "Historique de vol étendu",
+          "Taux de rafraîchissement plus rapide",
+          "Couches météorologiques",
+          "Optimisation d'itinéraire",
+          "Alertes de vol"
+        ]
+      },
+      "enterprise": {
+        "name": "Entreprise",
+        "description": "Outils professionnels pour les entreprises d'aviation",
+        "price": "29,99€/mois",
+        "features": [
+          "Tout ce qui est inclus dans le plan Premium",
+          "Accès API",
+          "Export de données",
+          "Support prioritaire",
+          "Tableau de bord personnalisé",
+          "Analyses avancées",
+          "Comptes utilisateurs multiples"
+        ]
+      }
+    },
+    "success": "Abonnement mis à jour avec succès",
+    "failure": "Échec de la mise à jour de l'abonnement"
+  },
+  "history": {
+    "title": "Notre Histoire",
+    "subtitle": "L'histoire du parcours d'AeroTracker pour devenir la plateforme de suivi de vol leader",
+    "timeline": {
+      "founding": "Fondation de l'Entreprise",
+      "firstRelease": "Première Version de la Plateforme",
+      "majorUpdate": "Mise à Jour Majeure",
+      "globalExpansion": "Expansion Mondiale",
+      "aiIntegration": "Intégration de l'IA",
+      "present": "Leader du Secteur"
+    }
+  },
+  "about": {
+    "team": "Notre Équipe",
+    "mission": "Notre Mission",
+    "missionText": "Fournir la plateforme de suivi de vol la plus précise, complète et conviviale au monde, permettant aux professionnels de l'aviation et aux passionnés d'obtenir des informations en temps réel et des analyses avancées."
+  },
+  "footer": {
+    "copyright": "© 2025 AeroTracker. Tous droits réservés.",
+    "terms": "Conditions d'Utilisation",
+    "privacy": "Politique de Confidentialité",
+    "contact": "Contactez-Nous",
+    "about": "À Propos",
+    "careers": "Carrières",
+    "help": "Centre d'Aide",
+    "feedback": "Commentaires",
+    "followUs": "Suivez-Nous",
+    "newsletter": "Abonnez-vous à notre newsletter",
+    "emailPlaceholder": "Entrez votre email",
+    "subscribe": "S'abonner"
+  },
+  "alerts": {
+    "success": "Succès",
+    "error": "Erreur",
+    "warning": "Avertissement",
+    "info": "Information"
+  },
+  "errors": {
+    "general": "Une erreur s'est produite",
+    "network": "Erreur réseau",
+    "unauthorized": "Veuillez vous connecter pour continuer",
+    "forbidden": "Vous n'avez pas la permission d'accéder à cette ressource",
+    "notFound": "Ressource non trouvée",
+    "serverError": "Erreur serveur",
+    "validation": "Erreur de validation",
+    "timeout": "Délai d'attente dépassé"
   }
 }

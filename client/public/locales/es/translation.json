@@ -1,132 +1,246 @@
 {
-  "app": {
-    "name": "AeroTracker",
-    "tagline": "Plataforma Avanzada de Seguimiento de Vuelos"
+  "common": {
+    "appName": "AeroTracker",
+    "tagline": "Seguimiento de Vuelos Avanzado",
+    "loading": "Cargando...",
+    "error": "Ha ocurrido un error",
+    "retry": "Reintentar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "viewAll": "Ver Todo",
+    "viewMore": "Ver Más",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "confirm": "Confirmar",
+    "welcome": "Bienvenido",
+    "login": "Iniciar Sesión",
+    "signup": "Registrarse",
+    "logout": "Cerrar Sesión",
+    "profile": "Perfil",
+    "home": "Inicio",
+    "settings": "Configuración"
   },
   "header": {
-    "home": "Inicio",
+    "dashboard": "Panel de Control",
     "flights": "Vuelos",
     "airports": "Aeropuertos",
-    "premium": "Premium",
-    "about": "Acerca de",
+    "map": "Mapa",
+    "subscribe": "Suscribirse",
+    "account": "Mi Cuenta",
     "history": "Nuestra Historia",
-    "login": "Iniciar Sesión",
-    "register": "Registrarse",
-    "profile": "Perfil",
-    "logout": "Cerrar Sesión"
+    "signIn": "Iniciar Sesión",
+    "local": "Local",
+    "zulu": "Zulu"
+  },
+  "auth": {
+    "title": "Acceso a la Cuenta",
+    "email": "Correo electrónico",
+    "username": "Nombre de usuario",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "forgotPassword": "¿Olvidó su Contraseña?",
+    "loginTitle": "Bienvenido de Nuevo",
+    "loginSubtitle": "Inicia sesión para acceder a tu cuenta AeroTracker",
+    "registerTitle": "Crear una Cuenta",
+    "registerSubtitle": "Únete a AeroTracker para desbloquear todas las funciones",
+    "noAccount": "¿No tienes una cuenta?",
+    "hasAccount": "¿Ya tienes una cuenta?",
+    "loginSuccess": "Inicio de sesión exitoso",
+    "registerSuccess": "Registro exitoso",
+    "loginError": "Error al iniciar sesión",
+    "registerError": "Error al registrarse",
+    "passwordsDoNotMatch": "Las contraseñas no coinciden",
+    "emailInvalid": "Correo electrónico inválido",
+    "passwordRequirements": "La contraseña debe tener al menos 8 caracteres e incluir un número",
+    "usernameExists": "El nombre de usuario ya existe"
   },
   "map": {
-    "title": "Seguimiento de Vuelos en Vivo",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "myLocation": "Mi Ubicación",
+    "legend": "Leyenda",
+    "layers": "Capas",
+    "satellite": "Satélite",
+    "terrain": "Terreno",
+    "dark": "Modo Oscuro",
+    "light": "Modo Claro",
+    "traffic": "Tráfico",
+    "weather": "Clima",
+    "airports": "Aeropuertos",
+    "flights": "Vuelos",
+    "noFlights": "No hay vuelos en esta área",
+    "loading": "Cargando datos de vuelo...",
+    "refreshing": "Actualizando datos...",
     "filters": {
-      "title": "Filtros de Mapa",
-      "all": "Todos los Vuelos",
-      "commercial": "Comercial",
-      "private": "Privado",
-      "weather": "Clima",
-      "paths": "Rutas de Vuelo",
-      "airports": "Aeropuertos",
-      "live": "Seguimiento en Vivo"
+      "title": "Filtros",
+      "airline": "Aerolínea",
+      "aircraft": "Tipo de Aeronave",
+      "altitude": "Altitud (pies)",
+      "speed": "Velocidad (nudos)",
+      "status": "Estado del Vuelo",
+      "clear": "Limpiar Filtros"
     }
   },
-  "flight": {
-    "details": {
-      "title": "Detalles del Vuelo",
-      "callsign": "Señal de Llamada",
-      "flightNumber": "Número de Vuelo",
-      "origin": "Origen",
-      "destination": "Destino",
-      "aircraft": "Aeronave",
-      "altitude": "Altitud",
-      "speed": "Velocidad",
-      "status": "Estado",
-      "scheduled": "Programado",
-      "estimated": "Estimado",
-      "actual": "Real",
-      "departure": "Salida",
-      "arrival": "Llegada"
-    },
+  "flights": {
+    "flightNumber": "Número de Vuelo",
+    "airline": "Aerolínea",
+    "status": "Estado",
+    "departure": "Salida",
+    "arrival": "Llegada",
+    "aircraft": "Aeronave",
+    "registration": "Matrícula",
+    "altitude": "Altitud",
+    "speed": "Velocidad",
+    "heading": "Rumbo",
+    "tracking": "Seguir",
+    "details": "Detalles",
+    "origin": "Origen",
+    "destination": "Destino",
+    "scheduledDeparture": "Salida Programada",
+    "actualDeparture": "Salida Real",
+    "scheduledArrival": "Llegada Programada",
+    "estimatedArrival": "Llegada Estimada",
+    "terminal": "Terminal",
+    "gate": "Puerta",
+    "route": "Ruta",
+    "duration": "Duración",
+    "distance": "Distancia",
+    "flightInfo": "Información de Vuelo",
     "status": {
+      "scheduled": "Programado",
       "active": "Activo",
       "landed": "Aterrizado",
-      "scheduled": "Programado",
-      "delayed": "Retrasado",
       "cancelled": "Cancelado",
-      "diverted": "Desviado"
+      "diverted": "Desviado",
+      "delayed": "Retrasado"
     }
   },
-  "premium": {
-    "title": "Características Premium",
-    "tagline": "Mejora Tu Experiencia de Seguimiento de Vuelos",
-    "features": {
-      "title": "Características Premium Exclusivas",
-      "weatherOverlay": "Superposición del Clima",
-      "detailedInfo": "Información Detallada de Aeronaves",
-      "routeOptimizer": "Optimizador de Rutas",
-      "notifications": "Notificaciones en Tiempo Real",
-      "historical": "Datos Históricos de Vuelos",
-      "export": "Exportación de Datos e Informes"
-    },
-    "plans": {
-      "title": "Planes de Suscripción",
-      "free": "Gratuito",
-      "premium": "Premium",
-      "enterprise": "Empresarial",
-      "monthly": "Mensual",
-      "yearly": "Anual",
-      "subscribe": "Suscribirse"
-    },
-    "prompt": "Inicia sesión o crea una cuenta para acceder a las características premium."
+  "airports": {
+    "code": "Código",
+    "name": "Nombre",
+    "city": "Ciudad",
+    "country": "País",
+    "timezone": "Zona Horaria",
+    "coordinates": "Coordenadas",
+    "elevation": "Elevación",
+    "runways": "Pistas",
+    "terminals": "Terminales",
+    "weather": "Clima",
+    "departures": "Salidas",
+    "arrivals": "Llegadas",
+    "alerts": "Alertas",
+    "facilities": "Instalaciones",
+    "information": "Información del Aeropuerto"
   },
-  "about": {
-    "title": "Acerca de AeroTracker",
-    "mission": "Nuestra Misión",
-    "missionText": "AeroTracker se esfuerza por proporcionar la plataforma de seguimiento de vuelos más completa y precisa del mundo, potenciando a profesionales y entusiastas de la aviación con datos en tiempo real y herramientas innovadoras.",
-    "team": "Nuestro Equipo",
-    "technology": "Nuestra Tecnología"
+  "subscription": {
+    "title": "Planes de Suscripción",
+    "subtitle": "Elige el plan que se adapte a tus necesidades",
+    "current": "Plan Actual",
+    "upgrade": "Mejorar",
+    "downgrade": "Reducir",
+    "renew": "Renovar",
+    "cancel": "Cancelar Suscripción",
+    "expiry": "Expira el",
+    "payment": "Información de Pago",
+    "cardName": "Nombre en la Tarjeta",
+    "cardNumber": "Número de Tarjeta",
+    "cardExpiry": "Fecha de Expiración",
+    "cardCVC": "CVC",
+    "billingAddress": "Dirección de Facturación",
+    "plans": {
+      "free": {
+        "name": "Gratis",
+        "description": "Seguimiento de vuelo básico",
+        "price": "Gratis",
+        "features": [
+          "Seguimiento de vuelo en tiempo real",
+          "Funciones básicas de mapa",
+          "Historial de vuelo limitado",
+          "Velocidad de actualización estándar"
+        ]
+      },
+      "premium": {
+        "name": "Premium",
+        "description": "Seguimiento de vuelo mejorado para entusiastas de la aviación",
+        "price": "$9.99/mes",
+        "features": [
+          "Todo lo incluido en el plan Gratis",
+          "Filtros avanzados y búsqueda",
+          "Historial de vuelo extendido",
+          "Velocidad de actualización más rápida",
+          "Capas climáticas",
+          "Optimización de ruta",
+          "Alertas de vuelo"
+        ]
+      },
+      "enterprise": {
+        "name": "Empresarial",
+        "description": "Herramientas profesionales para empresas de aviación",
+        "price": "$29.99/mes",
+        "features": [
+          "Todo lo incluido en el plan Premium",
+          "Acceso API",
+          "Exportación de datos",
+          "Soporte prioritario",
+          "Panel personalizado",
+          "Análisis avanzados",
+          "Múltiples cuentas de usuario"
+        ]
+      }
+    },
+    "success": "Suscripción actualizada exitosamente",
+    "failure": "Error al actualizar la suscripción"
   },
   "history": {
     "title": "Nuestra Historia",
-    "subtitle": "El Viaje de AeroTracker desde la Visión hasta el Liderazgo en la Industria",
+    "subtitle": "La historia del viaje de AeroTracker para convertirse en la plataforma líder de seguimiento de vuelos",
     "timeline": {
-      "founding": "Fundación",
-      "firstRelease": "Primera Versión",
-      "majorUpdate": "Actualización Mayor",
+      "founding": "Fundación de la Empresa",
+      "firstRelease": "Primer Lanzamiento de la Plataforma",
+      "majorUpdate": "Actualización Mayor de la Plataforma",
       "globalExpansion": "Expansión Global",
       "aiIntegration": "Integración de IA",
-      "present": "Presente"
+      "present": "Liderando la Industria"
     }
+  },
+  "about": {
+    "team": "Nuestro Equipo",
+    "mission": "Nuestra Misión",
+    "missionText": "Proporcionar la plataforma de seguimiento de vuelos más precisa, completa y fácil de usar en el mundo, empoderando a profesionales y entusiastas de la aviación con información en tiempo real y análisis avanzados."
   },
   "footer": {
-    "quickLinks": "Enlaces Rápidos",
-    "resources": "Recursos",
-    "legal": "Legal",
-    "contactSupport": "Contactar Soporte",
-    "copyright": "© {{year}} AeroTracker. Todos los derechos reservados."
+    "copyright": "© 2025 AeroTracker. Todos los derechos reservados.",
+    "terms": "Términos de Servicio",
+    "privacy": "Política de Privacidad",
+    "contact": "Contáctenos",
+    "about": "Acerca de",
+    "careers": "Carreras",
+    "help": "Centro de Ayuda",
+    "feedback": "Comentarios",
+    "followUs": "Síguenos",
+    "newsletter": "Suscríbete a nuestro boletín",
+    "emailPlaceholder": "Ingresa tu correo electrónico",
+    "subscribe": "Suscribirse"
   },
-  "auth": {
-    "login": "Iniciar Sesión",
-    "register": "Registrarse",
-    "email": "Correo Electrónico",
-    "username": "Nombre de Usuario",
-    "password": "Contraseña",
-    "confirm": "Confirmar Contraseña",
-    "forgotPassword": "¿Olvidaste tu Contraseña?",
-    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
-    "needAccount": "¿Necesitas una cuenta?"
+  "alerts": {
+    "success": "Éxito",
+    "error": "Error",
+    "warning": "Advertencia",
+    "info": "Información"
   },
-  "settings": {
-    "title": "Configuración",
-    "account": "Cuenta",
-    "preferences": "Preferencias",
-    "theme": "Tema",
-    "language": "Idioma",
-    "notifications": "Notificaciones",
-    "privacy": "Privacidad",
-    "languages": {
-      "en": "English",
-      "fr": "Français",
-      "es": "Español",
-      "zh": "中文"
-    }
+  "errors": {
+    "general": "Algo salió mal",
+    "network": "Error de red",
+    "unauthorized": "Por favor inicia sesión para continuar",
+    "forbidden": "No tienes permiso para acceder a este recurso",
+    "notFound": "Recurso no encontrado",
+    "serverError": "Error del servidor",
+    "validation": "Error de validación",
+    "timeout": "Tiempo de espera agotado"
   }
 }

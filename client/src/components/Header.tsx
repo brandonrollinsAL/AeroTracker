@@ -25,7 +25,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useSubscription } from '@/hooks/use-subscription';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { LanguageSelector } from '@/components/LanguageSelector';
+import LanguageSelector from '@/components/LanguageSelector';
 
 interface HeaderProps {
   isDarkMode: boolean;

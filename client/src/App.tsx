@@ -6,6 +6,7 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { SubscriptionProvider } from "@/hooks/use-subscription";
 import { queryClient } from "@/lib/queryClient";
 import { ProtectedRoute } from "@/lib/protected-route";
+import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import HomePage from "@/pages/Home";
 import AuthPage from "@/pages/auth-page";
@@ -26,6 +27,7 @@ function App() {
         <AuthProvider>
           <SubscriptionProvider>
             <div className="flex flex-col min-h-screen">
+              <Header isDarkMode={false} onThemeToggle={() => {}} />
               <main className="flex-grow">
                 <Switch>
                   <Route path="/auth" component={AuthPage} />

@@ -1,132 +1,246 @@
 {
-  "app": {
-    "name": "航空追踪",
-    "tagline": "先进的航班追踪平台"
+  "common": {
+    "appName": "AeroTracker",
+    "tagline": "高级航班追踪",
+    "loading": "加载中...",
+    "error": "发生错误",
+    "retry": "重试",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "search": "搜索",
+    "filter": "筛选",
+    "viewAll": "查看全部",
+    "viewMore": "查看更多",
+    "back": "返回",
+    "next": "下一步",
+    "previous": "上一步",
+    "submit": "提交",
+    "confirm": "确认",
+    "welcome": "欢迎",
+    "login": "登录",
+    "signup": "注册",
+    "logout": "退出登录",
+    "profile": "个人资料",
+    "home": "首页",
+    "settings": "设置"
   },
   "header": {
-    "home": "首页",
+    "dashboard": "仪表盘",
     "flights": "航班",
     "airports": "机场",
-    "premium": "高级版",
-    "about": "关于我们",
-    "history": "发展历程",
-    "login": "登录",
-    "register": "注册",
-    "profile": "个人资料",
-    "logout": "退出登录"
-  },
-  "map": {
-    "title": "实时航班追踪",
-    "filters": {
-      "title": "地图筛选",
-      "all": "所有航班",
-      "commercial": "商业航班",
-      "private": "私人航班",
-      "weather": "天气",
-      "paths": "飞行路径",
-      "airports": "机场",
-      "live": "实时追踪"
-    }
-  },
-  "flight": {
-    "details": {
-      "title": "航班详情",
-      "callsign": "呼号",
-      "flightNumber": "航班号",
-      "origin": "出发地",
-      "destination": "目的地",
-      "aircraft": "飞机",
-      "altitude": "高度",
-      "speed": "速度",
-      "status": "状态",
-      "scheduled": "计划",
-      "estimated": "预计",
-      "actual": "实际",
-      "departure": "起飞",
-      "arrival": "到达"
-    },
-    "status": {
-      "active": "飞行中",
-      "landed": "已降落",
-      "scheduled": "已计划",
-      "delayed": "延误",
-      "cancelled": "取消",
-      "diverted": "改航"
-    }
-  },
-  "premium": {
-    "title": "高级功能",
-    "tagline": "提升您的航班追踪体验",
-    "features": {
-      "title": "专属高级功能",
-      "weatherOverlay": "天气覆盖层",
-      "detailedInfo": "详细的飞机信息",
-      "routeOptimizer": "航线优化器",
-      "notifications": "实时通知",
-      "historical": "历史航班数据",
-      "export": "数据导出和报告"
-    },
-    "plans": {
-      "title": "订阅计划",
-      "free": "免费版",
-      "premium": "高级版",
-      "enterprise": "企业版",
-      "monthly": "月付",
-      "yearly": "年付",
-      "subscribe": "订阅"
-    },
-    "prompt": "登录或创建账户以访问高级功能。"
-  },
-  "about": {
-    "title": "关于航空追踪",
-    "mission": "我们的使命",
-    "missionText": "航空追踪致力于提供全球最全面、最准确的航班追踪平台，为航空专业人士和爱好者提供实时数据和创新工具。",
-    "team": "我们的团队",
-    "technology": "我们的技术"
-  },
-  "history": {
-    "title": "发展历程",
-    "subtitle": "航空追踪从愿景到行业领导者的旅程",
-    "timeline": {
-      "founding": "创立",
-      "firstRelease": "首次发布",
-      "majorUpdate": "重大更新",
-      "globalExpansion": "全球扩张",
-      "aiIntegration": "人工智能集成",
-      "present": "现在"
-    }
-  },
-  "footer": {
-    "quickLinks": "快速链接",
-    "resources": "资源",
-    "legal": "法律信息",
-    "contactSupport": "联系支持",
-    "copyright": "© {{year}} 航空追踪。保留所有权利。"
+    "map": "地图",
+    "subscribe": "订阅",
+    "account": "我的账户",
+    "history": "我们的历史",
+    "signIn": "登录",
+    "local": "本地时间",
+    "zulu": "协调世界时"
   },
   "auth": {
-    "login": "登录",
-    "register": "注册",
-    "email": "电子邮件",
+    "title": "账户访问",
+    "email": "电子邮箱",
     "username": "用户名",
     "password": "密码",
-    "confirm": "确认密码",
+    "confirmPassword": "确认密码",
     "forgotPassword": "忘记密码？",
-    "alreadyHaveAccount": "已有账户？",
-    "needAccount": "需要一个账户？"
+    "loginTitle": "欢迎回来",
+    "loginSubtitle": "登录以访问您的AeroTracker账户",
+    "registerTitle": "创建账户",
+    "registerSubtitle": "加入AeroTracker以解锁所有功能",
+    "noAccount": "没有账户？",
+    "hasAccount": "已有账户？",
+    "loginSuccess": "登录成功",
+    "registerSuccess": "注册成功",
+    "loginError": "登录失败",
+    "registerError": "注册失败",
+    "passwordsDoNotMatch": "密码不匹配",
+    "emailInvalid": "无效的电子邮箱",
+    "passwordRequirements": "密码必须至少包含8个字符和一个数字",
+    "usernameExists": "用户名已存在"
   },
-  "settings": {
-    "title": "设置",
-    "account": "账户",
-    "preferences": "偏好",
-    "theme": "主题",
-    "language": "语言",
-    "notifications": "通知",
-    "privacy": "隐私",
-    "languages": {
-      "en": "English",
-      "fr": "Français",
-      "es": "Español",
-      "zh": "中文"
+  "map": {
+    "zoomIn": "放大",
+    "zoomOut": "缩小",
+    "myLocation": "我的位置",
+    "legend": "图例",
+    "layers": "图层",
+    "satellite": "卫星",
+    "terrain": "地形",
+    "dark": "暗黑模式",
+    "light": "明亮模式",
+    "traffic": "交通",
+    "weather": "天气",
+    "airports": "机场",
+    "flights": "航班",
+    "noFlights": "此区域没有航班",
+    "loading": "加载航班数据...",
+    "refreshing": "刷新数据...",
+    "filters": {
+      "title": "筛选",
+      "airline": "航空公司",
+      "aircraft": "飞机类型",
+      "altitude": "高度（英尺）",
+      "speed": "速度（节）",
+      "status": "航班状态",
+      "clear": "清除筛选"
     }
+  },
+  "flights": {
+    "flightNumber": "航班号",
+    "airline": "航空公司",
+    "status": "状态",
+    "departure": "出发",
+    "arrival": "到达",
+    "aircraft": "飞机",
+    "registration": "注册号",
+    "altitude": "高度",
+    "speed": "速度",
+    "heading": "航向",
+    "tracking": "追踪",
+    "details": "详情",
+    "origin": "始发地",
+    "destination": "目的地",
+    "scheduledDeparture": "计划出发",
+    "actualDeparture": "实际出发",
+    "scheduledArrival": "计划到达",
+    "estimatedArrival": "预计到达",
+    "terminal": "航站楼",
+    "gate": "登机口",
+    "route": "航线",
+    "duration": "飞行时间",
+    "distance": "距离",
+    "flightInfo": "航班信息",
+    "status": {
+      "scheduled": "已排定",
+      "active": "飞行中",
+      "landed": "已着陆",
+      "cancelled": "已取消",
+      "diverted": "已改道",
+      "delayed": "已延误"
+    }
+  },
+  "airports": {
+    "code": "代码",
+    "name": "名称",
+    "city": "城市",
+    "country": "国家",
+    "timezone": "时区",
+    "coordinates": "坐标",
+    "elevation": "海拔",
+    "runways": "跑道",
+    "terminals": "航站楼",
+    "weather": "天气",
+    "departures": "出发",
+    "arrivals": "到达",
+    "alerts": "警报",
+    "facilities": "设施",
+    "information": "机场信息"
+  },
+  "subscription": {
+    "title": "订阅计划",
+    "subtitle": "选择适合您需求的计划",
+    "current": "当前计划",
+    "upgrade": "升级",
+    "downgrade": "降级",
+    "renew": "续订",
+    "cancel": "取消订阅",
+    "expiry": "到期日",
+    "payment": "支付信息",
+    "cardName": "持卡人姓名",
+    "cardNumber": "卡号",
+    "cardExpiry": "有效期",
+    "cardCVC": "CVC码",
+    "billingAddress": "账单地址",
+    "plans": {
+      "free": {
+        "name": "免费",
+        "description": "基本航班追踪",
+        "price": "免费",
+        "features": [
+          "实时航班追踪",
+          "基本地图功能",
+          "有限的航班历史",
+          "标准数据刷新率"
+        ]
+      },
+      "premium": {
+        "name": "高级",
+        "description": "面向航空爱好者的增强型航班追踪",
+        "price": "$9.99/月",
+        "features": [
+          "免费计划中的所有功能",
+          "高级筛选和搜索",
+          "扩展的航班历史",
+          "更快的数据刷新率",
+          "天气叠加层",
+          "航线优化",
+          "航班提醒"
+        ]
+      },
+      "enterprise": {
+        "name": "企业版",
+        "description": "面向航空企业的专业工具",
+        "price": "$29.99/月",
+        "features": [
+          "高级计划中的所有功能",
+          "API访问",
+          "数据导出",
+          "优先支持",
+          "自定义仪表盘",
+          "高级分析",
+          "多用户账户"
+        ]
+      }
+    },
+    "success": "订阅更新成功",
+    "failure": "订阅更新失败"
+  },
+  "history": {
+    "title": "我们的历史",
+    "subtitle": "AeroTracker成为领先航班追踪平台的历程",
+    "timeline": {
+      "founding": "公司成立",
+      "firstRelease": "第一版平台发布",
+      "majorUpdate": "平台重大更新",
+      "globalExpansion": "全球扩张",
+      "aiIntegration": "AI整合",
+      "present": "引领行业"
+    }
+  },
+  "about": {
+    "team": "我们的团队",
+    "mission": "我们的使命",
+    "missionText": "提供全球最精确、最全面、最用户友好的航班追踪平台，为航空专业人士和爱好者提供实时见解和高级分析。"
+  },
+  "footer": {
+    "copyright": "© 2025 AeroTracker。保留所有权利。",
+    "terms": "服务条款",
+    "privacy": "隐私政策",
+    "contact": "联系我们",
+    "about": "关于我们",
+    "careers": "招聘信息",
+    "help": "帮助中心",
+    "feedback": "反馈",
+    "followUs": "关注我们",
+    "newsletter": "订阅我们的通讯",
+    "emailPlaceholder": "输入您的电子邮箱",
+    "subscribe": "订阅"
+  },
+  "alerts": {
+    "success": "成功",
+    "error": "错误",
+    "warning": "警告",
+    "info": "信息"
+  },
+  "errors": {
+    "general": "出现错误",
+    "network": "网络错误",
+    "unauthorized": "请登录以继续",
+    "forbidden": "您没有权限访问此资源",
+    "notFound": "未找到资源",
+    "serverError": "服务器错误",
+    "validation": "验证错误",
+    "timeout": "请求超时"
   }
 }
