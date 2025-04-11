@@ -276,61 +276,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get NEXRAD radar data
   app.get("/api/nexrad", handleNexradRequest);
 
-  // Search endpoint for flights, airports, and aircraft
+  // Enhanced Search endpoint for flights, airports, and aircraft
   app.get("/api/search", async (req, res) => {
     try {
-      const { query, type } = req.query;
+      const query = req.query.q as string;
       
-      if (!query) {
-        return res.status(400).json({ message: "Query parameter is required" });
+      if (!query || query.length < 2) {
+        return res.status(400).json({ error: "Search query must be at least 2 characters" });
       }
-      
-      // Define a more specific type for our search results array
-      interface SearchResult {
-        type: 'flight' | 'airport' | 'aircraft';
-        id: string | number;
-        [key: string]: any; // To allow for the spread operator
-      }
-      
-      let results: SearchResult[] = [];
-      const searchQuery = query.toString().toLowerCase();
-      
-      if (!type || type === 'flights') {
-        const flights = await fetchFlights('all');
-        const matchedFlights = flights.filter(flight => 
-          flight.callsign?.toLowerCase().includes(searchQuery) ||
-          flight.flightNumber?.toLowerCase().includes(searchQuery) ||
-          flight.registration?.toLowerCase().includes(searchQuery) ||
-          flight.departure?.icao?.toLowerCase().includes(searchQuery) ||
-          flight.arrival?.icao?.toLowerCase().includes(searchQuery)
+
+      // Prepare structured result format
+      const results: {
+        flights: any[];
+        airports: any[];
+        aircraft: any[];
+      } = {
+        flights: [],
+        airports: [],
+        aircraft: []
+      };
+
+      // 1. Search for airports by code, name, or city
+      const airports = await storage.getAllAirports();
+      const matchingAirports = airports.filter(airport => {
+        const normalizedQuery = query.toLowerCase();
+        return (
+          airport.code.toLowerCase().includes(normalizedQuery) ||
+          (airport.name && airport.name.toLowerCase().includes(normalizedQuery)) ||
+          (airport.city && airport.city.toLowerCase().includes(normalizedQuery)) ||
+          (airport.country && airport.country.toLowerCase().includes(normalizedQuery))
         );
-        results = [...results, ...matchedFlights.map(f => ({ ...f, type: 'flight' as const }))];
-      }
-      
-      if (!type || type === 'airports') {
-        const airports = await storage.getAllAirports();
-        const matchedAirports = airports.filter(airport => 
-          airport.code.toLowerCase().includes(searchQuery) ||
-          airport.name.toLowerCase().includes(searchQuery) ||
-          airport.city.toLowerCase().includes(searchQuery)
+      });
+      results.airports = matchingAirports;
+
+      // 2. Search for flights by callsign, flightNumber, or airline
+      const cachedFlights = await storage.getCachedFlights();
+      const matchingFlights = cachedFlights.filter(flight => {
+        const normalizedQuery = query.toLowerCase();
+        return (
+          (flight.callsign && flight.callsign.toLowerCase().includes(normalizedQuery)) ||
+          (flight.flightNumber && flight.flightNumber.toLowerCase().includes(normalizedQuery)) ||
+          (typeof flight.airline === 'string' && flight.airline.toLowerCase().includes(normalizedQuery)) ||
+          (flight.departure?.icao && flight.departure.icao.toLowerCase().includes(normalizedQuery)) ||
+          (flight.arrival?.icao && flight.arrival.icao.toLowerCase().includes(normalizedQuery)) ||
+          (flight.registration && flight.registration.toLowerCase().includes(normalizedQuery))
         );
-        results = [...results, ...matchedAirports.map(a => ({ ...a, type: 'airport' as const }))];
-      }
-      
-      if (!type || type === 'aircraft') {
-        const aircraft = await storage.getAllAircraft();
-        const matchedAircraft = aircraft.filter(ac => 
-          ac.registration.toLowerCase().includes(searchQuery) ||
-          ac.type.toLowerCase().includes(searchQuery) ||
-          (ac.airline && ac.airline.toLowerCase().includes(searchQuery))
+      }).slice(0, 25); // Limit to 25 flights for performance
+      results.flights = matchingFlights;
+
+      // 3. Search for aircraft by registration or type
+      const aircraft = await storage.getAllAircraft();
+      const matchingAircraft = aircraft.filter(ac => {
+        const normalizedQuery = query.toLowerCase();
+        return (
+          (ac.registration && ac.registration.toLowerCase().includes(normalizedQuery)) ||
+          (ac.type && ac.type.toLowerCase().includes(normalizedQuery)) ||
+          (ac.operator && ac.operator.toLowerCase().includes(normalizedQuery))
         );
-        results = [...results, ...matchedAircraft.map(a => ({ ...a, type: 'aircraft' as const }))];
-      }
-      
+      });
+      results.aircraft = matchingAircraft;
+
       res.json(results);
-    } catch (error) {
-      console.error("Error performing search:", error);
-      res.status(500).json({ message: "Search operation failed" });
+    } catch (error: any) {
+      console.error("Search error:", error);
+      res.status(500).json({ error: error.message });
     }
   });
 

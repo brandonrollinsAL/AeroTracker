@@ -151,8 +151,9 @@ export function FlightListWidget({ widget, className }: WidgetProps) {
       // Apply airline filter
       if (filterSettings.airline) {
         filtered = filtered.filter(f => {
-          if (typeof f.airline === 'string') {
-            return f.airline.toLowerCase().includes(filterSettings.airline!.toLowerCase());
+          // Check if airline is a string before using toLowerCase
+          if (typeof f.airline === 'string' && typeof filterSettings.airline === 'string') {
+            return f.airline.toLowerCase().includes(filterSettings.airline.toLowerCase());
           }
           return false;
         });
@@ -170,8 +171,8 @@ export function FlightListWidget({ widget, className }: WidgetProps) {
       // Apply aircraft type filter
       if (filterSettings.aircraftType) {
         filtered = filtered.filter(f => {
-          if (typeof f.aircraftType === 'string') {
-            return f.aircraftType.toLowerCase().includes(filterSettings.aircraftType!.toLowerCase());
+          if (typeof f.aircraftType === 'string' && typeof filterSettings.aircraftType === 'string') {
+            return f.aircraftType.toLowerCase().includes(filterSettings.aircraftType.toLowerCase());
           }
           return false;
         });

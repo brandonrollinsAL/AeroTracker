@@ -80,24 +80,46 @@ export default function DashboardContainer({
           )}
         </div>
         
-        <div className="grid grid-cols-4 gap-4 auto-rows-min">
-          {dashboard.widgets.map((widget) => (
-            <div 
-              key={widget.id}
-              className="col-span-4 md:col-span-2 lg:col-span-1"
-              style={{
-                gridColumn: `span ${Math.min(widget.position.w, 4)}`,
-                gridRow: `span ${Math.min(widget.position.h, 4)}`,
-              }}
-            >
-              <Widget
-                widget={widget}
-                className="h-full"
-                onEditWidget={isEditable ? onEditWidget : undefined}
-                onDeleteWidget={isEditable ? onDeleteWidget : undefined}
-              />
-            </div>
-          ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-min">
+          {dashboard.widgets.map((widget) => {
+            let colSpan = Math.min(widget.position.w, 4);
+            let rowSpan = Math.min(widget.position.h, 4);
+            
+            // Responsive size adjustments
+            const widgetType = widget.type;
+            const isMapWidget = widgetType === 'map';
+            const isFlightListWidget = widgetType === 'flightList';
+            
+            // Make maps and flight lists larger on mobile
+            const mobileClass = isMapWidget || isFlightListWidget 
+              ? "col-span-1 sm:col-span-2" 
+              : "col-span-1";
+              
+            // Make important widgets take more space
+            const tabletClass = isMapWidget 
+              ? "lg:col-span-2" 
+              : isFlightListWidget 
+                ? "lg:col-span-2" 
+                : "lg:col-span-1";
+            
+            return (
+              <div 
+                key={widget.id}
+                className={`${mobileClass} ${tabletClass}`}
+                style={{
+                  gridColumn: `span ${colSpan}`,
+                  gridRow: `span ${rowSpan}`,
+                }}
+              >
+                <Widget
+                  widget={widget}
+                  className="h-full"
+                  onEditWidget={isEditable ? onEditWidget : undefined}
+                  onDeleteWidget={isEditable ? onDeleteWidget : undefined}
+                />
+              </div>
+            );
+          })}
           
           {isEditable && (
             <div className="col-span-1">
