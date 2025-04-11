@@ -41,7 +41,7 @@ function generateJwtToken(user: SelectUser) {
 }
 
 // JWT Authentication Middleware
-function authenticateJWT(req: Request, res: Response, next: NextFunction) {
+export function authenticateJWT(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
   
   if (authHeader) {
@@ -151,7 +151,7 @@ export function setupAuth(app: Express) {
       .trim()
       .isEmail().withMessage('Invalid email format')
       .normalizeEmail()
-  ], async (req, res, next) => {
+  ], async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Check for validation errors
       const errors = validationResult(req);
@@ -189,11 +189,21 @@ export function setupAuth(app: Express) {
         }
       });
 
-      req.login(user, (err) => {
+      req.login(user, (err: any) => {
         if (err) return next(err);
+        
+        // Generate JWT token for the new user
+        const token = generateJwtToken(user);
+        
         // Don't send the password hash back to the client
         const { password, ...userWithoutPassword } = user;
-        res.status(201).json(userWithoutPassword);
+        
+        // Send both user data and JWT token
+        res.status(201).json({
+          user: userWithoutPassword,
+          token: token,
+          expiresIn: JWT_EXPIRES_IN
+        });
       });
     } catch (error) {
       console.error("Registration error:", error);
@@ -205,7 +215,7 @@ export function setupAuth(app: Express) {
   app.post("/api/login", [
     body('username').trim().notEmpty().withMessage('Username is required'),
     body('password').trim().notEmpty().withMessage('Password is required')
-  ], (req, res, next) => {
+  ], (req: Request, res: Response, next: NextFunction) => {
     // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -236,7 +246,7 @@ export function setupAuth(app: Express) {
     })(req, res, next);
   });
 
-  app.post("/api/logout", (req, res, next) => {
+  app.post("/api/logout", (req: Request, res: Response, next: NextFunction) => {
     req.logout((err: any) => {
       if (err) return next(err);
       req.session.destroy((err: any) => {
@@ -247,11 +257,21 @@ export function setupAuth(app: Express) {
     });
   });
 
-  app.get("/api/user", (req, res) => {
+  // Enhanced user endpoint that supports both session and JWT authentication
+  app.get("/api/user", authenticateJWT, (req: Request, res: Response) => {
+    // Check if authenticated via JWT (added by authenticateJWT middleware)
+    if (req.user) {
+      // User data already available from JWT
+      res.json(req.user);
+      return;
+    }
+    
+    // Fallback to session-based authentication
     if (!req.isAuthenticated()) {
       return res.status(401).json({ error: "Not authenticated" });
     }
-    // Don't send the password hash back to the client
+    
+    // Session-based auth, get user from session
     const { password, ...userWithoutPassword } = req.user as Express.User;
     res.json(userWithoutPassword);
   });

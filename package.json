@@ -44,6 +44,8 @@
     "@react-leaflet/core": "^2.1.0",
     "@replit/vite-plugin-shadcn-theme-json": "^0.0.4",
     "@tanstack/react-query": "^5.60.5",
+    "@types/cookie-parser": "^1.4.8",
+    "@types/csurf": "^1.11.5",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/leaflet": "^1.9.17",
     "@types/react-helmet": "^6.1.11",
