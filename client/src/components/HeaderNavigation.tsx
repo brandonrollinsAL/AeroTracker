@@ -29,24 +29,24 @@ export default function HeaderNavigation({
   onMyLocation,
   isDarkMode 
 }: HeaderNavigationProps) {
-  // Luxury-themed button classes with enhanced styling
-  const activeButtonClass = 'relative bg-gradient-to-r from-[#A61C28] to-[#7A151E] text-white font-medium transition-all duration-300 shadow-[0_2px_10px_rgba(166,28,40,0.4)] hover:shadow-[0_4px_15px_rgba(166,28,40,0.5)] hover:translate-y-[-2px] border border-[#D4AF37]/30';
+  // Professional-themed button classes with enhanced styling
+  const activeButtonClass = 'relative bg-gradient-to-r from-[#2563EB] to-[#1E40AF] text-white font-medium transition-all duration-300 shadow-[0_2px_10px_rgba(37,99,235,0.4)] hover:shadow-[0_4px_15px_rgba(37,99,235,0.5)] hover:translate-y-[-2px] border border-[#60A5FA]/30';
   
-  const goldButtonClass = 'relative bg-gradient-to-r from-[#D4AF37] to-[#BF9B30] text-[#1C2526] font-medium transition-all duration-300 shadow-[0_2px_10px_rgba(212,175,55,0.4)] hover:shadow-[0_4px_15px_rgba(212,175,55,0.5)] hover:translate-y-[-2px] border border-[#D4AF37]/50';
+  const accentButtonClass = 'relative bg-gradient-to-r from-[#3B82F6] to-[#2563EB] text-white font-medium transition-all duration-300 shadow-[0_2px_10px_rgba(59,130,246,0.4)] hover:shadow-[0_4px_15px_rgba(59,130,246,0.5)] hover:translate-y-[-2px] border border-[#93C5FD]/50';
   
   const inactiveButtonClass = isDarkMode
-    ? 'relative border border-[#D4AF37]/20 bg-[#1C2526]/80 hover:bg-[#1C2526]/90 text-[#F5F5F5] transition-all duration-300 shadow-[0_2px_6px_rgba(28,37,38,0.3)] hover:shadow-[0_4px_12px_rgba(28,37,38,0.4)] hover:translate-y-[-2px]'
-    : 'relative border border-[#A61C28]/20 bg-white hover:bg-[#F9F5EB] text-[#1C2526] transition-all duration-300 shadow-[0_2px_6px_rgba(28,37,38,0.15)] hover:shadow-[0_4px_12px_rgba(28,37,38,0.25)] hover:translate-y-[-2px]';
+    ? 'relative border border-[#60A5FA]/20 bg-[#002B4C]/80 hover:bg-[#002B4C]/90 text-[#F5F5F5] transition-all duration-300 shadow-[0_2px_6px_rgba(0,43,76,0.3)] hover:shadow-[0_4px_12px_rgba(0,43,76,0.4)] hover:translate-y-[-2px]'
+    : 'relative border border-[#2563EB]/20 bg-white hover:bg-[#F0F9FF] text-[#002B4C] transition-all duration-300 shadow-[0_2px_6px_rgba(0,43,76,0.15)] hover:shadow-[0_4px_12px_rgba(0,43,76,0.25)] hover:translate-y-[-2px]';
   
-  // Luxury frosted glass effect with enhanced styling
+  // Professional frosted glass effect with enhanced styling
   const headerBgClass = isDarkMode 
-    ? 'bg-gradient-to-r from-[#1C2526]/90 to-[#2D3A3C]/95 backdrop-blur-[12px] shadow-lg border-b border-[#D4AF37]/30 relative after:absolute after:inset-0 after:bg-gradient-to-b after:from-[#D4AF37]/5 after:to-transparent after:pointer-events-none' 
-    : 'bg-gradient-to-r from-[#F9F5EB]/95 to-[#F5F5F5]/95 backdrop-blur-[12px] shadow-md border-b border-[#A61C28]/20 relative after:absolute after:inset-0 after:bg-gradient-to-b after:from-[#D4AF37]/5 after:to-transparent after:pointer-events-none';
+    ? 'bg-gradient-to-r from-[#002B4C]/90 to-[#003A65]/95 backdrop-blur-[12px] shadow-lg border-b border-[#60A5FA]/30 relative after:absolute after:inset-0 after:bg-gradient-to-b after:from-[#60A5FA]/5 after:to-transparent after:pointer-events-none' 
+    : 'bg-gradient-to-r from-[#F0F9FF]/95 to-[#F8FAFC]/95 backdrop-blur-[12px] shadow-md border-b border-[#2563EB]/20 relative after:absolute after:inset-0 after:bg-gradient-to-b after:from-[#60A5FA]/5 after:to-transparent after:pointer-events-none';
     
   // Get the correct button styling based on filter status and type
   const getButtonStyle = (isActive: boolean, isLiveTracking: boolean = false) => {
     if (!isActive) return inactiveButtonClass;
-    if (isLiveTracking) return goldButtonClass;
+    if (isLiveTracking) return accentButtonClass;
     return activeButtonClass;
   };
 
@@ -71,7 +71,7 @@ export default function HeaderNavigation({
                 )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
+            <TooltipContent className="bg-white border border-[#60A5FA]/30 shadow-md rounded-md p-3 text-[#002B4C] font-body">
               <p className="text-sm">Toggle NEXRAD weather radar overlay</p>
             </TooltipContent>
           </Tooltip>
@@ -93,7 +93,7 @@ export default function HeaderNavigation({
                 )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
+            <TooltipContent className="bg-white border border-[#60A5FA]/30 shadow-md rounded-md p-3 text-[#002B4C] font-body">
               <p className="text-sm">Show detailed flight trajectories and routes</p>
             </TooltipContent>
           </Tooltip>
@@ -115,7 +115,7 @@ export default function HeaderNavigation({
                 )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="bg-white border border-[#D4AF37]/30 shadow-md rounded-md p-3 text-[#1C2526] font-body">
+            <TooltipContent className="bg-white border border-[#60A5FA]/30 shadow-md rounded-md p-3 text-[#002B4C] font-body">
               <p className="text-sm">Display international and domestic airport locations</p>
             </TooltipContent>
           </Tooltip>
@@ -130,7 +130,7 @@ export default function HeaderNavigation({
                 }`}
                 onClick={() => onFilterChange({ showLiveTracking: !filters.showLiveTracking })}
               >
-                <Plane className={`h-4 w-4 mr-2 ${filters.showLiveTracking ? 'text-[#1C2526]' : ''}`} />
+                <Plane className={`h-4 w-4 mr-2 ${filters.showLiveTracking ? 'text-white' : ''}`} />
                 <span className="text-sm font-label">Live Tracking</span>
                 {filters.showLiveTracking && (
                   <span className="absolute inset-0 rounded-md bg-white/10 animate-pulse"></span>
