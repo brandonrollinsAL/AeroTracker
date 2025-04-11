@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
 import { Loader2 } from 'lucide-react';
-import { Dashboard } from '@shared/schema';
+import { Dashboard, DashboardWidget } from '@shared/schema';
 import DashboardManager from '@/components/Dashboard/DashboardManager';
 import DashboardEditor from '@/components/Dashboard/DashboardEditor';
+import DashboardContainer from '@/components/Dashboard/DashboardContainer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -92,46 +94,10 @@ export default function DashboardPage() {
         
         <TabsContent value="view">
           {selectedDashboard ? (
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-primary">{selectedDashboard.name}</h2>
-                <button 
-                  onClick={() => handleEditDashboard(selectedDashboard)}
-                  className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
-                >
-                  Edit Layout
-                </button>
-              </div>
-              
-              {selectedDashboard.widgets.length === 0 ? (
-                <div className="bg-muted/30 rounded-lg p-8 text-center">
-                  <p className="text-muted-foreground">
-                    This dashboard doesn't have any widgets yet. 
-                    Edit the dashboard to add widgets and customize your view.
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-3 gap-4">
-                  {/* This is where the actual dashboard content would be rendered */}
-                  {/* For now, we just show placeholders for the widgets */}
-                  {selectedDashboard.widgets.map((widget) => (
-                    <div 
-                      key={widget.id}
-                      className="bg-card border rounded-lg p-4"
-                      style={{
-                        gridColumn: `span ${widget.position.w}`,
-                        gridRow: `span ${widget.position.h}`,
-                      }}
-                    >
-                      <h3 className="font-semibold text-lg mb-2">{widget.title}</h3>
-                      <p className="text-muted-foreground">
-                        {widget.type} widget
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <DashboardContainer 
+              dashboard={selectedDashboard}
+              onEditDashboard={() => handleEditDashboard(selectedDashboard)}
+            />
           ) : (
             <div className="bg-muted/30 rounded-lg p-8 text-center">
               <p className="text-muted-foreground">
