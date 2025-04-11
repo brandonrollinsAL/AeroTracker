@@ -140,6 +140,14 @@
     --popover: 0 0% 100%; /* #FFFFFF */
     --popover-foreground: 200 14% 14%; /* #1C2526 */
     
+    /* Social Media Colors */
+    --twitter: #1DA1F2;
+    --facebook: #1877F2;
+    --linkedin: #0A66C2;
+    --instagram: #E4405F;
+    --youtube: #FF0000;
+    --pinterest: #E60023;
+    
     /* Primary: Burgundy (#A61C28) */
     --primary: 355 71% 38%; /* #A61C28 - Burgundy primary */
     --primary-foreground: 0 0% 96.1%; /* #F5F5F5 */

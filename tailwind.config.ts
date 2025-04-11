@@ -127,7 +127,13 @@ export default {
             domestic: "#93C5FD",
             regional: "#60A5FA"
           }
-        }
+        },
+        twitter: "var(--twitter)",
+        facebook: "var(--facebook)",
+        linkedin: "var(--linkedin)",
+        instagram: "var(--instagram)",
+        youtube: "var(--youtube)",
+        pinterest: "var(--pinterest)"
       },
       boxShadow: {
         'glowSmall': '0 0 8px rgba(30, 58, 138, 0.3)',

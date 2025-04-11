@@ -7,6 +7,7 @@ import HeaderNavigation from '@/components/HeaderNavigation';
 import FlightDetailPanel from '@/components/FlightDetailPanel';
 import RouteOptimizer from '@/components/RouteOptimizer';
 import { AuthPopup } from '@/components/AuthPopup';
+import Footer from '@/components/Footer';
 import { LiveFlight, Airport } from '@shared/schema';
 import { MapFilter } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -547,6 +548,8 @@ export default function Home() {
             description={`Sign in or create an account to access ${authFeatureName} and other premium features.`}
           />
         )}
+        
+        <Footer />
       </div>
     </div>
   );
