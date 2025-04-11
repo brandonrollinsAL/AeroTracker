@@ -1,12 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { DashboardWidget, LiveFlight, Airport } from '@shared/schema';
+import { DashboardWidget, LiveFlight, Airport, MapFilter } from '@shared/schema';
 import FlightMap from '@/components/FlightMap';
 import { useQuery } from '@tanstack/react-query';
 import { Loader2, Cloud, Plane, Info, Map, BarChart } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+
+// Define interfaces for our weather and stats data
+interface WeatherData {
+  location: string;
+  temperature: number;
+  conditions: string;
+  wind: string;
+  visibility: string;
+  pressure: string;
+  humidity: string;
+}
+
+interface StatsData {
+  activeFlights: number;
+  airports: number;
+  avgAltitude: number;
+  avgSpeed: number;
+}
 
 interface WidgetProps {
   widget: DashboardWidget;
@@ -77,6 +95,9 @@ export function MapWidget({ widget, className }: WidgetProps) {
     staleTime: 30000, // 30 seconds
   });
 
+  // Use useState for selected flight
+  const [selectedFlight, setSelectedFlight] = useState<LiveFlight | null>(null);
+  
   return (
     <Card className={`${className} overflow-hidden`}>
       <CardHeader className="p-4 pb-2">
@@ -94,8 +115,10 @@ export function MapWidget({ widget, className }: WidgetProps) {
           // We're reusing the existing FlightMap component with customized settings
           <FlightMap 
             flights={flights}
-            filters={widget.settings?.filters || { type: 'all', showFlightPaths: true, showAirports: true }}
-            isWidget={true}
+            selectedFlight={selectedFlight}
+            onFlightSelect={setSelectedFlight}
+            filters={widget.settings?.filters as MapFilter || { type: 'all', showFlightPaths: true, showAirports: true }}
+            onFilterChange={() => {}}
             isDarkMode={false}
             isConnected={true}
           />
@@ -127,8 +150,12 @@ export function FlightListWidget({ widget, className }: WidgetProps) {
     if (filterSettings) {
       // Apply airline filter
       if (filterSettings.airline) {
-        filtered = filtered.filter(f => 
-          f.airline?.toLowerCase().includes(filterSettings.airline!.toLowerCase()));
+        filtered = filtered.filter(f => {
+          if (typeof f.airline === 'string') {
+            return f.airline.toLowerCase().includes(filterSettings.airline!.toLowerCase());
+          }
+          return false;
+        });
       }
       
       // Apply altitude filter
@@ -142,8 +169,12 @@ export function FlightListWidget({ widget, className }: WidgetProps) {
       
       // Apply aircraft type filter
       if (filterSettings.aircraftType) {
-        filtered = filtered.filter(f => 
-          f.aircraftType?.toLowerCase().includes(filterSettings.aircraftType!.toLowerCase()));
+        filtered = filtered.filter(f => {
+          if (typeof f.aircraftType === 'string') {
+            return f.aircraftType.toLowerCase().includes(filterSettings.aircraftType!.toLowerCase());
+          }
+          return false;
+        });
       }
     }
     
@@ -218,7 +249,7 @@ export function FlightListWidget({ widget, className }: WidgetProps) {
 export function WeatherInfoWidget({ widget, className }: WidgetProps) {
   const locationCode = widget.settings?.locationCode || 'KJFK'; // Default to JFK if not set
   
-  const { data: weatherData, isLoading } = useQuery({
+  const { data: weatherData, isLoading } = useQuery<WeatherData>({
     queryKey: [`/api/weather/${locationCode}`],
     staleTime: 900000, // 15 minutes
   });
@@ -425,7 +456,7 @@ export function FlightDetailsWidget({ widget, className }: WidgetProps) {
 
 // Statistics widget
 export function StatsWidget({ widget, className }: WidgetProps) {
-  const { data: stats, isLoading } = useQuery({
+  const { data: stats, isLoading } = useQuery<StatsData>({
     queryKey: ['/api/stats'],
     staleTime: 900000, // 15 minutes
   });
