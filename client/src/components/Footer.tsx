@@ -23,14 +23,14 @@ export function Footer() {
               <ul className="space-y-2 text-sm">
                 <li>
                   <Link href="/privacy-policy">
-                    <a className="text-muted-foreground hover:text-burgundy-gold transition-colors">
+                    <a className="text-muted-foreground hover:text-primary transition-colors">
                       Privacy Policy
                     </a>
                   </Link>
                 </li>
                 <li>
                   <Link href="/terms">
-                    <a className="text-muted-foreground hover:text-burgundy-gold transition-colors">
+                    <a className="text-muted-foreground hover:text-primary transition-colors">
                       Terms of Service
                     </a>
                   </Link>
@@ -44,7 +44,7 @@ export function Footer() {
                 <li>
                   <a 
                     href="mailto:support@aerotracker.com" 
-                    className="text-muted-foreground hover:text-burgundy-gold transition-colors"
+                    className="text-muted-foreground hover:text-primary transition-colors"
                   >
                     support@aerotracker.com
                   </a>
