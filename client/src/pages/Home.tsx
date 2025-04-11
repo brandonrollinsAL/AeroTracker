@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import FlightMap from '@/components/FlightMap';
 import FlightPanel from '@/components/FlightPanel';
-import Header from '@/components/Header';
 import HeaderNavigation from '@/components/HeaderNavigation';
 import FlightDetailPanel from '@/components/FlightDetailPanel';
 import RouteOptimizer from '@/components/RouteOptimizer';
@@ -400,11 +399,6 @@ export default function Home() {
       </Helmet>
       
       <div className={`min-h-screen ${isDarkMode ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-900'}`}>
-        <Header 
-          isDarkMode={isDarkMode} 
-          onThemeToggle={() => setTheme(theme === 'dark' ? 'light' : 'dark')} 
-        />
-        
         <HeaderNavigation
           filters={mapFilters}
           onFilterChange={handleFilterChange}
