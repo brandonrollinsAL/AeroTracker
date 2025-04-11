@@ -170,7 +170,7 @@ export default function FlightPanel({
               <div className="flex space-x-1">
                 <Select
                   value={filterType}
-                  onValueChange={(value) => setFilterType(value)}
+                  onValueChange={(value: 'all' | 'commercial' | 'private' | 'cargo') => setFilterType(value)}
                 >
                   <SelectTrigger className="h-8 text-xs w-[110px]">
                     <SelectValue placeholder="Filter by" />
@@ -185,7 +185,7 @@ export default function FlightPanel({
                 
                 <Select
                   value={sortBy}
-                  onValueChange={(value) => setSortBy(value)}
+                  onValueChange={(value: 'airline' | 'altitude' | 'speed' | 'departure' | 'arrival' | 'time') => setSortBy(value)}
                 >
                   <SelectTrigger className="h-8 text-xs w-[110px]">
                     <SelectValue placeholder="Sort by" />
@@ -359,7 +359,7 @@ export default function FlightPanel({
                   <div className="flex justify-between items-start mb-2">
                     <div className="font-semibold text-sm text-blue-800">
                       {flight.callsign || flight.flightNumber}
-                      {flight.airline && (
+                      {typeof flight.airline === 'string' && (
                         <span className="text-xs font-normal text-blue-600 ml-1.5">
                           ({flight.airline})
                         </span>
