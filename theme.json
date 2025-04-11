@@ -5,11 +5,11 @@
   "radius": 1.2,
   "colors": {
     "blue": {
-      "dark": "#1C2526",
-      "medium": "#4A4A4A",
-      "light": "#D4AF37",
-      "ultraLight": "#F5F5F5",
-      "accent": "#D4AF37",
+      "dark": "#1E40AF",
+      "medium": "#3B82F6",
+      "light": "#93C5FD",
+      "ultraLight": "#F0F9FF",
+      "accent": "#38BDF8",
       "sky": "#93C5FD"
     },
     "text": {
@@ -24,17 +24,17 @@
     },
     "status": {
       "active": "#22C55E",
-      "landed": "#4A4A4A",
-      "scheduled": "#D4AF37",
-      "delayed": "#A61C28",
-      "cancelled": "#A61C28",
-      "diverted": "#6C5B7B"
+      "landed": "#6B7280",
+      "scheduled": "#3B82F6",
+      "delayed": "#F59E0B",
+      "cancelled": "#EF4444",
+      "diverted": "#8B5CF6"
     },
     "aviation": {
       "altitude": {
-        "high": "#1C2526",
-        "medium": "#4A4A4A",
-        "low": "#D4AF37"
+        "high": "#1E40AF",
+        "medium": "#3B82F6",
+        "low": "#93C5FD"
       },
       "weather": {
         "clear": "#22C55E",
@@ -45,31 +45,31 @@
         "fog": "#EBEBEB"
       },
       "airports": {
-        "international": "#1C2526",
-        "domestic": "#4A4A4A",
-        "regional": "#D4AF37"
+        "international": "#1E40AF",
+        "domestic": "#3B82F6",
+        "regional": "#93C5FD"
       },
-      "metallic": "#D4AF37"
+      "metallic": "#60A5FA"
     },
     "gradients": {
-      "primary": "linear-gradient(135deg, #A61C28, #1C2526)",
-      "accent": "linear-gradient(to right, #1C2526, #D4AF37)",
-      "light": "linear-gradient(135deg, #4A4A4A, #F5F5F5)",
-      "sky": "linear-gradient(to bottom, #F5F5F5, #1C2526)",
-      "altitude": "linear-gradient(to top, #D4AF37, #4A4A4A, #1C2526)",
-      "horizon": "linear-gradient(to bottom, #1C2526 0%, #4A4A4A 45%, #F5F5F5 100%)",
-      "cockpit": "linear-gradient(135deg, #1C2526 0%, #4A4A4A 35%, #D4AF37 100%)"
+      "primary": "linear-gradient(135deg, #2563EB, #1E40AF)",
+      "accent": "linear-gradient(to right, #1E40AF, #60A5FA)",
+      "light": "linear-gradient(135deg, #6B7280, #F5F5F5)",
+      "sky": "linear-gradient(to bottom, #F0F9FF, #1E40AF)",
+      "altitude": "linear-gradient(to top, #93C5FD, #3B82F6, #1E40AF)",
+      "horizon": "linear-gradient(to bottom, #1E40AF 0%, #3B82F6 45%, #F0F9FF 100%)",
+      "cockpit": "linear-gradient(135deg, #1E40AF 0%, #3B82F6 35%, #60A5FA 100%)"
     },
     "effects": {
-      "glowSmall": "0 0 8px rgba(212, 175, 55, 0.3)",
-      "glowMedium": "0 0 15px rgba(212, 175, 55, 0.5)",
-      "glowLarge": "0 0 25px rgba(212, 175, 55, 0.7)",
-      "insetSmall": "inset 0 1px 3px rgba(28, 37, 38, 0.2)",
-      "flightPath": "0 0 0 2px rgba(212, 175, 55, 0.25), 0 0 10px rgba(212, 175, 55, 0.3)",
-      "runwayLight": "0 0 5px rgba(212, 175, 55, 0.7), 0 0 15px rgba(28, 37, 38, 0.5)",
-      "buttonHover": "0 0 8px rgba(212, 175, 55, 0.5)",
-      "cardHover": "0 0 12px rgba(28, 37, 38, 0.2)",
-      "frostedGlass": "rgba(245, 245, 245, 0.9) backdrop-filter: blur(12px)",
+      "glowSmall": "0 0 8px rgba(37, 99, 235, 0.3)",
+      "glowMedium": "0 0 15px rgba(37, 99, 235, 0.5)",
+      "glowLarge": "0 0 25px rgba(37, 99, 235, 0.7)",
+      "insetSmall": "inset 0 1px 3px rgba(30, 64, 175, 0.2)",
+      "flightPath": "0 0 0 2px rgba(37, 99, 235, 0.25), 0 0 10px rgba(37, 99, 235, 0.3)",
+      "runwayLight": "0 0 5px rgba(96, 165, 250, 0.7), 0 0 15px rgba(30, 64, 175, 0.5)",
+      "buttonHover": "0 0 8px rgba(37, 99, 235, 0.5)",
+      "cardHover": "0 0 12px rgba(59, 130, 246, 0.2)",
+      "frostedGlass": "rgba(240, 249, 255, 0.9) backdrop-filter: blur(12px)",
       "cockpitCard": "0 4px 8px rgba(0, 0, 0, 0.1)"
     },
     "animation": {
@@ -82,8 +82,8 @@
   },
   "typography": {
     "fontFamily": {
-      "heading": "'Garamond', 'EB Garamond', serif",
-      "body": "'Avenir', 'Avenir Next', 'Montserrat', sans-serif"
+      "heading": "'Inter', 'SF Pro Display', 'Montserrat', sans-serif",
+      "body": "'Inter', 'SF Pro Text', 'Montserrat', sans-serif"
     },
     "sizes": {
       "heading": "48px",
