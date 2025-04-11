@@ -18,6 +18,8 @@ import PrivacyPolicy from "@/pages/privacy-policy";
 import NotFound from "@/pages/not-found";
 import HistoryPage from "@/pages/history-page";
 import SearchPage from "@/pages/search-page";
+import FlightDetailsPage from "@/pages/flight-details-page";
+import MapPage from "@/pages/map-page";
 import { useTranslation } from 'react-i18next';
 import { getLanguageDir } from '@/i18n';
 
@@ -74,6 +76,8 @@ function App() {
                   <Route path="/privacy-policy" component={PrivacyPolicy} />
                   <Route path="/history" component={HistoryPage} />
                   <Route path="/search" component={SearchPage} />
+                  <Route path="/flight-details" component={FlightDetailsPage} />
+                  <Route path="/map" component={MapPage} />
                   <Route path="/" component={HomePage} />
                   <Route component={NotFound} />
                 </Switch>
