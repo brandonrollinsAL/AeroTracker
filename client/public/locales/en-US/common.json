@@ -26,6 +26,8 @@
   "selectLanguage": "Select Language",
   "searchLanguage": "Search language...",
   "noLanguagesFound": "No languages found",
+  "common.selectLanguage": "Select Language",
+  "common.searchLanguage": "Search language...",
   "languageChanged": "Language changed",
   "darkMode": "Dark Mode",
   "lightMode": "Light Mode",

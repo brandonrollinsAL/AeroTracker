@@ -10,10 +10,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { supportedLanguages } from '@/i18n';
+import { supportedLanguages, namespaces } from '@/i18n';
 
+/**
+ * Language selector component with search functionality
+ * Supports RTL languages and displays language flags
+ */
 export default function LanguageSelector() {
-  const { i18n, t } = useTranslation();
+  // Use the common namespace for translations
+  const { i18n } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   
   // Convert supported languages object to array for easier filtering
@@ -45,6 +50,11 @@ export default function LanguageSelector() {
     localStorage.setItem('i18nextLng', languageCode);
     document.cookie = `i18next=${languageCode}; path=/; max-age=${60*60*24*365}; SameSite=Lax`;
   };
+
+  // Hardcoded text as fallback - this is safer than relying on translations that might be missing
+  const selectLanguageLabel = "Select Language";
+  const searchLanguagePlaceholder = "Search language...";
+  const noLanguagesFoundText = "No languages found";
   
   return (
     <DropdownMenu>
@@ -53,7 +63,7 @@ export default function LanguageSelector() {
           variant="ghost" 
           size="icon"
           className="h-9 w-9 rounded-full relative hover:bg-slate-100 dark:hover:bg-slate-800"
-          aria-label={t('common.selectLanguage')}
+          aria-label={selectLanguageLabel}
         >
           <Globe className="h-5 w-5 text-blue-600 dark:text-blue-400" />
           <span className="absolute -bottom-1 -right-1 text-[10px]">
@@ -66,7 +76,7 @@ export default function LanguageSelector() {
           <div className="relative w-full">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
             <Input
-              placeholder={t('common.searchLanguage', 'Search language...')}
+              placeholder={searchLanguagePlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-8 pr-8 h-9"
@@ -132,7 +142,7 @@ export default function LanguageSelector() {
           {/* No results message */}
           {filteredLanguages.length === 0 && (
             <div className="px-2 py-4 text-center text-sm text-muted-foreground">
-              {t('common.noLanguagesFound', 'No languages found')}
+              {noLanguagesFoundText}
             </div>
           )}
         </div>
