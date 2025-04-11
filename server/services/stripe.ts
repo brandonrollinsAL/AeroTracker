@@ -1,293 +1,362 @@
-import { db } from '../db';
+import Stripe from 'stripe';
+import { pool } from '../db';
 import { users } from '@shared/schema';
 import { eq } from 'drizzle-orm';
+import { db } from '../db';
 
-// Create mock types for Stripe to avoid import issues
-type MockStripe = {
-  customers: {
-    create: (params: any) => Promise<{ id: string }>;
-  };
-  paymentIntents: {
-    create: (params: any) => Promise<{ client_secret: string | null }>;
-  };
-  subscriptions: {
-    create: (params: any) => Promise<any>;
-    retrieve: (id: string) => Promise<any>;
-    update: (id: string, params: any) => Promise<any>;
-    cancel: (id: string) => Promise<any>;
-  };
-  prices: {
-    list: (params: any) => Promise<{ data: any[] }>;
-  };
-  webhooks: {
-    constructEvent: (body: any, signature: string, secret: string) => any;
-  };
-};
+// Initialize Stripe with graceful degradation for development environment
+let stripe: Stripe | null = null;
 
-// Create a mock implementation for development
-const createMockStripe = (): MockStripe => {
-  console.warn('Using mock Stripe implementation');
-  return {
-    customers: {
-      create: async () => ({ id: 'mock_customer_id' }),
-    },
-    paymentIntents: {
-      create: async () => ({ client_secret: 'mock_client_secret' }),
-    },
-    subscriptions: {
-      create: async () => ({
-        id: 'mock_subscription_id',
-        status: 'active',
-        current_period_end: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60, // 30 days from now
-        items: { data: [{ id: 'mock_item_id', price: { id: 'mock_price_id' } }] },
-        latest_invoice: {
-          payment_intent: { client_secret: 'mock_client_secret' },
-        },
-      }),
-      retrieve: async () => ({
-        id: 'mock_subscription_id',
-        status: 'active',
-        current_period_end: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
-        items: { data: [{ id: 'mock_item_id', price: { id: 'mock_price_id' } }] },
-      }),
-      update: async () => ({}),
-      cancel: async () => ({}),
-    },
-    prices: {
-      list: async () => ({
-        data: [
-          {
-            id: 'mock_price_basic',
-            currency: 'usd',
-            unit_amount: 995,
-            recurring: { interval: 'month' },
-            product: {
-              name: 'Basic Plan',
-              description: 'Access to basic features',
-              features: [],
-            },
-          },
-          {
-            id: 'mock_price_premium',
-            currency: 'usd',
-            unit_amount: 1995,
-            recurring: { interval: 'month' },
-            product: {
-              name: 'Premium Plan',
-              description: 'Access to all premium features',
-              features: [],
-            },
-          },
-        ],
-      }),
-    },
-    webhooks: {
-      constructEvent: () => ({
-        type: 'unknown',
-        data: { object: {} },
-      }),
-    },
-  };
-};
+// Environment variable flag to check if Stripe is configured
+let isStripeConfigured = false;
 
-// Create the Stripe instance or use mock
-let stripeInstance: MockStripe;
-
-// Warning for missing API key
-if (!process.env.STRIPE_SECRET_KEY) {
-  console.warn('Missing STRIPE_SECRET_KEY environment variable. Using mock Stripe implementation.');
-  stripeInstance = createMockStripe();
-} else {
-  try {
-    // Only import Stripe if we have an API key
-    const { default: Stripe } = require('stripe');
-    stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY, {
+try {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.warn('⚠️ STRIPE_SECRET_KEY is not set. Stripe functionality will be mocked.');
+    isStripeConfigured = false;
+  } else {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: '2023-10-16',
     });
+    isStripeConfigured = true;
+    console.log('✅ Stripe initialized successfully');
+  }
+} catch (error) {
+  console.error('❌ Failed to initialize Stripe:', error);
+  isStripeConfigured = false;
+}
+
+// Mock subscription plans for development when Stripe is not configured
+const mockSubscriptionPlans = [
+  {
+    id: 'price_mock_premium_monthly',
+    name: 'Premium Plan',
+    description: 'Access to all premium features',
+    price: 9.99,
+    interval: 'month',
+    features: [
+      'Unlimited flight tracking',
+      'Advanced weather data',
+      'Route optimization',
+      'Historical data access',
+      'Priority customer support'
+    ]
+  },
+  {
+    id: 'price_mock_premium_yearly',
+    name: 'Premium Plan (Annual)',
+    description: 'Save 16% with annual billing',
+    price: 99.99,
+    interval: 'year',
+    features: [
+      'Unlimited flight tracking',
+      'Advanced weather data',
+      'Route optimization',
+      'Historical data access',
+      'Priority customer support'
+    ]
+  }
+];
+
+// Helper function to retrieve subscription plans
+export async function getSubscriptionPlans() {
+  if (!isStripeConfigured || !stripe) {
+    return mockSubscriptionPlans;
+  }
+
+  try {
+    const prices = await stripe.prices.list({
+      active: true,
+      expand: ['data.product'],
+    });
+
+    return prices.data.map(price => {
+      const product = price.product as Stripe.Product;
+      return {
+        id: price.id,
+        name: product.name,
+        description: product.description || '',
+        price: price.unit_amount! / 100,
+        interval: price.recurring?.interval || 'month',
+        features: product.metadata?.features ? JSON.parse(product.metadata.features) : [],
+      };
+    });
   } catch (error) {
-    console.warn('Failed to initialize Stripe:', error);
-    stripeInstance = createMockStripe();
+    console.error('Error fetching subscription plans:', error);
+    return mockSubscriptionPlans;
   }
 }
 
-// Export the service with type-safe methods
-export const stripeService = {
-  // Create or get a Stripe customer for a user
-  async getOrCreateCustomer(userId: number, email: string, name?: string): Promise<string> {
-    const [user] = await db.select().from(users).where(eq(users.id, userId));
-    
-    if (user?.stripeCustomerId) {
-      return user.stripeCustomerId;
-    }
-    
-    const customer = await stripeInstance.customers.create({
+// Create a customer in Stripe
+export async function createCustomer(email: string, name: string) {
+  if (!isStripeConfigured || !stripe) {
+    return { id: `cus_mock_${Date.now()}` };
+  }
+
+  try {
+    return await stripe.customers.create({
       email,
-      name: name || email,
-      metadata: {
-        userId: userId.toString(),
-      },
+      name,
     });
-    
-    await db.update(users)
-      .set({ stripeCustomerId: customer.id })
-      .where(eq(users.id, userId));
-    
-    return customer.id;
-  },
-  
-  // Create a payment intent for one-time payments
-  async createPaymentIntent(
-    amount: number, 
-    currency: string = 'usd', 
-    customerId?: string
-  ): Promise<{ client_secret: string | null }> {
-    const paymentIntent = await stripeInstance.paymentIntents.create({
-      amount: Math.round(amount * 100), // Convert to cents
-      currency,
-      customer: customerId,
-      automatic_payment_methods: { enabled: true },
-    });
-    
-    return { client_secret: paymentIntent.client_secret };
-  },
-  
-  // Create or update a subscription for a user
-  async createOrUpdateSubscription(
-    userId: number, 
-    priceId: string
-  ): Promise<{
-    clientSecret: string | null;
-    subscriptionId: string;
-  }> {
-    const [user] = await db.select().from(users).where(eq(users.id, userId));
-    
-    if (!user) {
-      throw new Error('User not found');
-    }
-    
-    if (!user.email) {
-      throw new Error('User email is required for subscriptions');
-    }
-    
-    // Make sure we have a customer ID
-    const customerId = user.stripeCustomerId || 
-      await this.getOrCreateCustomer(userId, user.email, user.username);
-    
-    if (user.stripeSubscriptionId) {
-      // Update existing subscription
-      const subscription = await stripeInstance.subscriptions.retrieve(user.stripeSubscriptionId);
-      
-      if (subscription.status === 'active' || subscription.status === 'trialing') {
-        // Update subscription if price changed
-        const currentPriceId = subscription.items.data[0].price.id;
-        if (currentPriceId !== priceId) {
-          await stripeInstance.subscriptions.update(subscription.id, {
-            items: [{
-              id: subscription.items.data[0].id,
-              price: priceId,
-            }],
-          });
-        }
-        
-        return {
-          subscriptionId: subscription.id,
-          clientSecret: null,
-        };
-      }
-    }
-    
-    // Create new subscription
-    const subscription = await stripeInstance.subscriptions.create({
+  } catch (error) {
+    console.error('Error creating Stripe customer:', error);
+    throw error;
+  }
+}
+
+// Create a subscription
+export async function createSubscription(customerId: string, priceId: string) {
+  if (!isStripeConfigured || !stripe) {
+    // For development, return a mock subscription with client secret
+    return {
+      id: `sub_mock_${Date.now()}`,
+      clientSecret: `pi_mock_${Date.now()}_secret_${Math.random().toString(36).substring(2, 15)}`,
+    };
+  }
+
+  try {
+    const subscription = await stripe.subscriptions.create({
       customer: customerId,
       items: [{ price: priceId }],
       payment_behavior: 'default_incomplete',
       expand: ['latest_invoice.payment_intent'],
     });
+
+    const invoice = subscription.latest_invoice as Stripe.Invoice;
+    const paymentIntent = invoice.payment_intent as Stripe.PaymentIntent;
+
+    return {
+      id: subscription.id,
+      clientSecret: paymentIntent.client_secret,
+    };
+  } catch (error) {
+    console.error('Error creating subscription:', error);
+    throw error;
+  }
+}
+
+// Cancel a subscription
+export async function cancelSubscription(subscriptionId: string) {
+  if (!isStripeConfigured || !stripe) {
+    return { id: subscriptionId, status: 'canceled' };
+  }
+
+  try {
+    return await stripe.subscriptions.cancel(subscriptionId);
+  } catch (error) {
+    console.error('Error canceling subscription:', error);
+    throw error;
+  }
+}
+
+// Get subscription details
+export async function getSubscription(subscriptionId: string) {
+  if (!isStripeConfigured || !stripe) {
+    return {
+      id: subscriptionId,
+      status: 'active',
+      current_period_end: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60, // 30 days from now
+      items: {
+        data: [
+          {
+            price: {
+              id: 'price_mock_premium_monthly',
+              product: 'prod_mock_premium',
+            },
+          },
+        ],
+      },
+    };
+  }
+
+  try {
+    return await stripe.subscriptions.retrieve(subscriptionId);
+  } catch (error) {
+    console.error('Error retrieving subscription:', error);
+    throw error;
+  }
+}
+
+// Update user's subscription details in database
+export async function updateUserSubscription(
+  userId: number,
+  subscriptionDetails: {
+    stripeCustomerId?: string;
+    stripeSubscriptionId?: string;
+    subscriptionTier?: string;
+    subscriptionStatus?: string;
+    subscriptionExpiresAt?: Date;
+  }
+) {
+  try {
+    const [updatedUser] = await db
+      .update(users)
+      .set(subscriptionDetails)
+      .where(eq(users.id, userId))
+      .returning();
     
-    // Update user record with subscription information
-    const subscriptionStatus = subscription.status as 
-      'active' | 'canceled' | 'past_due' | 'trialing' | 'inactive' || 'inactive';
-    
-    const expiresAt = new Date((subscription.current_period_end || 0) * 1000);
-    
-    await db.update(users)
-      .set({
-        stripeSubscriptionId: subscription.id,
-        subscriptionStatus: subscriptionStatus,
-        subscriptionExpiresAt: expiresAt.toISOString(),
-      })
+    return updatedUser;
+  } catch (error) {
+    console.error('Error updating user subscription details:', error);
+    throw error;
+  }
+}
+
+// Webhook handler to process Stripe events
+export async function handleStripeWebhook(event: any) {
+  // Handle different event types
+  switch (event.type) {
+    case 'checkout.session.completed':
+      const session = event.data.object;
+      // Process the checkout session
+      break;
+      
+    case 'invoice.paid':
+      const invoice = event.data.object;
+      // Update subscription status to active
+      if (invoice.subscription) {
+        const subscription = await getSubscription(invoice.subscription);
+        const userQuery = await db
+          .select()
+          .from(users)
+          .where(eq(users.stripeCustomerId, invoice.customer));
+        
+        if (userQuery.length > 0) {
+          const user = userQuery[0];
+          const expiresAt = new Date(subscription.current_period_end * 1000);
+          
+          await updateUserSubscription(user.id, {
+            subscriptionStatus: 'active',
+            subscriptionExpiresAt: expiresAt,
+          });
+        }
+      }
+      break;
+      
+    case 'invoice.payment_failed':
+      // Handle failed payment
+      break;
+      
+    case 'customer.subscription.updated':
+      const updatedSubscription = event.data.object;
+      // Update the subscription status in your database
+      const userQuery = await db
+        .select()
+        .from(users)
+        .where(eq(users.stripeSubscriptionId, updatedSubscription.id));
+      
+      if (userQuery.length > 0) {
+        const user = userQuery[0];
+        const expiresAt = new Date(updatedSubscription.current_period_end * 1000);
+        
+        await updateUserSubscription(user.id, {
+          subscriptionStatus: updatedSubscription.status,
+          subscriptionExpiresAt: expiresAt,
+        });
+      }
+      break;
+      
+    case 'customer.subscription.deleted':
+      const canceledSubscription = event.data.object;
+      // Update the subscription status in your database
+      const userQueryCancel = await db
+        .select()
+        .from(users)
+        .where(eq(users.stripeSubscriptionId, canceledSubscription.id));
+      
+      if (userQueryCancel.length > 0) {
+        const user = userQueryCancel[0];
+        const expiresAt = new Date(canceledSubscription.current_period_end * 1000);
+        
+        await updateUserSubscription(user.id, {
+          subscriptionStatus: 'canceled',
+          subscriptionExpiresAt: expiresAt,
+        });
+      }
+      break;
+      
+    default:
+      console.log(`Unhandled event type: ${event.type}`);
+  }
+  
+  return { received: true };
+}
+
+// Function to get a user's subscription status
+export async function getUserSubscriptionStatus(userId: number) {
+  try {
+    const userQuery = await db
+      .select()
+      .from(users)
       .where(eq(users.id, userId));
     
-    // Get client secret for payment (if available)
-    const clientSecret = subscription.latest_invoice?.payment_intent?.client_secret || null;
-    
-    return {
-      subscriptionId: subscription.id,
-      clientSecret,
-    };
-  },
-  
-  // Cancel a subscription
-  async cancelSubscription(subscriptionId: string, cancelImmediately: boolean = false): Promise<void> {
-    if (cancelImmediately) {
-      await stripeInstance.subscriptions.cancel(subscriptionId);
-    } else {
-      await stripeInstance.subscriptions.update(subscriptionId, {
-        cancel_at_period_end: true,
-      });
-    }
-  },
-  
-  // Update user subscription status based on Stripe webhook events
-  async updateUserSubscriptionStatus(subscriptionId: string, status: string): Promise<void> {
-    const [user] = await db.select().from(users)
-      .where(eq(users.stripeSubscriptionId, subscriptionId));
-    
-    if (!user) {
-      return;
+    if (!userQuery.length) {
+      throw new Error('User not found');
     }
     
-    const subscriptionStatus = status as 
-      'active' | 'canceled' | 'past_due' | 'trialing' | 'inactive' || 'inactive';
+    const user = userQuery[0];
     
-    const subscription = await stripeInstance.subscriptions.retrieve(subscriptionId);
-    const expiresAt = new Date((subscription.current_period_end || 0) * 1000);
-    
-    await db.update(users)
-      .set({
-        subscriptionStatus: subscriptionStatus,
-        subscriptionExpiresAt: expiresAt.toISOString(),
-        subscriptionTier: status === 'active' ? 'premium' : 'free',
-      })
-      .where(eq(users.id, user.id));
-  },
-  
-  // Get available subscription plans
-  async getSubscriptionPlans(): Promise<{
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    currency: string;
-    interval: string;
-    features: string[];
-  }[]> {
-    const prices = await stripeInstance.prices.list({
-      expand: ['data.product'],
-      active: true,
-    });
-    
-    return prices.data.map(price => {
-      const product = price.product || {};
+    // If user has no subscription, return free tier status
+    if (!user.stripeSubscriptionId) {
       return {
-        id: price.id,
-        name: product.name || 'Unnamed Plan',
-        description: product.description || '',
-        price: (price.unit_amount || 0) / 100,
-        currency: price.currency || 'usd',
-        interval: price.recurring?.interval || 'month',
-        features: (product.features || []).map((f: any) => f.name || ''),
+        isSubscriptionActive: false,
+        subscriptionTier: 'free',
+        subscriptionStatus: 'inactive',
       };
-    });
-  },
-};
+    }
+    
+    // If Stripe is not configured or we're in development mode
+    if (!isStripeConfigured || !stripe) {
+      return {
+        isSubscriptionActive: user.subscriptionStatus === 'active',
+        subscriptionTier: user.subscriptionTier || 'free',
+        subscriptionStatus: user.subscriptionStatus || 'inactive',
+        subscriptionExpiresAt: user.subscriptionExpiresAt,
+        stripeCustomerId: user.stripeCustomerId,
+        stripeSubscriptionId: user.stripeSubscriptionId,
+      };
+    }
+    
+    // Fetch the latest subscription data from Stripe
+    try {
+      const subscription = await getSubscription(user.stripeSubscriptionId);
+      const isActive = ['active', 'trialing'].includes(subscription.status);
+      const expiresAt = new Date(subscription.current_period_end * 1000);
+      
+      // Update the user record if needed
+      if (
+        subscription.status !== user.subscriptionStatus ||
+        expiresAt.toISOString() !== user.subscriptionExpiresAt
+      ) {
+        await updateUserSubscription(user.id, {
+          subscriptionStatus: subscription.status,
+          subscriptionExpiresAt: expiresAt,
+        });
+      }
+      
+      return {
+        isSubscriptionActive: isActive,
+        subscriptionTier: user.subscriptionTier || 'free',
+        subscriptionStatus: subscription.status,
+        subscriptionExpiresAt: expiresAt.toISOString(),
+        stripeCustomerId: user.stripeCustomerId,
+        stripeSubscriptionId: user.stripeSubscriptionId,
+      };
+    } catch (error) {
+      console.error('Error fetching subscription from Stripe:', error);
+      
+      // Return data from the database if Stripe API fails
+      return {
+        isSubscriptionActive: user.subscriptionStatus === 'active',
+        subscriptionTier: user.subscriptionTier || 'free',
+        subscriptionStatus: user.subscriptionStatus || 'inactive',
+        subscriptionExpiresAt: user.subscriptionExpiresAt,
+        stripeCustomerId: user.stripeCustomerId,
+        stripeSubscriptionId: user.stripeSubscriptionId,
+      };
+    }
+  } catch (error) {
+    console.error('Error getting user subscription status:', error);
+    throw error;
+  }
+}

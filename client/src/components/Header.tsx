@@ -8,7 +8,9 @@ import {
   PlaneTakeoffIcon,
   ClockIcon,
   LogOut,
-  User
+  User,
+  CreditCard,
+  Crown
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -19,7 +21,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/use-auth';
+import { useSubscription } from '@/hooks/use-subscription';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 
 interface HeaderProps {
   isDarkMode: boolean;
@@ -199,6 +203,37 @@ export default function Header({ isDarkMode, onThemeToggle }: HeaderProps) {
                         <User className="mr-2 h-4 w-4" />
                         <span>Profile</span>
                       </DropdownMenuItem>
+                      {(() => {
+                        // Get subscription status
+                        const { isPremium, status } = useSubscription();
+                        return (
+                          <DropdownMenuItem 
+                            className="cursor-pointer"
+                            onClick={() => navigate('/subscription')}
+                          >
+                            <div className="flex items-center justify-between w-full">
+                              <div className="flex items-center">
+                                {isPremium ? (
+                                  <Crown className="mr-2 h-4 w-4 text-amber-500" />
+                                ) : (
+                                  <CreditCard className="mr-2 h-4 w-4" />
+                                )}
+                                <span>Subscription</span>
+                              </div>
+                              {status && (
+                                <Badge 
+                                  className={`ml-2 text-xs ${
+                                    isPremium ? 'bg-blue-600' : 'bg-gray-500'
+                                  }`}
+                                >
+                                  {isPremium ? 'Premium' : 'Free'}
+                                </Badge>
+                              )}
+                            </div>
+                          </DropdownMenuItem>
+                        );
+                      })()}
+                      <DropdownMenuSeparator />
                       <DropdownMenuItem 
                         className="cursor-pointer text-red-500 focus:text-red-500"
                         onClick={() => {
