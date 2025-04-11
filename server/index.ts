@@ -4,6 +4,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import csurf from "csurf";
+import rateLimit from "express-rate-limit";
 import { authenticateJWT } from "./auth";
 
 const app = express();
@@ -41,9 +42,20 @@ app.use((req, res, next) => {
   next();
 });
 
+// Global API rate limiter
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // 100 requests per IP per 15 minutes
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later' },
+  skip: (req) => !req.path.startsWith('/api/'), // Only limit API routes
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(apiLimiter); // Apply global rate limiting
 
 // Set up CSRF protection for all state-changing routes
 const csrfProtection = csurf({ 

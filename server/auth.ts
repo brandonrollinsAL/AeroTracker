@@ -5,6 +5,7 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import jwt from "jsonwebtoken";
+import rateLimit from "express-rate-limit";
 import { storage } from "./storage";
 import { User as SelectUser } from "@shared/schema";
 // Import PostgreSQL session store with dynamic import for ES Module compatibility
@@ -111,6 +112,25 @@ export function setupAuth(app: Express) {
   app.use(session(sessionSettings));
   app.use(passport.initialize());
   app.use(passport.session());
+  
+  // Define rate limiters for authentication endpoints
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // 10 requests per IP per 15 minutes
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many authentication attempts, please try again later' },
+    skipSuccessfulRequests: false, // Count all attempts, not just failures
+  });
+  
+  const loginLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 5, // 5 failed login attempts per IP per hour
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many failed login attempts, please try again later' },
+    skipSuccessfulRequests: true, // Only count failed attempts
+  });
 
   passport.use(
     new LocalStrategy(async (username, password, done) => {
@@ -138,7 +158,7 @@ export function setupAuth(app: Express) {
   });
 
   // Enhanced registration with validation and security checks
-  app.post("/api/register", [
+  app.post("/api/register", authLimiter, [
     body('username')
       .trim()
       .isLength({ min: 3 }).withMessage('Username must be at least 3 characters long')
@@ -212,7 +232,7 @@ export function setupAuth(app: Express) {
   });
 
   // Enhanced login with JWT token generation and input validation
-  app.post("/api/login", [
+  app.post("/api/login", loginLimiter, [
     body('username').trim().notEmpty().withMessage('Username is required'),
     body('password').trim().notEmpty().withMessage('Password is required')
   ], (req: Request, res: Response, next: NextFunction) => {
